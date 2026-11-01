@@ -1,14 +1,46 @@
 HƯỚNG DẪN ĐƯA VÔ ƯU TỰ LÊN WEBSITE (MIỄN PHÍ, KHÔNG CẦN TÀI KHOẢN CLAUDE)
 ===========================================================================
 
-Gói này gồm:
-  vo-uu-tu/           Thư mục website (index.html, config.js, sounds/). Đưa nguyên thư mục này lên mạng.
-  Code.gs             Máy chủ dữ liệu, chạy trên Google Sheets (Apps Script).
-  HUONG-DAN.txt       File này.
+Kho GitHub ltpthientax67/vo-uu-tu gồm:
+  site/               Website (index.html, quan-tri.html, bao-mat.html, config.js, version.json, sounds/).
+                      Netlify tự lấy thư mục này mỗi khi kho được cập nhật.
+  server/Code.gs      Máy chủ dữ liệu, chạy trên Google Sheets (Apps Script). Phải dán tay vào Apps Script.
+  server/HUONG-DAN.txt  File này.
 
 Website lưu dữ liệu ở đâu?
-  - Đăng ký dùng thử, góp ý, câu hỏi Phật pháp: vào Google Sheet của bạn.
-  - Sổ tu tập, lời nguyện trên Tường tâm nguyện: lưu ngay trên máy của từng người dùng.
+  - Đăng ký dùng thử, góp ý, câu hỏi Phật pháp, Tường tâm nguyện, thông báo, báo lỗi, lượt vào Tự:
+    vào Google Sheet của bạn.
+  - Sổ tu tập, lá xăm đã xin: lưu ngay trên máy của từng người dùng.
+
+===========================================================================
+CẬP NHẬT MÁY CHỦ LÊN BẢN 2 (làm một lần, khoảng 3 phút)
+===========================================================================
+ Bản 2 thêm: Tường tâm nguyện dùng chung có duyệt, thông báo của Tự, báo lỗi, đếm lượt vào, trang quản trị.
+ 1. Mở Google Sheet "Vô Ưu Tự – Dữ liệu" → Tiện ích mở rộng → Apps Script.
+ 2. Xóa hết code cũ trong Code.gs, dán toàn bộ server/Code.gs mới vào. (Nếu trước đây bạn đã điền
+    OWNER_EMAIL thì điền lại.) Bấm Lưu.
+ 3. Chọn hàm "setup" → Chạy. Bảng tính có thêm các trang: TamNguyen, ThongBao, BaoLoi, LuotVao.
+    Dữ liệu cũ giữ nguyên.
+ 4. Chọn hàm "xemMatKhauQuanTri" → Chạy → bấm "Nhật ký thực thi" ở dưới để thấy dòng
+    "Mật khẩu trang quản trị: vut-…". Ghi lại mật khẩu này, không chia sẻ cho ai.
+    (Muốn đổi mật khẩu: chạy hàm "doiMatKhauQuanTri".)
+ 5. Triển khai → Quản lý các bản triển khai → bấm bút chì ở bản đang dùng
+    → Phiên bản: chọn "Phiên bản mới" → Triển khai.
+    QUAN TRỌNG: KHÔNG chọn "Tùy chọn triển khai mới", vì như vậy đường dẫn /exec sẽ đổi.
+
+===========================================================================
+CHỦ TRÌ TỰ HẰNG NGÀY: TRANG QUẢN TRỊ
+===========================================================================
+ Mở https://vo-uu-tu.netlify.app/quan-tri.html, nhập mật khẩu quản trị.
+ - Tổng quan: số người ghé mỗi ngày, việc đang chờ bạn.
+ - Hỏi đáp: viết lời đáp, tick "Đăng vào Hỏi đáp chung" nếu người hỏi cho phép.
+   Câu khó: bấm "Chép để nhờ AI gợi ý", dán vào Claude, rồi tự chỉnh lại trước khi lưu.
+ - Tâm nguyện: đọc, sửa bớt họ tên/số điện thoại nếu có, rồi "Duyệt lên tường" hoặc "Ẩn".
+   Lời nguyện có dấu hiệu khủng hoảng được viền đỏ.
+ - Thông báo: viết thông báo (lịch tụng rằm, lời chúc lễ…). Người dùng thấy khi bước vào Tự.
+ - Góp ý & lỗi: đánh dấu lỗi đã xử lý. Ai xin xóa dữ liệu thì có nút "Xóa toàn bộ dữ liệu của người này".
+ - Người đăng ký: xem danh sách, tải file CSV.
+ Bạn vẫn có thể làm trực tiếp trong Google Sheet như trước.
 
 ---------------------------------------------------------------------------
 BƯỚC 1. TẠO MÁY CHỦ DỮ LIỆU TRÊN GOOGLE SHEETS (khoảng 5 phút)
@@ -48,7 +80,8 @@ BƯỚC 3. ĐƯA WEBSITE LÊN MẠNG BẰNG NETLIFY (khoảng 3 phút)
  Gửi link này qua Zalo, Facebook… Người nhận mở bằng trình duyệt trên điện thoại hay máy tính là dùng được,
  không cần tài khoản gì.
 
- Khi có bản cập nhật: vào trang của site trên Netlify → mục Deploys → kéo thả lại thư mục vo-uu-tu mới.
+ Khi có bản cập nhật: website đã nối với GitHub, Netlify tự đưa bản mới lên. Người đang dùng sẽ thấy
+ thông báo "Có bản mới" và bấm "Tải lại".
 
 ---------------------------------------------------------------------------
 BƯỚC 4. HẰNG NGÀY: XEM ĐĂNG KÝ VÀ TRẢ LỜI CÂU HỎI

@@ -2,12 +2,30 @@
   publish = "site"
   command = ""
 
+# Trang và cấu hình luôn lấy bản mới nhất để người dùng nhận cập nhật ngay
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache"
 [[headers]]
   for = "/index.html"
   [headers.values]
     Cache-Control = "no-cache"
 [[headers]]
   for = "/config.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/version.json"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/quan-tri.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+    X-Robots-Tag = "noindex, nofollow"
+[[headers]]
+  for = "/bao-mat.html"
   [headers.values]
     Cache-Control = "no-cache"
 [[headers]]

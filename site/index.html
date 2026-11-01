@@ -166,6 +166,25 @@ textarea:focus,input[type=text]:focus{outline:none;border-color:rgba(226,179,106
 .intro .opt{display:flex;flex-direction:column;gap:7px}
 .intro .fine{font-size:11.5px;color:var(--mist-2);border-top:1px solid var(--line);padding-top:12px;line-height:1.6}
 .nogl{position:fixed;inset:0;display:grid;place-items:center;padding:24px;text-align:center;z-index:30;background:var(--ink)}
+/* Đợt 1: thông báo, hướng dẫn lần đầu */
+.banners{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 76px);z-index:9;width:min(460px,calc(100% - 32px));display:flex;flex-direction:column;gap:8px}
+.banner{background:var(--panel);border:1px solid rgba(226,179,106,.45);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:9px;backdrop-filter:blur(8px);animation:slideL .5s ease both}
+.banner .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--lamp)}
+.banner p{margin:3px 0 0;font-size:14px;line-height:1.5;color:var(--paper)}
+.banner-act{display:flex;gap:8px;flex-wrap:wrap}
+.banner .btn{padding:8px 16px;font-size:13.5px}
+.coach{position:fixed;inset:0;z-index:15;display:flex;align-items:flex-end;justify-content:center;padding:16px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 150px);background:rgba(5,9,10,.45)}
+.coach-card{width:min(420px,100%);background:var(--panel);border:1px solid rgba(226,179,106,.45);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px;backdrop-filter:blur(10px);animation:slideL .5s ease both}
+.coach-card .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--lamp)}
+.coach-card h2{font-size:26px}
+.coach-card p{margin:0;line-height:1.6;color:var(--mist)}
+details.practice summary{cursor:pointer;list-style:none;color:var(--paper)}
+details.practice summary::-webkit-details-marker{display:none}
+details.practice summary::after{content:" +";color:var(--lamp)}
+details.practice[open] summary::after{content:" –"}
+details.practice[open]{gap:8px}
+.news{margin:4px 0 0;padding-left:18px;color:var(--mist);font-size:13.5px;line-height:1.6}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 
@@ -211,7 +230,7 @@ textarea:focus,input[type=text]:focus{outline:none;border-color:rgba(226,179,106
     <div class="opt"><span class="muted">Hôm nay bạn muốn</span>
       <div class="chips" id="introCrowd"><button class="chip" data-c="1" aria-pressed="true">Đi giữa đại chúng</button><button class="chip" data-c="0" aria-pressed="false">Ở một mình</button></div></div>
     <div class="row"><button class="btn" id="enterBtn">Bước vào Tự</button><button class="btn ghost" id="regIntro">Đăng ký dùng thử</button><span class="muted">Nên đeo tai nghe.</span></div>
-    <p class="fine">Vô Ưu Tự là không gian tâm linh trực tuyến. Vô Ưu Tự không liên kết, không đại diện và không quảng bá cho bất kỳ ngôi chùa, tự viện hay tổ chức tôn giáo nào. Mọi hoạt động đều miễn phí, công đức không mua bán. Đại chúng trong Tự là mô phỏng để tạo không khí.</p>
+    <p class="fine">Vô Ưu Tự là không gian tâm linh trực tuyến. Vô Ưu Tự không liên kết, không đại diện và không quảng bá cho bất kỳ ngôi chùa, tự viện hay tổ chức tôn giáo nào. Mọi hoạt động đều miễn phí, công đức không mua bán. Đại chúng trong Tự là mô phỏng để tạo không khí. <a href="bao-mat.html" target="_blank" rel="noopener" style="color:var(--lamp)">Chính sách bảo mật</a></p>
   </div>
 </div>
 
@@ -1020,7 +1039,7 @@ function incense(){
       const sp=textSprite(txt,{size:30});floatObj(sp,new THREE.Vector3(0,2.5,-18.9),new THREE.Vector3(0,4.4,-24.2),9000,.6,.05);
       const orb=glow(0xffd28a,.7,.9);floatObj(orb,new THREE.Vector3(0,2.2,-18.8),new THREE.Vector3(0,4.5,-25.3),9000,.75,.05);
       bell(196,.45);addMerit("nguyen");
-      if($("#pShare").checked){const mine=store.get("myPrayers",[]);mine.unshift({t:txt,w:who,c:0,ts:Date.now()});store.set("myPrayers",mine.slice(0,20));}
+      if($("#pShare").checked)wallSend(txt,who);
       const risky=RISK.test(txt);
       later(()=>{$("#sheetBody").innerHTML=`<p class="lede">Lời nguyện của bạn đã bay về phía chánh điện.</p>
         <p class="verse">Nguyện cho ${name?esc(name):who==="Bản thân"?"con":who.toLowerCase()} được bình an, thân tâm nhẹ nhàng, mọi việc thuận duyên.</p>
@@ -1524,7 +1543,7 @@ function renderRegForm(db,id){
       <label class="f" for="rgContact">Liên hệ khi có bản mới (email, Zalo hoặc số điện thoại, không bắt buộc)</label><input type="text" id="rgContact" maxlength="100" value="${esc(r.contact||"")}" placeholder="Ví dụ: Zalo 09xx xxx xxx">
       <span class="muted">Bạn muốn dùng Vô Ưu Tự để</span>${chipsHTML("rgUse",REG_USE,r.uses||[],true)}
       <span class="muted">Bạn thường dùng trên</span>${chipsHTML("rgDev",REG_DEV,r.dev||"",false)}
-      <label class="check"><input type="checkbox" id="rgOk" ${r.consent?"checked":""}><span>Tôi đồng ý để người quản trị Vô Ưu Tự lưu các thông tin trên và liên hệ khi có bản mới. Thông tin chỉ người quản trị xem được, không chia sẻ cho ai khác.</span></label>
+      <label class="check"><input type="checkbox" id="rgOk" ${r.consent?"checked":""}><span>Tôi đồng ý để người quản trị Vô Ưu Tự lưu các thông tin trên và liên hệ khi có bản mới. Thông tin chỉ người quản trị xem được, không chia sẻ cho ai khác. <a href="bao-mat.html" target="_blank" rel="noopener" style="color:var(--lamp)">Xem chính sách bảo mật</a>.</span></label>
       <div class="row"><button class="btn" id="rgSend">${r.name?"Cập nhật đăng ký":"Đăng ký dùng thử"}</button><span class="muted" id="rgMsg"></span></div></div>`;
   ["rgAge","rgUse","rgDev"].forEach(bindChips);
   $("#rgSend").addEventListener("click",async()=>{const name=$("#rgName").value.trim();if(!name){$("#rgMsg").textContent="Bạn nhập tên gọi nhé.";return;}if(!$("#rgOk").checked){$("#rgMsg").textContent="Bạn cần đồng ý lưu thông tin để đăng ký.";return;}
@@ -1602,7 +1621,7 @@ function webRegForm(note,edit){
       <label class="f" for="rgContact">Liên hệ khi có bản mới (email, Zalo hoặc số điện thoại, không bắt buộc)</label><input type="text" id="rgContact" maxlength="100" value="${esc(r.contact||"")}" placeholder="Ví dụ: Zalo 09xx xxx xxx">
       <span class="muted">Bạn muốn dùng Vô Ưu Tự để</span>${chipsHTML("rgUse",REG_USE,r.uses||[],true)}
       <span class="muted">Bạn thường dùng trên</span>${chipsHTML("rgDev",REG_DEV,r.dev||"",false)}
-      <label class="check"><input type="checkbox" id="rgOk" ${r.consent?"checked":""}><span>Tôi đồng ý để người quản trị Vô Ưu Tự lưu các thông tin trên và liên hệ khi có bản mới. Thông tin chỉ người quản trị xem được, không chia sẻ cho ai khác.</span></label>
+      <label class="check"><input type="checkbox" id="rgOk" ${r.consent?"checked":""}><span>Tôi đồng ý để người quản trị Vô Ưu Tự lưu các thông tin trên và liên hệ khi có bản mới. Thông tin chỉ người quản trị xem được, không chia sẻ cho ai khác. <a href="bao-mat.html" target="_blank" rel="noopener" style="color:var(--lamp)">Xem chính sách bảo mật</a>.</span></label>
       <div class="row"><button class="btn" id="rgSend">${r.name?"Cập nhật đăng ký":"Đăng ký dùng thử"}</button><span class="muted" id="rgMsg"></span></div></div>`;
   ["rgAge","rgUse","rgDev"].forEach(bindChips);
   $("#rgSend").addEventListener("click",async()=>{const name=$("#rgName").value.trim();if(!name){$("#rgMsg").textContent="Bạn nhập tên gọi nhé.";return;}if(!$("#rgOk").checked){$("#rgMsg").textContent="Bạn cần đồng ý lưu thông tin để đăng ký.";return;}
@@ -1611,6 +1630,133 @@ function webRegForm(note,edit){
     try{await api("register",doc);myReg=doc;store.set("regLocal",doc);bell(220,.35);webRegForm();toast("Đăng ký thành công. Cảm ơn bạn đã đồng hành cùng Vô Ưu Tự.");}
     catch(e){$("#rgMsg").textContent=apiMsg(e);b.disabled=false;}});
 }
+
+// ===== ĐỢT 1: Tường tâm nguyện chung (có duyệt), thông báo của Tự, báo bản mới, hướng dẫn lần đầu, báo lỗi =====
+const APP_VER="1.1";
+const ERRS=[];
+addEventListener("error",e=>{ERRS.push(String(e.message||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
+addEventListener("unhandledrejection",e=>{const r=e.reason;if(r&&r.code)return;ERRS.push(String((r&&r.message)||r||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
+const devKind=()=>{const u=navigator.userAgent;return /iPhone|iPad|iPod/.test(u)?"iPhone/iPad":/Android/.test(u)?"Android":"Máy tính";};
+const devInfo=()=>`${devKind()} · ${innerWidth}×${innerHeight} · ${navigator.userAgent.slice(0,160)}`;
+const offline=e=>e&&(e.code==="no_server"||e.code==="unknown_action");
+
+/* ---- banner (thông báo của Tự, bản mới) ---- */
+function banner(id,html,btns){
+  let wrap=$("#banners");if(!wrap){wrap=document.createElement("div");wrap.id="banners";wrap.className="banners";document.body.appendChild(wrap);}
+  const hb=$("#hud").hidden?null:$("#hud").getBoundingClientRect();wrap.style.top=hb?Math.round(hb.bottom+8)+"px":"";
+  if($(`#bn-${id}`))return;
+  const el=document.createElement("div");el.className="banner";el.id="bn-"+id;el.setAttribute("role","status");
+  el.innerHTML=`<div class="banner-text">${html}</div><div class="banner-act">${btns.map((b,i)=>`<button class="${b.ghost?"chip":"btn"}" data-i="${i}">${b.label}</button>`).join("")}</div>`;
+  btns.forEach((b,i)=>el.querySelector(`[data-i="${i}"]`).addEventListener("click",()=>{if(b.fn)b.fn();el.remove();}));
+  wrap.appendChild(el);
+}
+let ANN=[];
+function showAnn(){const seen=store.get("annSeen",[]);const a=ANN.find(x=>!seen.includes(x.id));if(!a)return;
+  banner("ann-"+a.id,`<span class="eyebrow">Thông báo của Tự</span><p>${fmtAns(a.text)}</p>`,[{label:"Đã đọc",fn:()=>{store.set("annSeen",seen.concat(a.id).slice(-50));setTimeout(showAnn,400);}}]);}
+function hello(){api("hello",{dev:devKind(),ver:APP_VER}).then(j=>{ANN=j.ann||[];showAnn();}).catch(()=>{});}
+
+/* ---- báo có bản mới ---- */
+let verNotes=null,verShown=false;
+async function checkVersion(){
+  try{const r=await fetch("version.json",{cache:"no-store"});if(!r.ok)return;const j=await r.json();verNotes=j;
+    if(j.v&&j.v!==APP_VER&&!verShown){verShown=true;
+      banner("ver",`<span class="eyebrow">Có bản mới</span><p>Vô Ưu Tự vừa được cập nhật${j.notes&&j.notes[0]?": "+esc(j.notes[0]):""}. Tải lại để dùng bản mới nhé.</p>`,[{label:"Tải lại",fn:()=>location.reload()},{label:"Để sau",ghost:true}]);}}catch(e){}
+}
+setInterval(checkVersion,10*60*1000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkVersion();});
+
+/* ---- Tường tâm nguyện dùng chung ---- */
+const W_FOR=["Bản thân","Gia đình","Người đang ốm","Người đã khuất","Tất cả chúng sinh"];
+async function wallSend(t,w){
+  try{await api("wallPost",{t,w});toast("Lời nguyện đã được gửi. Người quản trị đọc xong sẽ đưa lên Tường tâm nguyện.",5200);return true;}
+  catch(e){if(offline(e)){const mine=store.get("myPrayers",[]);mine.unshift({t,w,c:0,ts:Date.now()});store.set("myPrayers",mine.slice(0,20));return true;}toast(apiMsg(e));return false;}
+}
+function niemFx(b){b.textContent="Nam mô Dược Sư Lưu Ly Quang Vương Phật";b.disabled=true;b.setAttribute("aria-pressed","true");mo(.4);later(()=>bell(208,.3),500);addMerit("choNguoi");
+  const o=glow(0xffd28a,.6,.9);floatObj(o,new THREE.Vector3(-10.3,rand(1.6,3),rand(-17,-14)),new THREE.Vector3(-4,4.6,-24),7000,.6,.1);}
+function wall(){
+  const h=HOT.find(x=>x.id==="wall");let who=W_FOR[1];
+  openSheet("Tường tâm nguyện","Niệm cho người đang cần",`
+    <p class="lede">Mỗi mảnh giấy là một lời nguyện ẩn danh. Dừng lại một chút, niệm một câu cho người ấy.</p>
+    <details class="practice" id="wForm"><summary><b>Viết một lời nguyện lên tường</b></summary>
+      <span class="muted">Cầu cho</span>
+      <div class="chips" id="wFor">${W_FOR.map(f=>`<button class="chip" data-f="${f}" aria-pressed="${f===who}">${f}</button>`).join("")}</div>
+      <label class="f" for="wText">Lời nguyện</label><textarea id="wText" maxlength="300" placeholder="Ví dụ: Cầu cho ba được tai qua nạn khỏi, ca mổ thuận lợi."></textarea>
+      <p class="note">Lời nguyện được gửi ẩn danh. Người quản trị đọc trước rồi mới đưa lên tường. Bạn đừng ghi số điện thoại, địa chỉ hay họ tên đầy đủ.</p>
+      <div id="wSup"></div>
+      <div class="row"><button class="btn" id="wSend" disabled>Gửi lời nguyện</button><span class="muted" id="wMsg"></span></div>
+    </details>
+    <div id="wMine" class="ask-log"></div>
+    <div id="wList"><p class="muted">Đang tải lời nguyện của đại chúng…</p></div>`,h.focus);
+  $$("#wFor .chip").forEach(b=>b.addEventListener("click",()=>{who=b.dataset.f;$$("#wFor .chip").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));}));
+  const ta=$("#wText");ta.addEventListener("input",()=>{$("#wSend").disabled=ta.value.trim().length<2;if(RISK.test(ta.value))$("#wSup").innerHTML=supportCard();});
+  $("#wSend").addEventListener("click",async()=>{const t=ta.value.trim();if(t.length<2)return;const b=$("#wSend");b.disabled=true;$("#wMsg").textContent="Đang gửi…";
+    if(await wallSend(t,who)){ta.value="";$("#wMsg").textContent="Đã gửi.";addMerit("nguyen");bell(196,.35);wallLoad();}else{$("#wMsg").textContent="";b.disabled=false;}});
+  wallLoad();
+}
+async function wallLoad(){
+  let items=[],mine=[],off=false;
+  try{const j=await api("wall");items=j.items||[];mine=j.mine||[];}catch(e){off=true;}
+  const L=$("#wList"),M=$("#wMine");if(!L)return;
+  if(off){mine=store.get("myPrayers",[]).map(p=>({t:p.t,w:p.w,st:"Trên thiết bị này"}));}
+  M.innerHTML=mine.length?`<span class="muted">Lời nguyện bạn đã gửi</span>`+mine.map(p=>`<div class="prayer mine"><p>${esc(p.t)}</p><div class="meta"><span>${esc(p.w)} · ${p.st==="Đã duyệt"?`đã lên tường · ${p.n||0} người đã niệm`:p.st==="Chờ duyệt"?"đang chờ người quản trị duyệt":esc(p.st)}</span></div></div>`).join(""):"";
+  const real=items.map(p=>({id:p.id,t:p.t,w:p.w,c:p.n||0,srv:true}));
+  const samples=real.length<6?SAMPLE.slice(0,6-real.length).map((p,i)=>({...p,id:"s"+i,c:(p.c||0)+(wallCounts["s"+i]||0)})):[];
+  L.innerHTML=(real.length?`<span class="muted">Lời nguyện của đại chúng</span>`:"")+real.map(card).join("")+
+    (samples.length?`<span class="muted">Lời nguyện minh họa</span>`+samples.map(card).join(""):"")+
+    (off?`<p class="note">Chưa kết nối được máy chủ nên tường đang hiện bản trên thiết bị.</p>`:"");
+  function card(p){return `<div class="prayer"><p>${esc(p.t)}</p><div class="meta"><span>${esc(p.w)} · <b data-c="${p.id}">${p.c}</b> người đã niệm</span><button class="chip" data-id="${p.id}" data-srv="${p.srv?1:0}">Niệm cho người này</button></div></div>`;}
+  $$("#wList .chip[data-id]").forEach(b=>b.addEventListener("click",()=>{const id=b.dataset.id,el=$(`[data-c="${id}"]`);el.textContent=+el.textContent+1;niemFx(b);
+    if(b.dataset.srv==="1")api("wallNiem",{id}).catch(()=>{});else{wallCounts[id]=(wallCounts[id]||0)+1;store.set("wallCounts",wallCounts);}}));
+}
+
+/* ---- Báo lỗi ---- */
+function bugReport(){
+  openSheet("Báo lỗi","Có gì đó chưa ổn?",`
+    <p class="lede">Bạn kể ngắn gọn điều đã xảy ra, người quản trị sẽ sửa trong bản sau.</p>
+    <div class="practice"><b>Mô tả lỗi</b>
+      <textarea id="bgText" maxlength="1200" placeholder="Ví dụ: Bấm Tụng kinh trên điện thoại thì không nghe tiếng mõ."></textarea>
+      <label class="check"><input type="checkbox" id="bgDev" checked><span>Gửi kèm loại thiết bị, kích thước màn hình và lỗi kỹ thuật gần nhất để dễ tìm nguyên nhân (không có thông tin cá nhân)</span></label>
+      <div class="row"><button class="btn" id="bgSend">Gửi báo lỗi</button><span class="muted" id="bgMsg"></span></div></div>
+    <p class="note">Phiên bản ${APP_VER}</p>`,null);
+  $("#bgSend").addEventListener("click",async()=>{const text=$("#bgText").value.trim();if(text.length<3){$("#bgMsg").textContent="Bạn viết vài chữ mô tả nhé.";return;}
+    const b=$("#bgSend");b.disabled=true;$("#bgMsg").textContent="Đang gửi…";const withDev=$("#bgDev").checked;
+    try{await api("bug",{text,dev:withDev?devInfo():devKind(),err:withDev?ERRS.join(" | "):"",ver:APP_VER});$("#bgMsg").textContent="Cảm ơn bạn. Báo lỗi đã được gửi.";$("#bgText").value="";}
+    catch(e){$("#bgMsg").textContent=apiMsg(e);}finally{b.disabled=false;}});
+}
+
+/* ---- Về Tự (thêm thông báo, có gì mới, bảo mật, báo lỗi) ---- */
+function about(){
+  openSheet("Về Vô Ưu Tự","Một ngôi Tự trực tuyến",`
+    <p class="lede">Vô Ưu nghĩa là không còn ưu phiền. Đây là nơi để bạn ghé vào khi bận rộn hay rối lòng: dạo sân, thả muộn phiền, thắp nhang, tụng niệm, và niệm cho người khác.</p>
+    ${ANN.length?`<span class="muted">Thông báo của Tự</span>${ANN.map(a=>`<div class="msg a">${fmtAns(a.text)}<br><small class="muted">${fmtTime(a.at)}</small></div>`).join("")}`:""}
+    <p>Vô Ưu Tự là không gian tâm linh trực tuyến. Vô Ưu Tự không liên kết, không đại diện và không quảng bá cho bất kỳ ngôi chùa, tự viện hay tổ chức tôn giáo nào. Mọi hoạt động đều miễn phí, công đức không mua bán.</p>
+    <p class="muted">Cách đi: ${coarse?"dùng vòng tròn góc trái để đi, kéo màn hình để nhìn quanh.":"phím W A S D hoặc mũi tên để đi, kéo chuột để nhìn quanh."} Bấm vào các đốm sáng để tự đi đến nơi đó.</p>
+    <div class="row"><button class="btn ghost" id="abGuide">Xem lại hướng dẫn</button><button class="btn ghost" id="abBug">Báo lỗi</button><a class="btn ghost" href="bao-mat.html" target="_blank" rel="noopener">Chính sách bảo mật</a></div>
+    <div id="abNew"></div>
+    ${supportCard().replace("Có vẻ bạn đang mang một điều rất nặng.","Cần nói chuyện với một người thật?")}
+    <p class="note">Phiên bản ${APP_VER}</p>`,null);
+  $("#abGuide").addEventListener("click",()=>{closeSheet();coach(0);});
+  $("#abBug").addEventListener("click",bugReport);
+  const showNew=j=>{const el=$("#abNew");if(el&&j&&j.notes&&j.notes.length)el.innerHTML=`<span class="muted">Có gì mới (${esc(j.v)})</span><ul class="news">${j.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>`;};
+  if(verNotes)showNew(verNotes);else fetch("version.json",{cache:"no-store"}).then(r=>r.json()).then(j=>{verNotes=j;showNew(j);}).catch(()=>{});
+}
+
+/* ---- Hướng dẫn lần đầu ---- */
+const COACH=[
+  {t:"Đi lại trong Tự",p:coarse?"Dùng vòng tròn ở góc trái dưới để bước đi. Kéo một ngón tay trên màn hình để nhìn quanh.":"Dùng phím W A S D hoặc các phím mũi tên để bước đi. Kéo chuột để nhìn quanh."},
+  {t:"Đến nơi bạn muốn",p:"Bấm vào các đốm sáng có tên trong sân Tự, hoặc nút “Đi đến…” ở góc phải dưới. Bạn sẽ tự đi tới đó: thắp nhang, tụng kinh, thỉnh chuông, xin xăm, ngồi thiền dưới cội Bồ đề."},
+  {t:"Các nút phía trên",p:"“Pháp” để đọc lời Phật dạy và gửi câu hỏi cho người quản trị. “Sổ tu tập” ghi lại việc lành bạn đã làm. “Về Tự” có thông báo, báo lỗi và hướng dẫn này. Phía dưới có nút ngồi xếp bằng và quỳ lạy."}
+];
+function coach(i){
+  let el=$("#coach");if(!el){el=document.createElement("div");el.id="coach";el.className="coach";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");document.body.appendChild(el);}
+  const c=COACH[i];
+  el.hidden=false;el.innerHTML=`<div class="coach-card"><div class="steps">${COACH.map((_,k)=>`<i class="${k<=i?"on":""}"></i>`).join("")}</div>
+    <span class="eyebrow">Hướng dẫn ${i+1}/${COACH.length}</span><h2>${c.t}</h2><p>${c.p}</p>
+    <div class="row"><button class="btn" id="coNext">${i<COACH.length-1?"Tiếp":"Bắt đầu"}</button><button class="chip" id="coSkip">Bỏ qua</button></div></div>`;
+  const done=()=>{el.hidden=true;store.set("coached",1);canvas.focus();};
+  $("#coNext").addEventListener("click",()=>i<COACH.length-1?coach(i+1):done());$("#coSkip").addEventListener("click",done);$("#coNext").focus();
+}
+$("#enterBtn").addEventListener("click",()=>{hello();checkVersion();if(!store.get("coached",0))setTimeout(()=>{if(!S.sheetOpen)coach(0);},900);});
 
 // ---- Merit book ----
 function meritBook(){
@@ -1626,14 +1772,6 @@ function meritBook(){
   const b=$("#hhBtn");b&&b.addEventListener("click",()=>{bell(196,.5);b.disabled=true;$("#hhMsg").textContent="Đã hồi hướng. Nguyện cho tất cả đều được bình an.";
     for(let i=0;i<6;i++)later(()=>{const o=glow(0xffd28a,.6,.9);floatObj(o,new THREE.Vector3(rand(-6,6),1.2,rand(-16,-10)),new THREE.Vector3(rand(-1,1),4.8,-24.5),8000,.6,.2);},i*300);});
 }
-function about(){
-  openSheet("Về Vô Ưu Tự","Một ngôi Tự trực tuyến",`
-    <p class="lede">Vô Ưu nghĩa là không còn ưu phiền. Đây là nơi để bạn ghé vào khi bận rộn hay rối lòng: dạo sân, thả muộn phiền, thắp nhang, tụng niệm, và niệm cho người khác.</p>
-    <p>Vô Ưu Tự là không gian tâm linh trực tuyến. Vô Ưu Tự không liên kết, không đại diện và không quảng bá cho bất kỳ ngôi chùa, tự viện hay tổ chức tôn giáo nào. Mọi hoạt động đều miễn phí, công đức không mua bán.</p>
-    <p class="muted">Cách đi: ${coarse?"dùng vòng tròn góc trái để đi, kéo màn hình để nhìn quanh.":"phím W A S D hoặc mũi tên để đi, kéo chuột để nhìn quanh."} Bấm vào các đốm sáng để tự đi đến nơi đó.</p>
-    ${supportCard().replace("Có vẻ bạn đang mang một điều rất nặng.","Cần nói chuyện với một người thật?")}`,null);
-}
-
 /* ================= navigation ================= */
 function walkTo(h,onArrive){
   closeSheet();const pts=[];let cx=S.x,cz=S.z;const tz=h.stand[1],deep=z=>z<-19.6;
