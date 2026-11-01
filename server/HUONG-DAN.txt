@@ -1,0 +1,73 @@
+HƯỚNG DẪN ĐƯA VÔ ƯU TỰ LÊN WEBSITE (MIỄN PHÍ, KHÔNG CẦN TÀI KHOẢN CLAUDE)
+===========================================================================
+
+Gói này gồm:
+  vo-uu-tu/           Thư mục website (index.html, config.js, sounds/). Đưa nguyên thư mục này lên mạng.
+  Code.gs             Máy chủ dữ liệu, chạy trên Google Sheets (Apps Script).
+  HUONG-DAN.txt       File này.
+
+Website lưu dữ liệu ở đâu?
+  - Đăng ký dùng thử, góp ý, câu hỏi Phật pháp: vào Google Sheet của bạn.
+  - Sổ tu tập, lời nguyện trên Tường tâm nguyện: lưu ngay trên máy của từng người dùng.
+
+---------------------------------------------------------------------------
+BƯỚC 1. TẠO MÁY CHỦ DỮ LIỆU TRÊN GOOGLE SHEETS (khoảng 5 phút)
+---------------------------------------------------------------------------
+ 1. Vào sheets.google.com, tạo một bảng tính trống, đặt tên "Vô Ưu Tự – Dữ liệu".
+ 2. Trên thanh menu chọn: Tiện ích mở rộng → Apps Script.
+ 3. Xóa hết đoạn code mẫu, dán toàn bộ nội dung file Code.gs vào. Bấm biểu tượng Lưu.
+ 4. (Không bắt buộc) Ở dòng OWNER_EMAIL, điền email của bạn giữa hai dấu nháy
+    để nhận thư báo khi có người đăng ký hoặc gửi câu hỏi.
+ 5. Ở ô chọn hàm phía trên, chọn "setup" rồi bấm "Chạy".
+    Google sẽ hỏi cấp quyền: chọn tài khoản của bạn → Nâng cao → Đi tới dự án (không an toàn) → Cho phép.
+    (Cảnh báo này xuất hiện vì đây là code do chính bạn tạo, chưa được Google kiểm duyệt.)
+    Quay lại bảng tính sẽ thấy 3 trang: DangKy, GopY, HoiDap.
+ 6. Bấm "Triển khai" → "Tùy chọn triển khai mới" → bấm bánh răng chọn "Ứng dụng web".
+      - Thực thi với tư cách: Tôi
+      - Người có quyền truy cập: Bất kỳ ai
+    Bấm "Triển khai", rồi SAO CHÉP "URL ứng dụng web" (kết thúc bằng /exec).
+
+---------------------------------------------------------------------------
+BƯỚC 2. NỐI WEBSITE VỚI MÁY CHỦ
+---------------------------------------------------------------------------
+ 1. Mở file vo-uu-tu/config.js bằng Notepad.
+ 2. Dán URL vừa sao chép vào giữa hai dấu nháy ở dòng API_URL, ví dụ:
+        API_URL: "https://script.google.com/macros/s/AKfycb...../exec"
+ 3. Lưu file.
+
+---------------------------------------------------------------------------
+BƯỚC 3. ĐƯA WEBSITE LÊN MẠNG BẰNG NETLIFY (khoảng 3 phút)
+---------------------------------------------------------------------------
+ 1. Vào app.netlify.com, đăng ký miễn phí (có thể đăng nhập bằng Google hoặc email).
+ 2. Chọn "Add new site" (Thêm trang) → "Deploy manually" (Triển khai thủ công).
+ 3. Kéo nguyên thư mục vo-uu-tu thả vào khung trên trang.
+ 4. Sau vài giây, Netlify cho bạn đường link dạng https://ten-ngau-nhien.netlify.app
+ 5. Đổi tên cho đẹp: Site configuration → Change site name → ví dụ "vo-uu-tu"
+    → link thành https://vo-uu-tu.netlify.app (nếu tên còn trống).
+
+ Gửi link này qua Zalo, Facebook… Người nhận mở bằng trình duyệt trên điện thoại hay máy tính là dùng được,
+ không cần tài khoản gì.
+
+ Khi có bản cập nhật: vào trang của site trên Netlify → mục Deploys → kéo thả lại thư mục vo-uu-tu mới.
+
+---------------------------------------------------------------------------
+BƯỚC 4. HẰNG NGÀY: XEM ĐĂNG KÝ VÀ TRẢ LỜI CÂU HỎI
+---------------------------------------------------------------------------
+ - Trang DangKy: danh sách người đăng ký dùng thử (tên, độ tuổi, tỉnh, liên hệ, mục đích, thiết bị).
+ - Trang GopY: điểm chấm và góp ý.
+ - Trang HoiDap:
+     • Viết lời đáp vào cột "Lời đáp (bạn viết vào đây)". Người hỏi mở lại mục "Hỏi chuyện Phật pháp"
+       trên website sẽ thấy lời đáp của bạn. Cột "Ngày trả lời" tự điền.
+     • Muốn đưa vào mục Hỏi đáp chung: tick cột "Đăng công khai". Chỉ những câu người hỏi đã cho phép
+       ("Cho phép đăng" = Có) mới được hiện công khai.
+     • Câu khó: bạn có thể dán câu hỏi vào Claude để xin gợi ý, rồi tự chỉnh trước khi trả lời.
+
+---------------------------------------------------------------------------
+LƯU Ý
+---------------------------------------------------------------------------
+ - Khi sửa Code.gs sau này: Triển khai → Quản lý các bản triển khai → bút chì → Phiên bản: "Phiên bản mới" → Triển khai.
+   (URL giữ nguyên, không cần sửa config.js.)
+ - Âm thanh chuông và mõ hiện lấy từ video bạn gửi (nguồn TikTok). Trước khi giới thiệu rộng rãi,
+   nên tự thu âm hoặc xin phép người quay. Chỉ cần thay file trong thư mục sounds/ (giữ nguyên tên file).
+ - Bóng nắng chỉ bật trên máy tính; điện thoại tự dùng chế độ nhẹ hơn.
+ - Thông tin người dùng (tên, liên hệ) chỉ nằm trong Google Sheet của bạn. Đừng chia sẻ bảng tính cho người khác.

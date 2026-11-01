@@ -1,0 +1,16 @@
+[build]
+  publish = "site"
+  command = ""
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/config.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/sounds/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
