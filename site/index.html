@@ -207,7 +207,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </div>
 
 <button class="action" id="actionBtn" hidden><small id="actionSub"></small><strong id="actionLbl"></strong></button>
-<div class="posture" id="postureBar" hidden><button class="pill" id="sitBtn">Ngồi xếp bằng</button><button class="pill" id="layBtn2">Quỳ lạy</button></div>
+<div class="posture" id="postureBar" hidden><button class="pill" id="sitBtn">Ngồi xếp bằng</button><button class="pill" id="layBtn2">Quỳ lạy</button><button class="pill" id="dressBtn">Trang phục</button></div>
 <div class="goto" id="gotoWrap" hidden>
   <button class="pill" id="gotoBtn" aria-expanded="false" style="padding:9px 14px;font-size:13.5px">Đi đến…</button>
   <div class="goto-menu" id="gotoMenu" hidden></div>
@@ -229,6 +229,8 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
       <div class="chips" id="introView"><button class="chip" data-v="fp" aria-pressed="true">Bằng mắt mình</button><button class="chip" data-v="tp" aria-pressed="false">Nhìn mình từ phía sau</button></div></div>
     <div class="opt"><span class="muted">Hôm nay bạn muốn</span>
       <div class="chips" id="introCrowd"><button class="chip" data-c="1" aria-pressed="true">Đi giữa đại chúng</button><button class="chip" data-c="0" aria-pressed="false">Ở một mình</button></div></div>
+    <div class="opt"><span class="muted">Trang phục của bạn</span>
+      <div class="chips" id="introDress"><button class="chip" data-o="lam" aria-pressed="true">Áo lam</button><button class="chip" data-o="aodai" aria-pressed="false">Áo dài</button><button class="chip" data-o="tang" aria-pressed="false">Áo tăng lữ</button><span class="muted" style="align-self:center;margin:0 2px">·</span><button class="chip" data-g="0" aria-pressed="true">Nam</button><button class="chip" data-g="1" aria-pressed="false">Nữ</button></div></div>
     <div class="row"><button class="btn" id="enterBtn">Bước vào Tự</button><button class="btn ghost" id="regIntro">Đăng ký dùng thử</button><span class="muted">Nên đeo tai nghe.</span></div>
     <p class="fine">Vô Ưu Tự là không gian tâm linh trực tuyến. Vô Ưu Tự không liên kết, không đại diện và không quảng bá cho bất kỳ ngôi chùa, tự viện hay tổ chức tôn giáo nào. Mọi hoạt động đều miễn phí, công đức không mua bán. Đại chúng trong Tự là mô phỏng để tạo không khí. <a href="bao-mat.html" target="_blank" rel="noopener" style="color:var(--lamp)">Chính sách bảo mật</a></p>
   </div>
@@ -393,17 +395,42 @@ function rep2(t,rx,ry){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rx,ry);
  const planks=canvasTex(256,256,(x,w,h)=>{for(let i=0;i<8;i++){const v=Math.random()*18|0;x.fillStyle=`rgb(${136+v},${90+v},${56+v})`;x.fillRect(0,i*32,w,31);x.fillStyle="rgba(60,35,20,.6)";x.fillRect(0,i*32+31,w,1);const off=Math.random()*w;x.fillRect(off,i*32,1,31);
    for(let k=0;k<6;k++){x.strokeStyle=`rgba(90,55,30,${.15+Math.random()*.15})`;x.beginPath();const y=i*32+4+Math.random()*24;x.moveTo(0,y);for(let xx=0;xx<=w;xx+=32)x.lineTo(xx,y+Math.sin(xx/40+k)*2);x.stroke();}}});
  mat.floor.map=rep2(planks,5,5);mat.floor.color.setHex(0xe8d8c8);mat.floor.needsUpdate=true;}
+/* Mái cong kiểu Nam Bộ: mặt mái võng nhẹ, bốn góc đao cong vút lên mềm mại, đầu đao cuốn lá (không nhọn). */
+function taperTube(curve,segs,r0,r1,radial,m){
+  const g=new THREE.TubeGeometry(curve,segs,1,radial,false),p=g.attributes.position,v=new THREE.Vector3(),c=new THREE.Vector3();
+  for(let i=0;i<=segs;i++){const t=i/segs,r=r0+(r1-r0)*Math.pow(t,.85);curve.getPointAt(t,c);for(let j=0;j<=radial;j++){const k=i*(radial+1)+j;v.fromBufferAttribute(p,k).sub(c).multiplyScalar(r).add(c);p.setXYZ(k,v.x,v.y,v.z);}}
+  g.computeVertexNormals();return new THREE.Mesh(g,m);}
+/* đầu đao: vươn ra, uốn lên rồi cuộn ngược vào trong như đọt dương xỉ, kết bằng hạt tròn */
+function curlTip(base,dir,size,m){
+  const out=new THREE.Vector3(dir.x,0,dir.z).normalize(),P=(a,b)=>base.clone().add(out.clone().multiplyScalar(a*size)).add(new THREE.Vector3(0,b*size,0));
+  const curve=new THREE.CatmullRomCurve3([P(-.12,-.03),P(.18,.0),P(.45,.08),P(.66,.25),P(.78,.48),P(.76,.68),P(.64,.8),P(.5,.78),P(.44,.66),P(.5,.57),P(.6,.6)],false,"centripetal");
+  const tube=taperTube(curve,48,.12*size+.02,.035*size+.012,8,m);scene.add(tube);
+  const end=curve.getPointAt(1);sph(.05*size+.018,m,end.x,end.y,end.z,10);return tube;}
 function hipRoof(cx,cy,cz,w,d,h,rl,m){
-  const A=[-w/2,0,-d/2],B=[w/2,0,-d/2],C=[w/2,0,d/2],D=[-w/2,0,d/2],R1=[-rl,h,0],R2=[rl,h,0];
-  const tris=[D,C,R2, D,R2,R1, B,A,R1, B,R1,R2, A,D,R1, C,B,R2];
-  const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(tris.flat(),3));g.computeVertexNormals();
-  g.setAttribute("uv",new THREE.Float32BufferAttribute(tris.flatMap((p,k)=>k<12?[p[0]*1.3,(p[1]+Math.abs(p[2]))*1.3]:[p[2]*1.3,(p[1]+Math.abs(p[0]))*1.3]),2));
+  const lift=Math.min(.55,h*.32+.12),sag=h*.09,N=12;
+  const eaveFaces=[ // [eave start, eave end, ridge start, ridge end, uv axis]
+    [[-w/2,0,d/2],[w/2,0,d/2],[-rl,h,0],[rl,h,0],"x"],[[w/2,0,-d/2],[-w/2,0,-d/2],[rl,h,0],[-rl,h,0],"x"],
+    [[-w/2,0,-d/2],[-w/2,0,d/2],[-rl,h,0],[-rl,h,0],"z"],[[w/2,0,d/2],[w/2,0,-d/2],[rl,h,0],[rl,h,0],"z"]];
+  const disp=(x,y,z,t)=>{const hx=w/2+(rl-w/2)*t,hz=d/2*(1-t),ex=Math.min(1,Math.abs(x)/Math.max(hx,1e-4)),ez=hz>1e-4?Math.min(1,Math.abs(z)/hz):1;
+    const c=Math.pow(ex*ez,4)*Math.pow(1-t,2.2),k=1+.05*c;return [x*k,y-sag*Math.sin(Math.PI*t)+lift*c,z*k];};
+  const pos=[],uv=[],idx=[];
+  eaveFaces.forEach(([E0,E1,R0,R1,ax])=>{const base=pos.length/3;
+    for(let i=0;i<=N;i++){const t=i/N;for(let j=0;j<=N;j++){const u=j/N;
+      const ex=E0[0]+(E1[0]-E0[0])*u,ez=E0[2]+(E1[2]-E0[2])*u,rx=R0[0]+(R1[0]-R0[0])*u,rz=R0[2]+(R1[2]-R0[2])*u;
+      const x=ex+(rx-ex)*t,y=h*t,z=ez+(rz-ez)*t;
+      const along=ax==="x"?x:z,q=disp(x,y,z,t);
+      pos.push(...q);uv.push(along*1.3,(y+(ax==="x"?Math.abs(z):Math.abs(x)))*1.3);}}
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++){const a=base+i*(N+1)+j,b=a+1,c=a+N+1,dd=c+1;idx.push(a,b,c,b,dd,c);}});
+  const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));g.setAttribute("uv",new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
   add(new THREE.Mesh(g,m),cx,cy,cz);
-  box(rl*2+0.3,0.22,0.26,mat.tile,cx,cy+h+0.08,cz);
-  const tip=(x,y,z,dir,len)=>{const c=new THREE.Mesh(new THREE.ConeGeometry(0.11,len,8),mat.tile);c.quaternion.setFromUnitVectors(UP,dir.normalize());c.position.set(x,y,z).add(dir.clone().multiplyScalar(len/2));scene.add(c);};
-  [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([sx,sz])=>tip(cx+sx*w/2,cy,cz+sz*d/2,new THREE.Vector3(sx*.7,1,sz*.7),0.9));
-  [-1,1].forEach(sx=>tip(cx+sx*(rl+0.12),cy+h+0.08,cz,new THREE.Vector3(sx*.5,1,0),0.8));
-  const pearl=sph(0.22,mat.gold,cx,cy+h+0.42,cz); pearl.add(glow(0xffc870,1.4,.5));
+  // bờ nóc + bốn bờ dải chạy theo đường cong của mái, kết thúc bằng đầu đao cuốn
+  const ridgeM=mat.tile,sz=Math.max(.38,Math.min(1,h*.55+.15)),rr=Math.max(.06,Math.min(.13,h*.06));
+  box(rl*2+.1,rr*1.9,rr*2.2,ridgeM,cx,cy+h+rr*.6,cz);
+  [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([sx,sz2])=>{const pts=[];for(let i=0;i<=10;i++){const t=i/10,x=sx*(w/2+(rl-w/2)*t),z=sz2*(d/2)*(1-t),q=disp(x,h*t,z,t);pts.push(new THREE.Vector3(cx+q[0],cy+q[1]+rr*.7,cz+q[2]));}
+    pts.reverse();scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),24,rr,8,false),ridgeM));
+    const tipBase=pts[pts.length-1];curlTip(tipBase,new THREE.Vector3(sx,0,sz2),sz,ridgeM);});
+  [-1,1].forEach(sx=>{curlTip(new THREE.Vector3(cx+sx*(rl+.02),cy+h+rr*.6,cz),new THREE.Vector3(sx,0,0),sz*.8,ridgeM);});
+  const pearl=sph(Math.max(.14,Math.min(.22,h*.12)),mat.gold,cx,cy+h+.42,cz); pearl.add(glow(0xffc870,1.4,.5));
 }
 
 /* ---------- sky ---------- */
@@ -492,7 +519,7 @@ const THAP={x:12.4,z:7.6};
  for(let i=0;i<7;i++){const r=1.0-i*.1,h=1.15-i*.07;cyl(r,r,h,wm,THAP.x,y+h/2,THAP.z,8).rotation.y=Math.PI/8;
    [0,1,2,3].forEach(k=>{const a=k*Math.PI/2;const n=box(.26,h*.5,.05,M(0x3a2a20),THAP.x+Math.sin(a)*r*.93,y+h*.45,THAP.z+Math.cos(a)*r*.93);n.rotation.y=a;});
    y+=h;cyl(r*.72,r+.35,.28,mat.tile,THAP.x,y+.14,THAP.z,8).rotation.y=Math.PI/8;y+=.28;}
- cyl(.08,.2,.5,mat.gold,THAP.x,y+.25,THAP.z,10);sph(.17,mat.gold,THAP.x,y+.62,THAP.z,12);const sp=new THREE.Mesh(new THREE.ConeGeometry(.07,.9,8),mat.gold);add(sp,THAP.x,y+1.2,THAP.z);}
+ cyl(.08,.2,.5,mat.gold,THAP.x,y+.25,THAP.z,10);sph(.17,mat.gold,THAP.x,y+.62,THAP.z,12);sph(.12,mat.gold,THAP.x,y+.9,THAP.z,12);sph(.085,mat.gold,THAP.x,y+1.1,THAP.z,12);sph(.05,mat.gold,THAP.x,y+1.24,THAP.z,10).add(glow(0xffc870,.7,.5));}
 
 /* ---------- Cội Bồ đề: buttress roots, wide canopy, stone ring seat, falling heart leaves ---------- */
 const BODE={x:13.0,z:.4};const bodeLeaves=[];
@@ -819,37 +846,90 @@ box(.12,2.6,5.2,mat.wood,-10.62,2.25,-15.5);
 const crowdGroup=new THREE.Group();scene.add(crowdGroup);
 const SEATS=[];[-10.2,-11.6,-14.4,-15.8].forEach(z=>[-7.3,-6,-2.9,-1.7,1.7,2.9,6,7.3].forEach(x=>SEATS.push([x,z])));
 SEATS.forEach(([x,z])=>cyl(.3,.3,.1,mat.cushion,x,.66,z,16));
-/* human figures: jointed body (hips → legs, torso → arms, head), front faces -z */
-const PG={thigh:new THREE.CylinderGeometry(.075,.058,.44,8).translate(0,-.22,0),shin:new THREE.CylinderGeometry(.056,.045,.44,8).translate(0,-.22,0),foot:new THREE.BoxGeometry(.09,.06,.2).translate(0,-.03,-.05),
-  uarm:new THREE.CylinderGeometry(.062,.05,.3,8).translate(0,-.15,0),farm:new THREE.CylinderGeometry(.05,.04,.28,8).translate(0,-.14,0),hand:new THREE.SphereGeometry(.045,8,6),
-  torso:new THREE.CylinderGeometry(.165,.185,.52,12).translate(0,.26,0),chest:new THREE.SphereGeometry(.2,12,8),neck:new THREE.CylinderGeometry(.045,.05,.1,8),head:new THREE.SphereGeometry(.105,16,12),
-  hair:new THREE.SphereGeometry(.113,16,10,0,Math.PI*2,0,Math.PI*.55),bun:new THREE.SphereGeometry(.058,10,8),longHair:new THREE.BoxGeometry(.19,.3,.05),
-  robe:new THREE.CylinderGeometry(.19,.31,.86,14,1,true).translate(0,-.43,0),tunic:new THREE.CylinderGeometry(.19,.25,.62,14,1,true).translate(0,-.31,0),lap:new THREE.SphereGeometry(.3,14,8)};
-const matCache={};const pm=c=>matCache[c]||(matCache[c]=new THREE.MeshStandardMaterial({color:c,roughness:.8,side:THREE.DoubleSide}));
+/* human figures: jointed body (hips → legs, torso → arms, head), front faces -z.
+   Smooth lathe torso, painted serene face, shoulder/elbow joints, three formal outfits:
+   áo lam (áo tràng xám lam, tay rộng), áo dài (tà trước sau, quần trắng), áo tăng lữ (áo nhật bình + y vàng choàng vai). */
+const lathe=(pts,seg=16)=>new THREE.LatheGeometry(pts.map(([r,y])=>new THREE.Vector2(r,y)),seg);
+const PG={thigh:new THREE.CylinderGeometry(.072,.056,.44,10).translate(0,-.22,0),shin:new THREE.CylinderGeometry(.054,.04,.44,10).translate(0,-.22,0),
+  foot:(()=>{const g=new THREE.SphereGeometry(.06,10,6,0,Math.PI*2,0,Math.PI/2);g.scale(.8,.75,1.75);g.translate(0,-.06,-.045);return g;})(),
+  knee:new THREE.SphereGeometry(.056,10,6),
+  uarm:new THREE.CylinderGeometry(.056,.047,.3,10).translate(0,-.15,0),farm:new THREE.CylinderGeometry(.045,.035,.27,10).translate(0,-.135,0),
+  joint:new THREE.SphereGeometry(.054,12,8),elbow:new THREE.SphereGeometry(.048,8,6),
+  hand:(()=>{const g=new THREE.SphereGeometry(.042,10,8);g.scale(.75,1.25,.55);return g;})(),
+  torso:(()=>{const g=lathe([[.0,-.02],[.15,-.015],[.168,.04],[.158,.14],[.148,.22],[.165,.32],[.19,.41],[.198,.46],[.18,.51],[.12,.555],[.05,.575],[0,.58]],20);g.scale(1,1,.7);return g;})(),
+  hips:(()=>{const g=new THREE.SphereGeometry(.17,16,8,0,Math.PI*2,Math.PI/2,Math.PI/2);g.scale(1,.55,.75);return g;})(),
+  neck:new THREE.CylinderGeometry(.04,.046,.12,10),collar:new THREE.CylinderGeometry(.052,.058,.06,14,1,true),
+  head:(()=>{const g=new THREE.SphereGeometry(.1,24,18);g.scale(.93,1.1,1);return g;})(),
+  ear:(()=>{const g=new THREE.SphereGeometry(.022,8,6);g.scale(.5,1,.8);return g;})(),
+  hairM:(()=>{const g=new THREE.SphereGeometry(.106,22,14,0,Math.PI*2,0,Math.PI*.5);g.scale(.95,1.08,1.02);return g;})(),
+  hairF:(()=>{const g=new THREE.SphereGeometry(.108,22,14,0,Math.PI*2,0,Math.PI*.58);g.scale(.96,1.1,1.04);return g;})(),
+  bun:(()=>{const g=new THREE.SphereGeometry(.052,12,10);g.scale(1.15,.9,.85);return g;})(),
+  longHair:(()=>{const g=new THREE.CylinderGeometry(.075,.06,.34,12,1,true,-Math.PI/2,Math.PI);return g;})(),
+  robe:lathe([[.168,0],[.18,-.12],[.205,-.32],[.235,-.55],[.27,-.78],[.285,-.86],[.27,-.875]],22),
+  tunic:new THREE.CylinderGeometry(.168,.2,.1,20,1,true).translate(0,-.05,0),
+  panelF:new THREE.CylinderGeometry(.17,.25,.8,10,1,true,Math.PI-.62,1.24).translate(0,-.43,0),
+  panelB:new THREE.CylinderGeometry(.17,.26,.82,10,1,true,-.62,1.24).translate(0,-.44,0),
+  sleeve:new THREE.CylinderGeometry(.05,.1,.27,12,1,true).translate(0,-.15,0),
+  sash:(()=>{const g=new THREE.CylinderGeometry(.255,.255,.12,36,1,true);g.scale(1,1,.6);return g;})(),
+  lap:new THREE.SphereGeometry(.3,16,8)};
+const matCache={};const pm=c=>matCache[c]||(matCache[c]=new THREE.MeshStandardMaterial({color:c,roughness:.82,side:THREE.DoubleSide}));
 const pick=a=>a[Math.random()*a.length|0];
 const SKINS=[0xd8a882,0xc99570,0xe2b690,0xb98563];
+/* face painted onto the head sphere: soft half-closed eyes, brows, a hint of nose and lips. Front (-z) is u=.75 on the sphere. */
+const faceCache={};
+function faceMat(skin,female,elder){const k=skin+"_"+(female?1:0)+(elder?1:0);if(faceCache[k])return faceCache[k];
+  const c=new THREE.Color(skin),hex="#"+c.getHexString(),dk=c.clone().multiplyScalar(.72),dkHex="#"+dk.getHexString();
+  const t=canvasTex(512,256,(x,w,h)=>{x.fillStyle=hex;x.fillRect(0,0,w,h);const cx=w*.75,ey=h*.5;
+    if(female){x.fillStyle="rgba(214,120,110,.16)";[-1,1].forEach(s=>{x.beginPath();x.ellipse(cx+s*30,ey+22,13,8,0,0,7);x.fill();});}
+    x.lineCap="round";
+    [-1,1].forEach(s=>{const ex=cx+s*22;
+      x.strokeStyle=elder?"#9a9088":"#2c211a";x.lineWidth=female?2.2:3;x.beginPath();x.moveTo(ex-11,ey-12);x.quadraticCurveTo(ex,ey-18,ex+11,ey-12);x.stroke();
+      x.fillStyle="#f1e8dc";x.beginPath();x.ellipse(ex,ey+.6,8,2.8,0,0,7);x.fill();
+      x.fillStyle="#22180f";x.beginPath();x.ellipse(ex,ey+1,4,2.6,0,0,7);x.fill();
+      x.strokeStyle="#2a1d14";x.lineWidth=2.6;x.beginPath();x.moveTo(ex-10,ey-.5);x.quadraticCurveTo(ex,ey-6.5,ex+10,ey-.5);x.stroke();
+      if(elder){x.strokeStyle=dkHex;x.lineWidth=1;x.beginPath();x.moveTo(ex+s*12,ey+2);x.lineTo(ex+s*16,ey+5);x.stroke();}});
+    x.strokeStyle=dkHex;x.lineWidth=2;x.beginPath();x.moveTo(cx-2,ey+6);x.quadraticCurveTo(cx-6,ey+18,cx,ey+20);x.quadraticCurveTo(cx+5,ey+20,cx+6,ey+18);x.stroke();
+    x.fillStyle=female?"#b85a58":"#a0645a";x.beginPath();x.ellipse(cx,ey+33,9,3.2,0,0,7);x.fill();
+    x.strokeStyle="rgba(70,30,25,.6)";x.lineWidth=1.4;x.beginPath();x.moveTo(cx-9,ey+33);x.quadraticCurveTo(cx,ey+35.5,cx+9,ey+33);x.stroke();});
+  t.anisotropy=ANISO;return faceCache[k]=new THREE.MeshStandardMaterial({map:t,roughness:.62});}
 const OUTFITS={
-  lam:()=>{const c=pick([0x6f8197,0x7a8ba0,0x63778e]);return{top:c,sleeve:c,pants:c,robe:"robe",robeC:c};},
-  nau:()=>{const c=pick([0x8a6a4a,0x96764f]);return{top:c,sleeve:c,pants:c,robe:"robe",robeC:c};},
-  aodai:()=>{const c=pick([0xf4f0e6,0xeac9cf,0xcfe0ea,0xf0dca8,0xb94a3a]);return{top:c,sleeve:c,pants:0xf6f3ec,robe:"tunic",robeC:c};},
-  casual:()=>{const c=pick([0xdccfb4,0x9fb7c9,0xb8604c,0x7d9a7a,0xe8e2d6,0xd9b25a]);return{top:c,sleeve:c,pants:pick([0x3a3f4a,0x4b4038,0x5a6070,0x2f3a52]),robe:null};}
+  lam:o=>{const c=pick([0x667f9c,0x71879f,0x5f7590,0x7b8fa6]);return{kind:"robe",top:c,sleeve:c,pants:c,robeC:c,lapC:c,wide:true,label:"Áo lam"};},
+  nau:o=>{const c=pick([0x8a6a4a,0x96764f]);return{kind:"robe",top:c,sleeve:c,pants:c,robeC:c,lapC:c,wide:true};},
+  aodai:o=>{const c=o.female===false?pick([0x23324f,0x5a2a24,0x2f4a3c]):pick([0xf4f0e6,0xeac9cf,0xcfe0ea,0xf0dca8,0xb94a3a,0x9fc4d6]);const p=o.female===false?0xf1ece0:0xf8f5ee;return{kind:"aodai",top:c,sleeve:c,pants:p,robeC:c,lapC:p};},
+  tang:o=>{const c=pick([0x9a6b33,0x8b5e2c,0xa8742f]);return{kind:"robe",top:c,sleeve:c,pants:c,robeC:c,lapC:c,wide:true,sash:0xd7892a,shaved:true};},
+  casual:o=>{const c=pick([0xdccfb4,0x9fb7c9,0xb8604c,0x7d9a7a,0xe8e2d6,0xd9b25a]);const p=pick([0x3a3f4a,0x4b4038,0x5a6070,0x2f3a52]);return{kind:"casual",top:c,sleeve:c,pants:p,lapC:p};}
 };
 function person(o={}){
-  const outfit=(OUTFITS[o.outfit||pick(["lam","lam","lam","aodai","aodai","casual","casual","nau"])])();
-  const female=o.female??Math.random()<.6,elder=o.elder??(!o.child&&Math.random()<.22),child=!!o.child;
-  const skin=pm(o.skin||pick(SKINS)),hairC=pm(elder?pick([0xb8b4ac,0xd8d4cc,0x8a8680]):pick([0x1a1410,0x241a14,0x2e2018]));
+  const oname=o.outfit||pick(["lam","lam","lam","aodai","aodai","casual","casual","nau","tang"]);
+  const female=o.female??(oname==="tang"?Math.random()<.4:Math.random()<.6),elder=o.elder??(!o.child&&Math.random()<.22),child=!!o.child;
+  const outfit=OUTFITS[oname]({female,elder});
+  const skinC=o.skin||pick(SKINS),skin=pm(skinC),hairC=pm(elder?pick([0xb8b4ac,0xd8d4cc,0x8a8680]):pick([0x1a1410,0x241a14,0x2e2018]));
   const root=new THREE.Group(),hips=new THREE.Group();hips.position.y=.92;root.add(hips);const legs=[],arms=[];
-  for(const s of [-1,1]){const th=new THREE.Group();th.position.x=s*.085;hips.add(th);th.add(new THREE.Mesh(PG.thigh,pm(outfit.pants)));const kn=new THREE.Group();kn.position.y=-.44;th.add(kn);kn.add(new THREE.Mesh(PG.shin,pm(outfit.pants)));const ft=new THREE.Mesh(PG.foot,pm(0x2a221c));ft.position.y=-.44;kn.add(ft);legs.push({th,kn});}
-  let robe=null;if(outfit.robe){robe=new THREE.Mesh(outfit.robe==="robe"?PG.robe:PG.tunic,pm(outfit.robeC));robe.position.y=.04;hips.add(robe);}
+  hips.add(new THREE.Mesh(PG.hips,pm(outfit.kind==="robe"?outfit.robeC:outfit.pants)));
+  for(const s of [-1,1]){const th=new THREE.Group();th.position.x=s*.085;hips.add(th);th.add(new THREE.Mesh(PG.thigh,pm(outfit.pants)));const kn=new THREE.Group();kn.position.y=-.44;th.add(kn);
+    kn.add(new THREE.Mesh(PG.knee,pm(outfit.pants)));kn.add(new THREE.Mesh(PG.shin,pm(outfit.pants)));const ft=new THREE.Mesh(PG.foot,pm(outfit.kind==="casual"?0x2a221c:0x3a2c22));ft.position.y=-.44;kn.add(ft);legs.push({th,kn});}
+  let robe=null;
+  if(outfit.kind==="robe"){robe=new THREE.Group();robe.add(new THREE.Mesh(PG.robe,pm(outfit.robeC)));robe.position.y=.04;hips.add(robe);}
+  else if(outfit.kind==="aodai"){robe=new THREE.Group();robe.add(new THREE.Mesh(PG.panelF,pm(outfit.robeC)));robe.add(new THREE.Mesh(PG.panelB,pm(outfit.robeC)));robe.add(new THREE.Mesh(PG.tunic,pm(outfit.robeC)));robe.position.y=.04;hips.add(robe);}
   const upper=new THREE.Group();hips.add(upper);
-  upper.add(new THREE.Mesh(PG.torso,pm(outfit.top)));const ch=new THREE.Mesh(PG.chest,pm(outfit.top));ch.scale.set(1,.42,.72);ch.position.y=.48;upper.add(ch);
-  const nk=new THREE.Mesh(PG.neck,skin);nk.position.y=.58;upper.add(nk);
-  const headG=new THREE.Group();headG.position.y=.71;upper.add(headG);headG.add(new THREE.Mesh(PG.head,skin));
-  const hr=new THREE.Mesh(PG.hair,hairC);hr.rotation.x=.3;hr.position.set(0,.012,.012);headG.add(hr);
-  if(female){const b=new THREE.Mesh(PG.bun,hairC);b.position.set(0,.03,.105);headG.add(b);if(!elder&&Math.random()<.5){const lh=new THREE.Mesh(PG.longHair,hairC);lh.position.set(0,-.14,.085);headG.add(lh);}}
-  for(const s of [-1,1]){const sh=new THREE.Group();sh.rotation.order="YXZ";sh.position.set(s*.205,.49,0);upper.add(sh);sh.add(new THREE.Mesh(PG.uarm,pm(outfit.sleeve)));const el=new THREE.Group();el.position.y=-.3;sh.add(el);el.add(new THREE.Mesh(PG.farm,pm(outfit.sleeve)));const hd=new THREE.Mesh(PG.hand,skin);hd.position.y=-.29;el.add(hd);arms.push({sh,el,s});}
-  root.scale.setScalar((child?.62:1)*(female?.95:1.03)*rand(.97,1.03));
-  root.userData={hips,upper,legs,arms,robe,headG,elder,outfitC:outfit.robeC||outfit.pants};
+  const tor=new THREE.Mesh(PG.torso,pm(outfit.top));if(female&&!child)tor.scale.set(.94,1,1.04);upper.add(tor);
+  if(outfit.sash){const sa=new THREE.Mesh(PG.sash,pm(outfit.sash));sa.position.set(0,.31,0);sa.rotation.z=.8;upper.add(sa);
+    const dr=new THREE.Mesh(new THREE.CylinderGeometry(.168,.178,.3,18,1,true,Math.PI*.15,Math.PI*1.3),pm(outfit.sash));dr.scale.z=.76;dr.position.y=.13;upper.add(dr);}
+  const nk=new THREE.Mesh(PG.neck,skin);nk.position.y=.6;upper.add(nk);
+  if(outfit.kind!=="casual"){const co=new THREE.Mesh(PG.collar,pm(outfit.top));co.position.y=.58;upper.add(co);}
+  const headG=new THREE.Group();headG.position.y=.745;upper.add(headG);headG.add(new THREE.Mesh(PG.head,faceMat(skinC,female&&!outfit.shaved,elder)));
+  [-1,1].forEach(s=>{const e=new THREE.Mesh(PG.ear,skin);e.position.set(s*.094,0,.008);headG.add(e);});
+  if(!outfit.shaved){const hr=new THREE.Mesh(female?PG.hairF:PG.hairM,hairC);hr.rotation.x=female?.42:.36;hr.position.set(0,.016,.014);headG.add(hr);
+    if(female){const b=new THREE.Mesh(PG.bun,hairC);b.position.set(0,.03,.1);headG.add(b);
+      if(!elder&&(outfit.kind==="aodai"?Math.random()<.75:Math.random()<.35)){b.visible=false;const lh=new THREE.Mesh(PG.longHair,hairC);lh.position.set(0,-.16,.022);headG.add(lh);}}}
+  
+  for(const s of [-1,1]){const sh=new THREE.Group();sh.rotation.order="YXZ";sh.position.set(s*.2,.5,0);upper.add(sh);
+    sh.add(new THREE.Mesh(PG.joint,pm(outfit.sleeve)));sh.add(new THREE.Mesh(PG.uarm,pm(outfit.sleeve)));const el=new THREE.Group();el.position.y=-.3;sh.add(el);
+    el.add(new THREE.Mesh(PG.elbow,pm(outfit.sleeve)));
+    if(outfit.wide){el.add(new THREE.Mesh(PG.sleeve,pm(outfit.sleeve)));const fa=new THREE.Mesh(PG.farm,skin);fa.scale.set(.8,1,.8);el.add(fa);}else el.add(new THREE.Mesh(PG.farm,pm(outfit.sleeve)));
+    const hd=new THREE.Mesh(PG.hand,skin);hd.position.y=-.3;el.add(hd);arms.push({sh,el,s});}
+  root.scale.setScalar((child?.62:1)*(female?.95:1.03)*(o.exact?1:rand(.97,1.03)));
+  root.userData={hips,upper,legs,arms,robe,headG,elder,outfitC:outfit.lapC,outfit:oname,female};
   poseStand(root);return root;
 }
 function poseStand(p){const u=p.userData;u.legs.forEach(l=>{l.th.rotation.x=0;l.kn.rotation.x=0;});u.arms.forEach(a=>{a.sh.rotation.set(0,0,a.s*.07);a.el.rotation.x=.12;});u.hips.position.y=u.seated?.14:.92;u.upper.rotation.set(u.elder?-.12:0,0,0);u.headG.rotation.x=0;}
@@ -871,7 +951,7 @@ function holdIncense(p){const s=makeStick(true);s.scale.setScalar(.75);s.positio
 const seatedPeople=[];SEATS.forEach(([x,z])=>{if(Math.random()<.88){const p=seatPerson(person());p.position.set(x,.68,z);const r=Math.random();p.userData.lap=r<.4?"book":r<.55?true:false;if(p.userData.lap==="book")holdBook(p);p.userData.ph=rand(0,6);posePray(p,0,p.userData.lap);crowdGroup.add(p);seatedPeople.push(p);}});
 /* the chant leader (duy na) with mõ and bell, front-left of the hall */
 cyl(.34,.34,.12,mat.cushion,-6.6,.66,-17.6,20);
-const leader=seatPerson(person({outfit:"nau",female:false,elder:true}));leader.position.set(-6.6,.68,-17.6);leader.rotation.y=-.73;leader.userData.ph=0;posePray(leader,0,"book");crowdGroup.add(leader);
+const leader=seatPerson(person({outfit:"tang",female:false,elder:true}));leader.position.set(-6.6,.68,-17.6);leader.rotation.y=-.73;leader.userData.ph=0;posePray(leader,0,"book");crowdGroup.add(leader);
 {const m=new THREE.Mesh(new THREE.SphereGeometry(.22,16,10),M(0x5a2414,{roughness:.45}));m.scale.set(1.25,.85,1);add(m,-6.95,.84,-18.35);cyl(.26,.26,.07,mat.cushion,-6.95,.66,-18.35,14);
  const bp=[[.0,0],[.18,0],[.27,.09],[.3,.23],[.28,.27]].map(([r,y])=>new THREE.Vector2(r,y));add(new THREE.Mesh(new THREE.LatheGeometry(bp,22),M(0x7a5a2c,{metalness:.7,roughness:.3,side:THREE.DoubleSide})),-6.0,.72,-18.45);}
 const bowlPeople=[];[[-1.6,-17.3],[1.6,-17.4],[-1.1,-15.2]].forEach(([x,z])=>{const p=person({outfit:pick(["lam","aodai"])});p.position.set(x,.6,z);p.rotation.y=Math.atan2(x,z+18.7);p.userData.ph=rand(0,6);holdIncense(p);crowdGroup.add(p);bowlPeople.push(p);});
@@ -1632,7 +1712,7 @@ function webRegForm(note,edit){
 }
 
 // ===== ĐỢT 1: Tường tâm nguyện chung (có duyệt), thông báo của Tự, báo bản mới, hướng dẫn lần đầu, báo lỗi =====
-const APP_VER="1.1";
+const APP_VER="1.2";
 const ERRS=[];
 addEventListener("error",e=>{ERRS.push(String(e.message||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
 addEventListener("unhandledrejection",e=>{const r=e.reason;if(r&&r.code)return;ERRS.push(String((r&&r.message)||r||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
@@ -1758,6 +1838,27 @@ function coach(i){
 }
 $("#enterBtn").addEventListener("click",()=>{hello();checkVersion();if(!store.get("coached",0))setTimeout(()=>{if(!S.sheetOpen)coach(0);},900);});
 
+
+// ---- Trang phục của người dùng: áo lam, áo dài, áo tăng lữ; nam hoặc nữ ----
+const DRESS=[["lam","Áo lam","Áo tràng xám lam tay rộng, trang phục đi chùa của Phật tử."],["aodai","Áo dài","Áo dài truyền thống, trang nhã khi lễ Phật."],["tang","Áo tăng lữ","Áo nhật bình màu nâu vàng với y choàng vai của người xuất gia."]];
+let LOOK=store.get("look",{outfit:"lam",female:false});
+function restyleAvatar(){const np=person({outfit:LOOK.outfit,female:!!LOOK.female,elder:false,skin:0xd2a07a,exact:true});
+  avatar.children.filter(c=>!c.isSprite).forEach(c=>avatar.remove(c));np.children.slice().forEach(c=>avatar.add(c));
+  avatar.userData=np.userData;avatar.scale.copy(np.scale);if(S.pose==="sit")setSeated(avatar,true);else poseStand(avatar);}
+function setLook(k,v){LOOK={...LOOK,[k]:v};store.set("look",LOOK);restyleAvatar();syncDressChips();}
+function syncDressChips(){$$("[data-o]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.o===LOOK.outfit)));$$("[data-g]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.g===(LOOK.female?"1":"0"))));}
+function bindDress(root){$$(root+" [data-o]").forEach(b=>b.addEventListener("click",()=>setLook("outfit",b.dataset.o)));$$(root+" [data-g]").forEach(b=>b.addEventListener("click",()=>setLook("female",b.dataset.g==="1")));}
+function dressUp(){const prev=S.view;setView("tp");
+  openSheet("Trang phục","Chọn y phục đi chùa",`<p class="lede">Chọn trang phục cho mình. Góc nhìn đã chuyển ra phía sau để bạn thấy dáng mình.</p>
+    <div class="chips" id="dressList">${DRESS.map(([k,n])=>`<button class="chip" data-o="${k}">${n}</button>`).join("")}</div>
+    <div class="chips" id="dressG"><button class="chip" data-g="0">Nam</button><button class="chip" data-g="1">Nữ</button></div>
+    <div id="dressNote" class="muted"></div>
+    <div class="row"><button class="btn" id="dressOk">Xong</button><button class="btn ghost" id="dressBack">${prev==="fp"?"Xong và trở lại góc nhìn bằng mắt mình":"Giữ góc nhìn phía sau"}</button></div>`,null);
+  const note=()=>{const d=DRESS.find(x=>x[0]===LOOK.outfit);$("#dressNote").textContent=d?d[2]:"";};
+  bindDress("#sheetBody");syncDressChips();note();$$("#sheetBody [data-o]").forEach(b=>b.addEventListener("click",note));
+  $("#dressOk").addEventListener("click",closeSheet);$("#dressBack").addEventListener("click",()=>{if(prev==="fp")setView("fp");closeSheet();});}
+$("#dressBtn").addEventListener("click",dressUp);
+bindDress("#introDress");syncDressChips();restyleAvatar();
 // ---- Merit book ----
 function meritBook(){
   const total=Object.values(merit).reduce((a,b)=>a+b,0);
@@ -1949,7 +2050,7 @@ if(!coarse){renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSof
   const sc=sun.shadow.camera;sc.left=-34;sc.right=34;sc.top=34;sc.bottom=-34;sc.near=1;sc.far=170;sun.shadow.bias=-.0006;sun.shadow.normalBias=.03;
   scene.traverse(o=>{if(!o.isMesh||o===skyMesh)return;const g=o.geometry;if(!g.boundingSphere)g.computeBoundingSphere();const r=g.boundingSphere.radius*Math.max(o.scale.x,o.scale.y,o.scale.z);o.receiveShadow=true;o.castShadow=r>.1&&r<14;});}
 requestAnimationFrame(frame);
-window.__vut={S,walkTo,HOT,incense,chant,pond,wall,meritBook,bellTower,setTime,xin:xinXam,bode,avatar};window.__setTime=setTime;
+window.__vut={S,person,setLook,walkTo,HOT,incense,chant,pond,wall,meritBook,bellTower,setTime,xin:xinXam,bode,avatar};window.__setTime=setTime;
 })();
 </script>
 </body>
