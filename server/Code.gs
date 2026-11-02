@@ -1,5 +1,5 @@
 /**
- * VÔ ƯU TỰ – Máy chủ dữ liệu trên Google Sheets (Google Apps Script) · bản 2
+ * VÔ ƯU TỰ – Máy chủ dữ liệu trên Google Sheets (Google Apps Script) · bản 3 (thêm đếm người đang có mặt)
  * Lưu: đăng ký dùng thử, góp ý, câu hỏi Phật pháp, Tường tâm nguyện, thông báo, báo lỗi, lượt vào Tự.
  * Có các lệnh quản trị (cần mật khẩu) cho trang quan-tri.html.
  *
@@ -113,6 +113,7 @@ function handle_(p) {
     if (action === 'myq') return out_({ ok: true, items: myq_(cid) });
     if (action === 'wall') return out_({ ok: true, items: wallList_(), mine: wallMine_(cid) });
     if (action === 'hello') return out_(hello_(cid, p));
+    if (action === 'here') return out_(here_(cid, p));
     const lock = LockService.getScriptLock();
     lock.waitLock(15000);
     try {
@@ -205,6 +206,24 @@ function hello_(cid, p) {
     sheet_('LuotVao').appendRow([today, cid, cell_(p.dev, 30), cell_(p.ver, 30)]);
   }
   return { ok: true, ann: annList_(true) };
+}
+
+/** Hiện diện thật: mỗi người báo "đang ở trong Tự" khoảng 90 giây một lần; đếm người có mặt trong 3 phút gần nhất. */
+function here_(cid, p) {
+  const c = CacheService.getScriptCache(), lock = LockService.getScriptLock();
+  lock.waitLock(5000);
+  try {
+    let m = {};
+    try { m = JSON.parse(c.get('pres') || '{}'); } catch (err) { m = {}; }
+    const now = Date.now();
+    Object.keys(m).forEach(function (k) { if (now - m[k][0] > 180000) delete m[k]; });
+    m[cid] = [now, p.chant === true ? 1 : 0];
+    const s = JSON.stringify(m);
+    if (s.length < 95000) c.put('pres', s, 900);
+    let n = 0, ch = 0;
+    Object.keys(m).forEach(function (k) { n++; if (m[k][1]) ch++; });
+    return { ok: true, n: n, chant: ch };
+  } finally { lock.releaseLock(); }
 }
 
 function annList_(onlyOn) {

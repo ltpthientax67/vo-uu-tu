@@ -8,6 +8,16 @@
 <meta property="og:title" content="Vô Ưu Tự · Ngôi Tự trực tuyến">
 <meta property="og:description" content="Ghé vào khi lòng đang rối. Thắp một nén nhang, tụng kinh cùng đại chúng, ngồi thiền dưới cội Bồ đề.">
 <meta name="theme-color" content="#0d1618">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vo-uu-tu.netlify.app/">
+<meta property="og:image" content="https://vo-uu-tu.netlify.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vô Ưu Tự">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 6c3 4 3 9 0 14-3-5-3-10 0-14Z' fill='%23e2b36a'/%3E%3Cpath d='M16 20c-4-1-8-4-9-9 4 0 7 3 9 9Zm0 0c4-1 8-4 9-9-4 0-7 3-9 9Z' fill='%23e2b36a' fill-opacity='.6'/%3E%3C/svg%3E">
 <script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -185,6 +195,15 @@ details.practice[open] summary::after{content:" –"}
 details.practice[open]{gap:8px}
 .news{margin:4px 0 0;padding-left:18px;color:var(--mist);font-size:13.5px;line-height:1.6}
 a.btn{text-decoration:none;display:inline-flex;align-items:center}
+/* Đợt 3 */
+.lunar{display:block;font-size:11.5px;color:var(--lamp);margin-top:2px}
+.intro-day{color:var(--mist);font-size:13.5px}
+.den-gift{border:1px solid rgba(226,179,106,.5);background:rgba(226,179,106,.08);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.den-gift p{margin:0}.den-gift b{color:var(--paper);font-weight:500}
+.breath{position:relative;height:210px;display:grid;place-items:center}
+.breath i{position:absolute;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(226,179,106,.45),rgba(226,179,106,.08) 70%);border:1px solid rgba(226,179,106,.5);transform:scale(.45)}
+.breath span{position:relative;font-family:var(--f-display);font-style:italic;font-size:24px;color:var(--paper)}
+html.big .sheet-body,html.big .banner,html.big .coach-card,html.big .intro-card{zoom:1.14}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 
@@ -231,8 +250,8 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
       <div class="chips" id="introCrowd"><button class="chip" data-c="1" aria-pressed="true">Đi giữa đại chúng</button><button class="chip" data-c="0" aria-pressed="false">Ở một mình</button></div></div>
     <div class="opt"><span class="muted">Trang phục của bạn</span>
       <div class="chips" id="introDress"><button class="chip" data-o="lam" aria-pressed="true">Áo lam</button><button class="chip" data-o="aodai" aria-pressed="false">Áo dài</button><button class="chip" data-o="tang" aria-pressed="false">Áo tăng lữ</button><span class="muted" style="align-self:center;margin:0 2px">·</span><button class="chip" data-g="0" aria-pressed="true">Nam</button><button class="chip" data-g="1" aria-pressed="false">Nữ</button></div></div>
-    <div class="row"><button class="btn" id="enterBtn">Bước vào Tự</button><button class="btn ghost" id="regIntro">Đăng ký dùng thử</button><span class="muted">Nên đeo tai nghe.</span></div>
-    <p class="fine">Vô Ưu Tự là không gian tâm linh trực tuyến. Vô Ưu Tự không liên kết, không đại diện và không quảng bá cho bất kỳ ngôi chùa, tự viện hay tổ chức tôn giáo nào. Mọi hoạt động đều miễn phí, công đức không mua bán. Đại chúng trong Tự là mô phỏng để tạo không khí. <a href="bao-mat.html" target="_blank" rel="noopener" style="color:var(--lamp)">Chính sách bảo mật</a></p>
+    <div class="row"><button class="btn" id="enterBtn" disabled>Đang dựng ngôi Tự…</button><button class="btn ghost" id="regIntro">Đăng ký dùng thử</button><span class="muted">Nên đeo tai nghe.</span></div>
+    <p class="fine">Vô Ưu Tự là không gian tâm linh trực tuyến. Vô Ưu Tự không liên kết, không đại diện và không quảng bá cho bất kỳ ngôi chùa, tự viện hay tổ chức tôn giáo nào. Mọi hoạt động đều miễn phí, công đức không mua bán. Vô Ưu Tự không bao giờ xin tiền; trang nào nhân danh Vô Ưu Tự xin tiền là giả mạo. Đại chúng trong Tự là mô phỏng để tạo không khí. <a href="bao-mat.html" target="_blank" rel="noopener" style="color:var(--lamp)">Chính sách bảo mật</a></p>
   </div>
 </div>
 
@@ -243,6 +262,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const coarse=matchMedia("(pointer: coarse)").matches;
+const LITE=(()=>{try{const v=localStorage.getItem("vout3:lite");if(v!==null)return v==="1";}catch(e){}if(new URLSearchParams(location.search).get("lite")==="1")return true;return coarse&&((navigator.deviceMemory||8)<=3||(navigator.hardwareConcurrency||8)<=4);})();
 const store={get(k,d){try{const v=localStorage.getItem("vout3:"+k);return v===null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem("vout3:"+k,JSON.stringify(v));}catch(e){}}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -342,7 +362,7 @@ function mo(vol=.55){
 const canvas=$("#scene");
 let renderer;
 try{renderer=new THREE.WebGLRenderer({canvas,antialias:true});}catch(e){document.body.insertAdjacentHTML("beforeend",'<div class="nogl"><p>Trình duyệt của bạn chưa hỗ trợ đồ họa 3D (WebGL). Hãy thử mở bằng Chrome, Edge hoặc Safari bản mới.</p></div>');return;}
-renderer.setPixelRatio(Math.min(devicePixelRatio||1,coarse?1.5:2));
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,LITE?1:coarse?1.5:2));
 const scene=new THREE.Scene(); scene.background=new THREE.Color(0x0d1618); scene.fog=new THREE.FogExp2(0x0d1618,0.017);
 const camera=new THREE.PerspectiveCamera(62,1,0.05,260); camera.rotation.order="YXZ";
 let viewOff={x:0,y:0},viewOffT={x:0,y:0};
@@ -948,7 +968,7 @@ function holdBook(p){const b=new THREE.Group(),pg=pm(0xf1e8d2),cv=pm(0x7a2a1c);[
   b.position.set(0,.2,-.33);b.rotation.x=-.75;p.userData.upper.add(b);}
 function holdIncense(p){const s=makeStick(true);s.scale.setScalar(.75);s.position.set(0,.36,-.25);p.userData.upper.add(s);}
 
-const seatedPeople=[];SEATS.forEach(([x,z])=>{if(Math.random()<.88){const p=seatPerson(person());p.position.set(x,.68,z);const r=Math.random();p.userData.lap=r<.4?"book":r<.55?true:false;if(p.userData.lap==="book")holdBook(p);p.userData.ph=rand(0,6);posePray(p,0,p.userData.lap);crowdGroup.add(p);seatedPeople.push(p);}});
+const seatedPeople=[];SEATS.forEach(([x,z])=>{if(Math.random()<(LITE?.4:.88)){const p=seatPerson(person());p.position.set(x,.68,z);const r=Math.random();p.userData.lap=r<.4?"book":r<.55?true:false;if(p.userData.lap==="book")holdBook(p);p.userData.ph=rand(0,6);posePray(p,0,p.userData.lap);crowdGroup.add(p);seatedPeople.push(p);}});
 /* the chant leader (duy na) with mõ and bell, front-left of the hall */
 cyl(.34,.34,.12,mat.cushion,-6.6,.66,-17.6,20);
 const leader=seatPerson(person({outfit:"tang",female:false,elder:true}));leader.position.set(-6.6,.68,-17.6);leader.rotation.y=-.73;leader.userData.ph=0;posePray(leader,0,"book");crowdGroup.add(leader);
@@ -1577,7 +1597,7 @@ function xinXam(){
       <p class="muted">Mỗi việc chỉ nên xin một quẻ. Nếu muốn hỏi việc khác, bạn có thể xin tiếp.</p>
       <div class="row"><button class="btn" id="qNiem">Niệm Quán Âm tạ ơn</button><button class="btn ghost" id="qAgain">Hỏi việc khác</button></div>`;
     $("#qNiem").addEventListener("click",()=>{const qa=HOT.find(x=>x.id==="quanam");chant("quanam",qa.focus,"Tượng Quán Thế Âm");});
-    $("#qAgain").addEventListener("click",xinXam);}
+    $("#qAgain").addEventListener("click",xinXam);_showQueHook(n,dom,cat,ti,l1,l2);}
 }
 
 // ---- Đăng ký dùng thử & góp ý: mỗi người ghi hồ sơ của mình, chỉ người quản trị xem được danh sách ----
@@ -1663,7 +1683,7 @@ function renderAsk(pre){
     <div id="askSup"></div>
     <div id="qaMine" class="ask-log"></div>
     <span class="muted">Hỏi đáp chung</span><div id="qaFaq" class="ask-log"><p class="muted">Đang tải…</p></div>
-    <p class="note">Câu hỏi chỉ người quản trị đọc được. Lời đáp sẽ hiện ở đây khi được trả lời, bạn quay lại sau nhé. Lời đáp là chia sẻ theo giáo lý Đại thừa, không thay thế lời dạy của một vị thầy.</p>`;
+    <p class="note">Câu hỏi chỉ người quản trị đọc được. Người quản trị thường trả lời trong 2–3 ngày; lời đáp sẽ hiện ở đây, bạn quay lại sau nhé. Lời đáp là chia sẻ theo giáo lý Đại thừa, không thay thế lời dạy của một vị thầy.</p>`;
   const inp=$("#askIn");if(pre)inp.value=pre;
   inp.addEventListener("input",()=>{if(RISK.test(inp.value))$("#askSup").innerHTML=supportCard();});
   $("#askSend").addEventListener("click",askSend);
@@ -1712,7 +1732,7 @@ function webRegForm(note,edit){
 }
 
 // ===== ĐỢT 1: Tường tâm nguyện chung (có duyệt), thông báo của Tự, báo bản mới, hướng dẫn lần đầu, báo lỗi =====
-const APP_VER="1.2";
+const APP_VER="1.3";
 const ERRS=[];
 addEventListener("error",e=>{ERRS.push(String(e.message||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
 addEventListener("unhandledrejection",e=>{const r=e.reason;if(r&&r.code)return;ERRS.push(String((r&&r.message)||r||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
@@ -1809,14 +1829,14 @@ function about(){
   openSheet("Về Vô Ưu Tự","Một ngôi Tự trực tuyến",`
     <p class="lede">Vô Ưu nghĩa là không còn ưu phiền. Đây là nơi để bạn ghé vào khi bận rộn hay rối lòng: dạo sân, thả muộn phiền, thắp nhang, tụng niệm, và niệm cho người khác.</p>
     ${ANN.length?`<span class="muted">Thông báo của Tự</span>${ANN.map(a=>`<div class="msg a">${fmtAns(a.text)}<br><small class="muted">${fmtTime(a.at)}</small></div>`).join("")}`:""}
-    <p>Vô Ưu Tự là không gian tâm linh trực tuyến. Vô Ưu Tự không liên kết, không đại diện và không quảng bá cho bất kỳ ngôi chùa, tự viện hay tổ chức tôn giáo nào. Mọi hoạt động đều miễn phí, công đức không mua bán.</p>
+    <p>Vô Ưu Tự là không gian tâm linh trực tuyến. Vô Ưu Tự không liên kết, không đại diện và không quảng bá cho bất kỳ ngôi chùa, tự viện hay tổ chức tôn giáo nào. Mọi hoạt động đều miễn phí, công đức không mua bán. <b>Vô Ưu Tự không bao giờ xin tiền, không nhận cúng dường qua bất kỳ tài khoản nào.</b> Nếu thấy trang nào mang tên Vô Ưu Tự xin tiền, đó là giả mạo.</p>
     <p class="muted">Cách đi: ${coarse?"dùng vòng tròn góc trái để đi, kéo màn hình để nhìn quanh.":"phím W A S D hoặc mũi tên để đi, kéo chuột để nhìn quanh."} Bấm vào các đốm sáng để tự đi đến nơi đó.</p>
     <div class="row"><button class="btn ghost" id="abGuide">Xem lại hướng dẫn</button><button class="btn ghost" id="abBug">Báo lỗi</button><a class="btn ghost" href="bao-mat.html" target="_blank" rel="noopener">Chính sách bảo mật</a></div>
-    <div id="abNew"></div>
+    <div id="abNew"></div><div id="abSettings" class="practice"></div>
     ${supportCard().replace("Có vẻ bạn đang mang một điều rất nặng.","Cần nói chuyện với một người thật?")}
     <p class="note">Phiên bản ${APP_VER}</p>`,null);
   $("#abGuide").addEventListener("click",()=>{closeSheet();coach(0);});
-  $("#abBug").addEventListener("click",bugReport);
+  $("#abBug").addEventListener("click",bugReport);renderSettings();
   const showNew=j=>{const el=$("#abNew");if(el&&j&&j.notes&&j.notes.length)el.innerHTML=`<span class="muted">Có gì mới (${esc(j.v)})</span><ul class="news">${j.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul>`;};
   if(verNotes)showNew(verNotes);else fetch("version.json",{cache:"no-store"}).then(r=>r.json()).then(j=>{verNotes=j;showNew(j);}).catch(()=>{});
 }
@@ -1873,6 +1893,318 @@ function meritBook(){
   const b=$("#hhBtn");b&&b.addEventListener("click",()=>{bell(196,.5);b.disabled=true;$("#hhMsg").textContent="Đã hồi hướng. Nguyện cho tất cả đều được bình an.";
     for(let i=0;i<6;i++)later(()=>{const o=glow(0xffd28a,.6,.9);floatObj(o,new THREE.Vector3(rand(-6,6),1.2,rand(-16,-10)),new THREE.Vector3(rand(-1,1),4.8,-24.5),8000,.6,.2);},i*300);});
 }
+// ===== ĐỢT 3: lịch âm và trang trí theo mùa, lời dạy hôm nay, Ghé 3 phút, khóa tu, sổ lá xăm,
+// đèn cầu an gửi người thân, thẻ chia sẻ, nhắc lịch, hiện diện thật, thời kinh tối chung, cài đặt =====
+/* Âm lịch Việt Nam (thuật toán Hồ Ngọc Đức, múi giờ +7) */
+const LUNAR=(()=>{const PI=Math.PI,INT=Math.floor,TZ=7;
+function jd(dd,mm,yy){const a=INT((14-mm)/12),y=yy+4800-a,m=mm+12*a-3;let j=dd+INT((153*m+2)/5)+365*y+INT(y/4)-INT(y/100)+INT(y/400)-32045;if(j<2299161)j=dd+INT((153*m+2)/5)+365*y+INT(y/4)-32083;return j;}
+function newMoon(k){const T=k/1236.85,T2=T*T,T3=T2*T,dr=PI/180;let J=2415020.75933+29.53058868*k+.0001178*T2-.000000155*T3;J+=.00033*Math.sin((166.56+132.87*T-.009173*T2)*dr);
+ const M=359.2242+29.10535608*k-.0000333*T2-.00000347*T3,Mp=306.0253+385.81691806*k+.0107306*T2+.00001236*T3,F=21.2964+390.67050646*k-.0016528*T2-.00000239*T3;
+ let C=(.1734-.000393*T)*Math.sin(M*dr)+.0021*Math.sin(2*dr*M);C=C-.4068*Math.sin(Mp*dr)+.0161*Math.sin(dr*2*Mp);C-=.0004*Math.sin(dr*3*Mp);
+ C=C+.0104*Math.sin(dr*2*F)-.0051*Math.sin(dr*(M+Mp));C=C-.0074*Math.sin(dr*(M-Mp))+.0004*Math.sin(dr*(2*F+M));C=C-.0004*Math.sin(dr*(2*F-M))-.0006*Math.sin(dr*(2*F+Mp));C=C+.001*Math.sin(dr*(2*F-Mp))+.0005*Math.sin(dr*(2*Mp+M));
+ const dt=T<-11?.001+.000839*T+.0002261*T2-.00000845*T3-.000000081*T*T3:-.000278+.000265*T+.000262*T2;return J+C-dt;}
+const nmDay=k=>INT(newMoon(k)+.5+TZ/24);
+function sunLong(j){const T=(j-2451545)/36525,T2=T*T,dr=PI/180,M=357.5291+35999.0503*T-.0001559*T2-.00000048*T*T2,L0=280.46645+36000.76983*T+.0003032*T2;
+ let DL=(1.9146-.004817*T-.000014*T2)*Math.sin(dr*M);DL+=(.019993-.000101*T)*Math.sin(dr*2*M)+.00029*Math.sin(dr*3*M);let L=(L0+DL)*dr;L-=PI*2*INT(L/(PI*2));return L;}
+const sunSeg=d=>INT(sunLong(d-.5-TZ/24)/PI*6);
+function m11(yy){const off=jd(31,12,yy)-2415021,k=INT(off/29.530588853);let nm=nmDay(k);if(sunSeg(nm)>=9)nm=nmDay(k-1);return nm;}
+function leapOff(a11){const k=INT((a11-2415021.076998695)/29.530588853+.5);let last=0,i=1,arc=sunSeg(nmDay(k+i));do{last=arc;i++;arc=sunSeg(nmDay(k+i));}while(arc!==last&&i<14);return i-1;}
+function fromSolar(date){const dd=date.getDate(),mm=date.getMonth()+1,yy=date.getFullYear(),dn=jd(dd,mm,yy),k=INT((dn-2415021.076998695)/29.530588853);
+ let ms=nmDay(k+1);if(ms>dn)ms=nmDay(k);let a11=m11(yy),b11=a11,ly;if(a11>=ms){ly=yy;a11=m11(yy-1);}else{ly=yy+1;b11=m11(yy+1);}
+ const day=dn-ms+1,diff=INT((ms-a11)/29);let leap=0,mon=diff+11;if(b11-a11>365){const lo=leapOff(a11);if(diff>=lo){mon=diff+10;if(diff===lo)leap=1;}}
+ if(mon>12)mon-=12;if(mon>=11&&diff<4)ly-=1;return{d:day,m:mon,y:ly,leap};}
+const CAN=["Canh","Tân","Nhâm","Quý","Giáp","Ất","Bính","Đinh","Mậu","Kỷ"],CHI=["Thân","Dậu","Tuất","Hợi","Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi"];
+const yearName=y=>CAN[y%10]+" "+CHI[y%12];
+const dayName=l=>l.d===1?"Mùng 1":l.d===15?"Rằm":(l.d<=10?"Mùng "+l.d:"Ngày "+l.d);
+const MONTHN=["","Giêng","Hai","Ba","Tư","Năm","Sáu","Bảy","Tám","Chín","Mười","Mười một","Chạp"];
+/* các ngày lễ, vía theo âm lịch */
+const FEASTS=[[1,1,"Tết Nguyên Đán"],[15,1,"Rằm tháng Giêng (Tết Thượng Nguyên)"],[19,2,"Vía Bồ Tát Quán Thế Âm đản sanh"],[15,4,"Đại lễ Phật Đản"],[19,6,"Vía Bồ Tát Quán Thế Âm thành đạo"],
+ [15,7,"Lễ Vu Lan báo hiếu"],[30,7,"Vía Bồ Tát Địa Tạng"],[19,9,"Vía Bồ Tát Quán Thế Âm xuất gia"],[15,10,"Rằm tháng Mười (Tết Hạ Nguyên)"],[17,11,"Vía Đức Phật A Di Đà"],[8,12,"Lễ Phật thành đạo"],[8,2,"Vía Đức Phật xuất gia"],[15,2,"Lễ Phật nhập Niết bàn"]];
+function feast(l){if(l.leap)return null;const f=FEASTS.find(([d,m])=>d===l.d&&m===l.m);return f?f[2]:null;}
+function season(l){if((l.m===12&&l.d>=23)||(l.m===1&&l.d<=15))return"tet";if(l.m===4&&l.d<=16)return"phatdan";if(l.m===7&&!l.leap)return"vulan";
+ if([2,6,9].includes(l.m)&&l.d>=17&&l.d<=21)return"quanam";if(l.d===1||(l.d>=14&&l.d<=16))return"ram";return null;}
+function label(date){const l=fromSolar(date);return `${dayName(l)} tháng ${MONTHN[l.m]}${l.leap?" nhuận":""} năm ${yearName(l.y)}`;}
+/* các ngày mùng 1, rằm và lễ trong n ngày tới */
+function upcoming(from,days){const out=[];const d=new Date(from.getFullYear(),from.getMonth(),from.getDate());for(let i=0;i<days;i++){const x=new Date(d.getTime()+i*86400000),l=fromSolar(x),f=feast(l);
+ if(f||l.d===1||l.d===15)out.push({date:x,l,name:f||(l.d===1?`Mùng 1 tháng ${MONTHN[l.m]}`:`Rằm tháng ${MONTHN[l.m]}`)+(l.leap?" nhuận":"")});}return out;}
+return{fromSolar,yearName,label,feast,season,upcoming,MONTHN};})();
+
+const QS=new URLSearchParams(location.search);
+const NOW=new Date(),TODAY=LUNAR.fromSolar(NOW),FEAST=LUNAR.feast(TODAY);
+const SEASON=QS.get("le")||LUNAR.season(TODAY);
+const SEASON_TEXT={tet:"Tự đang đón Tết: đèn lồng đỏ và mai vàng khắp sân.",phatdan:"Mùa Phật Đản: cờ Phật giáo và đèn hoa sen giăng khắp sân Tự.",vulan:"Mùa Vu Lan báo hiếu: hồ sen thắp thêm đèn hoa đăng.",quanam:"Ngày vía Quán Thế Âm: đèn sen thắp quanh tượng Bồ Tát.",ram:TODAY.d===1?"Hôm nay mùng 1: Tự thắp thêm đèn hoa đăng.":"Mùa trăng rằm: Tự thắp thêm đèn hoa đăng."};
+
+/* ---------- trang trí theo mùa ---------- */
+(function decorate(){if(!SEASON)return;
+  const pole=x=>cyl(.06,.07,5,M(0x7a2a1c),x,2.5,0);
+  const line=(z,y,fn,n=26,span=18)=>{for(let i=0;i<=n;i++){const t=i/n,x=-span/2+span*t,yy=y-.55*Math.sin(Math.PI*t);fn(x,yy,z,i);}};
+  if(SEASON==="phatdan"){const cols=[0x2a5db0,0xf2c23a,0xc8342b,0xf4f1e8,0xe9862a],g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute([-.16,0,0,.16,0,0,0,-.34,0],3));g.computeVertexNormals();
+    const mats=cols.map(c=>new THREE.MeshStandardMaterial({color:c,side:THREE.DoubleSide,roughness:.7}));
+    [15.5,9,2.5].forEach(z=>{[-9.3,9.3].forEach(x=>{const p=cyl(.06,.07,4.7,M(0x7a2a1c),x,2.35,z);});line(z,4.6,(x,y,zz,i)=>{const f=new THREE.Mesh(g,mats[i%5]);f.position.set(x,y,zz);scene.add(f);});});
+    [[-3,12],[3,12],[-3,5],[3,5]].forEach(([x,z])=>{const l=makeLantern(false);l.position.set(x,4.1,z);l.scale.setScalar(1.3);scene.add(l);});}
+  if(SEASON==="tet"||SEASON==="ram"||SEASON==="vulan"){const red=M(0xb3261b,{emissive:0xa0200c,emissiveIntensity:.7}),gold=mat.gold;
+    if(SEASON==="tet")[15.5,9,2.5].forEach(z=>{[-9.3,9.3].forEach(x=>cyl(.06,.07,4.7,M(0x7a2a1c),x,2.35,z));line(z,4.6,(x,y,zz,i)=>{if(i%3)return;const l=sph(.22,red,x,y-.35,zz,14);l.scale.y=1.25;cyl(.12,.12,.06,gold,x,y-.08,zz,10);cyl(.12,.12,.06,gold,x,y-.63,zz,10);if(i%6===0)l.add(glow(0xff6a3a,1.1,.35));});});
+    const n=SEASON==="ram"?6:SEASON==="vulan"?12:4;for(let i=0;i<n;i++){const l=makeLantern(i<2);const a=i/n*6.283;l.position.set(POND.x+Math.cos(a)*(1.2+(i%3)*.7),.06,POND.z+Math.sin(a)*(1.2+(i%3)*.7));scene.add(l);}}
+  if(SEASON==="tet"){const trunk=M(0x5a3b26),bloom=new THREE.MeshStandardMaterial({color:0xf6c935,emissive:0x6a4a00,roughness:.6});
+    [[-5.6,16.5],[5.6,16.5],[-5.6,4.2],[5.6,4.2]].forEach(([x,z])=>{cyl(.42,.36,.5,M(0x8a3a22),x,.25,z,14);const pts=[];
+      for(let b=0;b<6;b++){const a=b/6*6.283+rand(-.3,.3),len=rand(.7,1.2);const br=new THREE.Mesh(new THREE.CylinderGeometry(.025,.05,len,6),trunk);br.position.set(x+Math.cos(a)*len*.35,1.1+b*.08,z+Math.sin(a)*len*.35);br.rotation.set(Math.sin(a)*.8,0,-Math.cos(a)*.8);scene.add(br);
+        for(let k=0;k<14;k++)pts.push([x+Math.cos(a)*rand(.15,len*.75),1.1+b*.08+rand(-.2,.45),z+Math.sin(a)*rand(.15,len*.75)]);}
+      cyl(.05,.08,1.2,trunk,x,.95,z,8);const im=new THREE.InstancedMesh(new THREE.SphereGeometry(.05,6,4),bloom,pts.length),mm=new THREE.Matrix4();pts.forEach((p,i)=>{mm.makeTranslation(...p);im.setMatrixAt(i,mm);});scene.add(im);});}
+  if(SEASON==="quanam"){for(let i=0;i<10;i++){const a=i/10*6.283,l=makeLantern(i%3===0);l.position.set(QA.x+Math.cos(a)*2.35,.06,QA.z+Math.sin(a)*2.35);scene.add(l);}}
+  if((SEASON==="ram"||SEASON==="vulan")&&typeof moonD!=="undefined"&&TODAY.d>=14&&TODAY.d<=16)moonD.scale.multiplyScalar(1.5);
+})();
+
+/* ---------- lời dạy hôm nay ---------- */
+const DAILY=[
+ ["Tâm dẫn đầu các pháp, tâm làm chủ, tâm tạo tác. Nói hay làm với tâm trong sạch, an lạc theo ta như bóng không rời hình.","Ý Kinh Pháp Cú, kệ 2"],
+ ["Hận thù không thể dập tắt hận thù. Chỉ có tình thương mới dập tắt được hận thù. Đó là định luật ngàn đời.","Ý Kinh Pháp Cú, kệ 5"],
+ ["Dù thắng ngàn quân giữa chiến trường, không bằng tự thắng mình. Tự thắng mình mới là chiến công oanh liệt nhất.","Ý Kinh Pháp Cú, kệ 103"],
+ ["Không làm các điều ác, siêng làm các việc lành, giữ tâm ý trong sạch. Đó là lời chư Phật dạy.","Ý Kinh Pháp Cú, kệ 183"],
+ ["Sức khỏe là lợi ích lớn nhất, biết đủ là tài sản lớn nhất.","Ý Kinh Pháp Cú, kệ 204"],
+ ["Như tảng đá vững chắc, không lay động trước gió, người trí không dao động trước khen chê.","Ý Kinh Pháp Cú, kệ 81"],
+ ["Đừng chạy theo quá khứ, đừng lo lắng tương lai. Quá khứ đã qua, tương lai chưa đến. Hãy sống trọn vẹn với giây phút hiện tại.","Ý Kinh Nhất Dạ Hiền Giả"],
+ ["Các pháp do duyên sinh thì cũng do duyên diệt. Điều đang làm bạn khổ hôm nay rồi cũng sẽ đổi thay.","Ý giáo lý Duyên khởi"],
+ ["Nên không chỗ trụ mà sinh tâm ấy. Đừng để tâm dính mắc vào được mất, tâm sẽ tự nhẹ.","Kinh Kim Cang: Ưng vô sở trụ nhi sanh kỳ tâm"],
+ ["Tất cả pháp hữu vi như mộng, huyễn, bọt, bóng, như sương, như điện chớp. Hãy quán chiếu như vậy.","Kinh Kim Cang, bài kệ cuối"],
+ ["Quán Tự Tại Bồ Tát soi thấy năm uẩn đều không, vượt qua mọi khổ ách.","Bát Nhã Tâm Kinh"],
+ ["Bồ Tát Quán Thế Âm lắng nghe tiếng kêu của muôn loài để cứu khổ. Hôm nay bạn hãy lắng nghe một người thật trọn vẹn.","Ý Phẩm Phổ Môn, Kinh Pháp Hoa"],
+ ["Tâm bình thì thế giới bình. Muốn đổi cảnh, trước hết hãy đổi tâm.","Ý Kinh Duy Ma Cật: Tâm tịnh thì cõi Phật tịnh"],
+ ["Từ là cho vui, bi là cứu khổ, hỷ là vui theo niềm vui của người, xả là buông bỏ phân biệt.","Tứ vô lượng tâm"],
+ ["Một ngọn đèn thắp sáng trăm ngàn ngọn đèn khác mà ánh sáng không hề giảm. Hạnh phúc chia sẻ cũng vậy.","Ý Kinh Bốn Mươi Hai Chương"],
+ ["Biết mình đang thở vào, biết mình đang thở ra. Hơi thở là chiếc cầu đưa thân và tâm trở về một chỗ.","Ý Kinh Quán Niệm Hơi Thở"],
+ ["Lời nói dịu dàng, chân thật, đúng lúc và có lợi ích là món quà quý nhất ta có thể trao.","Ý Chánh ngữ trong Bát Chánh Đạo"],
+ ["Ân cha mẹ như trời biển. Hôm nay hãy gọi một cuộc điện thoại, nói một lời thương.","Ý Kinh Vu Lan và Kinh Báo Ân"],
+ ["Bố thí không chỉ là tiền bạc. Một nụ cười, một ánh mắt hiền, một lời an ủi đều là bố thí.","Ý hạnh Bố thí Ba La Mật"],
+ ["Nhẫn nhục không phải là yếu đuối. Đó là sức mạnh của người đủ lớn để không bị cơn giận dắt đi.","Ý hạnh Nhẫn nhục Ba La Mật"],
+ ["Giọt nước nhỏ rơi mãi cũng đầy bình. Việc lành nhỏ làm mỗi ngày cũng thành phước lớn.","Ý Kinh Pháp Cú, kệ 122"],
+ ["Người biết đủ, dù nằm trên đất vẫn thấy an vui. Người không biết đủ, dù ở thiên đường vẫn chưa vừa ý.","Ý Kinh Di Giáo"],
+ ["Phiền não tức Bồ đề. Bùn có thì sen mới nở; khó khăn hôm nay là chất liệu cho trí tuệ ngày mai.","Ý giáo lý Đại thừa"],
+ ["Hãy tự mình thắp đuốc lên mà đi, nương tựa nơi chính mình, nương tựa nơi Chánh pháp.","Ý lời di huấn của Đức Phật"],
+ ["Vô thường không phải để buồn. Vì vô thường mà nỗi khổ có thể qua, hạt giống có thể nảy mầm.","Ý giáo lý Vô thường"],
+ ["Tâm như con vượn chuyền cành. Đừng đánh nó, hãy nhẹ nhàng gọi nó về với hơi thở.","Ý lời dạy về chánh niệm"],
+ ["Mọi loài đều sợ đau đớn, mọi loài đều thương mạng sống. Lấy mình làm ví dụ, đừng làm khổ ai.","Ý Kinh Pháp Cú, kệ 130"],
+ ["Nguyện cho tất cả chúng sinh đều được an vui, không còn sợ hãi, không còn khổ đau.","Ý Kinh Từ Bi"],
+ ["Phước báu không đến từ việc cầu xin, mà từ việc gieo nhân lành và giữ tâm trong sáng.","Ý luật Nhân quả"],
+ ["Đức Phật A Di Đà phát nguyện tiếp dẫn tất cả. Một câu niệm Phật thành tâm là một lần trở về nhà.","Ý Kinh A Di Đà"]];
+function todayQuote(off=0){const d=Math.floor((Date.UTC(NOW.getFullYear(),NOW.getMonth(),NOW.getDate())-Date.UTC(2026,0,1))/86400000)+off;return DAILY[((d%DAILY.length)+DAILY.length)%DAILY.length];}
+
+/* ---------- thẻ chia sẻ (ảnh dọc 1080×1350) ---------- */
+function wrapText(x,text,maxW){const words=String(text).split(/\s+/),lines=[];let cur="";words.forEach(w=>{const t=cur?cur+" "+w:w;if(x.measureText(t).width>maxW&&cur){lines.push(cur);cur=w;}else cur=t;});if(cur)lines.push(cur);return lines;}
+async function shareCard(o){
+  try{await document.fonts.ready;}catch(e){}
+  const W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,"#16272b");g.addColorStop(.55,"#0d1618");g.addColorStop(1,"#1d1712");x.fillStyle=g;x.fillRect(0,0,W,H);
+  const r=x.createRadialGradient(W/2,300,10,W/2,300,520);r.addColorStop(0,"rgba(226,179,106,.28)");r.addColorStop(1,"rgba(226,179,106,0)");x.fillStyle=r;x.fillRect(0,0,W,H);
+  x.strokeStyle="rgba(226,179,106,.55)";x.lineWidth=2;x.strokeRect(48,48,W-96,H-96);
+  x.save();x.translate(W/2,250);x.fillStyle="#e2b36a";x.beginPath();x.moveTo(0,-90);x.bezierCurveTo(55,-35,55,40,0,80);x.bezierCurveTo(-55,40,-55,-35,0,-90);x.fill();
+  x.globalAlpha=.6;[-1,1].forEach(s=>{x.beginPath();x.moveTo(0,80);x.bezierCurveTo(s*70,60,s*130,0,s*140,-20);x.bezierCurveTo(s*120,40,s*60,80,0,80);x.fill();});x.restore();
+  x.textAlign="center";x.fillStyle="#e2b36a";x.font='500 30px "Be Vietnam Pro",sans-serif';x.fillText((o.eyebrow||"").toUpperCase().split("").join(" "),W/2,410);
+  x.fillStyle="#efe7d6";x.font='500 76px "Cormorant Garamond",Georgia,serif';let y=510;wrapText(x,o.title||"",W-220).slice(0,3).forEach(l=>{x.fillText(l,W/2,y);y+=84;});
+  y+=20;if(o.verse){x.font='italic 500 44px "Cormorant Garamond",Georgia,serif';x.fillStyle="#cbd0c7";o.verse.forEach(v=>wrapText(x,v,W-240).forEach(l=>{x.fillText(l,W/2,y);y+=58;}));y+=26;}
+  if(o.body){x.font='300 34px "Be Vietnam Pro",sans-serif';x.fillStyle="#cbd0c7";wrapText(x,o.body,W-260).slice(0,9).forEach(l=>{x.fillText(l,W/2,y);y+=52;});}
+  if(o.src){y+=18;x.font='italic 400 30px "Cormorant Garamond",Georgia,serif';x.fillStyle="#8e978e";x.fillText(o.src,W/2,y);}
+  x.fillStyle="#e2b36a";x.font='500 40px "Cormorant Garamond",Georgia,serif';x.fillText("Vô Ưu Tự",W/2,H-140);x.font='300 26px "Be Vietnam Pro",sans-serif';x.fillStyle="#8e978e";x.fillText(location.host+" · ngôi Tự trực tuyến, miễn phí",W/2,H-96);
+  const blob=await new Promise(res=>c.toBlob(res,"image/png")),name=(o.file||"vo-uu-tu")+".png";
+  try{const f=new File([blob],name,{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:"Vô Ưu Tự",text:o.text||""});return;}}catch(e){if(e&&e.name==="AbortError")return;}
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast("Đã lưu thẻ vào máy. Bạn có thể đăng hoặc gửi cho người thân.");
+}
+
+/* ---------- ghi nhận việc làm trong ngày (cho khóa tu) ---------- */
+function dayKey(d){return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
+function addMerit(k,n=1){merit[k]=(merit[k]||0)+n;store.set("merit",merit);$("#meritBadge").textContent=Object.values(merit).reduce((a,b)=>a+b,0);
+  const t=store.get("todayAct",{d:"",k:[]});const dk=dayKey(new Date());if(t.d!==dk){t.d=dk;t.k=[];}if(!t.k.includes(k))t.k.push(k);store.set("todayAct",t);if(typeof retreatTick==="function")retreatTick();}
+function todayDid(k){const t=store.get("todayAct",{d:"",k:[]});return t.d===dayKey(new Date())&&k.some(x=>t.k.includes(x));}
+
+/* ---------- Ghé 3 phút ---------- */
+function quick(){
+  const h=HOT.find(x=>x.id==="bell");
+  openSheet("Ghé 3 phút","Một chút tĩnh lặng",`<div class="steps"><i class="on"></i><i></i><i></i></div>
+    <p class="lede">Ba phút cho riêng mình: một tiếng chuông, ba hơi thở, một lời Phật dạy.</p>
+    <div class="row"><button class="btn" id="qkRing">Thỉnh một tiếng chuông</button></div>`,h.focus);
+  $("#qkRing").addEventListener("click",()=>{$("#qkRing").disabled=true;
+    tween(700,p=>{striker.rotation.z=.4*Math.sin(p*Math.PI/2);},()=>tween(260,p=>{striker.rotation.z=.4-.52*p;},()=>{bell(98,.75);later(()=>bell(147,.25),60);addMerit("chuong");tween(1600,p=>{striker.rotation.z=-.12*(1-p)*Math.cos(p*9);});later(breathe,1800);}));});
+  function breathe(){if(S.sheetOpen!=="Một chút tĩnh lặng")return;let n=0;
+    $("#sheetBody").innerHTML=`<div class="steps"><i class="on"></i><i class="on"></i><i></i></div><p class="lede">Theo vòng tròn: thở vào khi nó lớn, thở ra khi nó nhỏ.</p>
+      <div class="breath"><i id="qkCircle"></i><span id="qkWord">Thở vào…</span></div><p class="muted" id="qkCount">Hơi thở 1/3</p>`;
+    const step=()=>{if(S.sheetOpen!=="Một chút tĩnh lặng")return;const c=$("#qkCircle");if(!c)return;n++;if(n>3){addMerit("thien");done();return;}
+      $("#qkCount").textContent=`Hơi thở ${n}/3`;$("#qkWord").textContent="Thở vào…";c.style.transition="transform 4s ease-in-out";c.style.transform="scale(1)";
+      later(()=>{$("#qkWord")&&($("#qkWord").textContent="Thở ra…");c.style.transition="transform 6s ease-in-out";c.style.transform="scale(.45)";},4000);later(step,10000);};
+    later(step,300);}
+  function done(){const [q,src]=todayQuote();bell(196,.35);
+    $("#sheetBody").innerHTML=`<div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i></div><span class="muted">Lời Phật dạy hôm nay</span>
+      <p class="verse">${esc(q)}</p><p class="muted" style="text-align:right">${esc(src)}</p><p class="lede">Cảm ơn bạn đã dành ba phút cho mình. Mang chút tĩnh lặng này theo suốt ngày nhé.</p>
+      <div class="row"><button class="btn" id="qkShare">Chia sẻ lời dạy</button><button class="btn ghost" id="qkStay">Ở lại dạo Tự</button></div>`;
+    $("#qkShare").addEventListener("click",()=>shareCard({eyebrow:"Lời Phật dạy hôm nay",title:LUNAR.label(NOW).split(" năm")[0],body:q,src,file:"loi-day-hom-nay"}));$("#qkStay").addEventListener("click",closeSheet);
+    retreatMark("doc");}
+}
+
+/* ---------- khóa tu 7 / 21 ngày ---------- */
+const RT_DAYS=[
+ ["Trở về hơi thở","Hôm nay chỉ cần một việc: mỗi khi nhớ ra, dừng lại thở ba hơi thật chậm.","Ngồi thiền dưới cội Bồ đề hoặc dùng Ghé 3 phút."],
+ ["Buông bớt lo âu","Viết điều đang làm bạn lo lên một chiếc đèn hoa đăng và thả nó đi. Lo lắng không làm ngày mai nhẹ hơn, chỉ làm hôm nay nặng thêm.","Thả một muộn phiền ở hồ sen."],
+ ["Lòng biết ơn","Nghĩ về ba người đã giúp mình trong đời. Thầm cảm ơn họ, hoặc gọi cho một người.","Thắp nhang, gửi lời nguyện cho người ấy."],
+ ["Thương lấy chính mình","Bạn đã cố gắng nhiều. Hôm nay hãy nói với mình một câu dịu dàng như nói với người mình thương.","Tụng Bát Nhã Tâm Kinh ở góc tụng niệm."],
+ ["Tha thứ","Tha thứ không phải là cho rằng điều sai là đúng, mà là thôi mang hòn than nóng trong tay mình.","Niệm Quán Thế Âm ba lần, nghĩ về người làm mình buồn."],
+ ["Cho đi","Hôm nay hãy cho đi một điều nhỏ: một nụ cười, một lời khen, một bữa cơm, một câu hỏi thăm.","Niệm cho một người trên Tường tâm nguyện."],
+ ["Hồi hướng","Mọi việc lành tuần qua, hãy hồi hướng cho tất cả. Phước lành chia ra không vơi đi mà còn lớn thêm.","Mở Sổ tu tập, bấm Hồi hướng công đức."]];
+const RT_ROUND=["","Vòng hai: làm lại với sự chú tâm sâu hơn.","Vòng ba: làm việc này cho một người khác cùng hưởng."];
+function rtState(){return store.get("retreat",null);}
+function retreatMark(k){const r=rtState();if(!r)return;const t=store.get("rtToday",{d:"",k:[]}),dk=dayKey(new Date());if(t.d!==dk){t.d=dk;t.k=[];}if(!t.k.includes(k))t.k.push(k);store.set("rtToday",t);retreatTick();}
+function rtTasks(){const t=store.get("rtToday",{d:"",k:[]}),ok=t.d===dayKey(new Date());
+  return[{l:"Thỉnh chuông hoặc Ghé 3 phút",done:todayDid(["chuong"])},{l:"Tụng niệm, ngồi thiền hoặc lạy Phật",done:todayDid(["niem","kinh","thien","lay"])},{l:"Đọc lời dạy của ngày (mở trang khóa tu là xong)",done:ok&&t.k.includes("doc")}];}
+function retreatTick(){const r=rtState();if(!r||r.done.length>=r.len)return;const dk=dayKey(new Date());if(r.last===dk)return;
+  if(rtTasks().every(x=>x.done)){r.done.push(dk);r.last=dk;store.set("retreat",r);toast(r.done.length>=r.len?`Bạn đã hoàn thành khóa tu ${r.len} ngày. Tùy hỷ công đức!`:`Hoàn thành ngày ${r.done.length} của khóa tu. Hẹn bạn ngày mai.`,5000);bell(196,.4);}}
+function retreat(){
+  const r=rtState();
+  if(!r){openSheet("Khóa tu","Khóa tu tại gia",`<p class="lede">Mỗi ngày một chủ đề nhỏ, chừng mười phút. Bỏ lỡ một hôm cũng không sao, ngày mai bạn làm tiếp từ chỗ đã dừng.</p>
+      <div class="practice"><b>Bảy ngày an tâm</b><p class="muted">Bảy chủ đề: hơi thở, buông lo âu, biết ơn, thương mình, tha thứ, cho đi, hồi hướng.</p><button class="btn" data-len="7">Bắt đầu 7 ngày</button></div>
+      <div class="practice"><b>Hai mươi mốt ngày tinh tấn</b><p class="muted">Ba vòng bảy chủ đề, mỗi vòng đi sâu hơn.</p><button class="btn ghost" data-len="21">Bắt đầu 21 ngày</button></div>`,null);
+    $$("#sheetBody [data-len]").forEach(b=>b.addEventListener("click",()=>{store.set("retreat",{len:+b.dataset.len,start:Date.now(),done:[],last:""});retreat();}));return;}
+  if(r.done.length<r.len)retreatMark("doc");
+  const i=Math.min(r.done.length,r.len-1),[ti,body,act]=RT_DAYS[i%7],round=Math.floor(i/7),fin=r.done.length>=r.len,todayDone=r.last===dayKey(new Date());
+  openSheet("Khóa tu",`Khóa tu ${r.len} ngày`,`<div class="steps">${Array.from({length:Math.min(r.len,21)},(_,k)=>`<i class="${k<r.done.length?"on":""}"></i>`).join("")}</div>
+    ${fin?`<p class="lede">Bạn đã đi trọn ${r.len} ngày. Nguyện cho sự tĩnh lặng này ở lại cùng bạn.</p><div class="row"><button class="btn" id="rtNew">Bắt đầu khóa mới</button></div>`:
+    `<span class="muted">Ngày ${i+1}/${r.len}${todayDone?" · đã xong hôm nay":""}</span><h3 style="font-family:var(--f-display);font-weight:500;font-size:26px;margin:0">${ti}</h3>
+     <p>${body}</p>${RT_ROUND[round]?`<p class="muted">${RT_ROUND[round]}</p>`:""}<div class="practice"><b>Gợi ý thực hành</b><p>${act}</p></div>
+     <div class="practice"><b>Việc của ngày</b>${rtTasks().map(t=>`<label class="check"><input type="checkbox" disabled ${t.done?"checked":""}><span>${t.l}</span></label>`).join("")}<p class="muted">Các ô tự đánh dấu khi bạn làm trong Tự.</p></div>
+     <div class="row"><button class="btn" id="rtQuick">Ghé 3 phút</button><button class="btn ghost" id="rtBode">Ngồi thiền dưới cội Bồ đề</button><button class="chip" id="rtStop">Dừng khóa tu</button></div>`}`,null);
+  if(!fin){$("#rtQuick").addEventListener("click",quick);$("#rtBode").addEventListener("click",()=>walkTo(HOT.find(x=>x.id==="bode"),bode));
+    let armed=false;$("#rtStop").addEventListener("click",()=>{if(!armed){armed=true;$("#rtStop").textContent="Bấm lần nữa để dừng";return;}store.set("retreat",null);retreat();});}
+  else $("#rtNew").addEventListener("click",()=>{store.set("retreat",null);retreat();});
+}
+
+/* ---------- sổ lá xăm ---------- */
+function queBookAdd(n,dom){const b=store.get("queBook",[]);b.unshift({n,dom,at:Date.now()});store.set("queBook",b.slice(0,60));}
+function queBook(){const b=store.get("queBook",[]);
+  openSheet("Sổ tu tập","Sổ lá xăm đã xin",`<p class="lede">Những quẻ bạn đã xin. Đọc lại để nhớ lời nhắc, không phải để đoán vận.</p>
+    ${b.length?b.map(x=>{const q=QUE[x.n-1];return `<div class="prayer"><p>Quẻ số ${x.n} · ${esc(q[1])}</p><div class="meta"><span>${QCAT[q[0]]} · hỏi về ${esc(QDOM[x.dom]||"").toLowerCase()} · ${fmtTime(x.at)}</span><button class="chip" data-n="${x.n}">Lưu thẻ</button></div></div>`;}).join(""):`<p class="muted">Bạn chưa xin quẻ nào. Bàn xăm ở bên phải sân Tự.</p>`}`,null);
+  $$("#sheetBody [data-n]").forEach(b=>b.addEventListener("click",()=>{const n=+b.dataset.n,q=QUE[n-1];shareCard({eyebrow:`Quẻ số ${n} · ${QCAT[q[0]]}`,title:q[1],verse:[q[2]+",",q[3]+"."],body:QNHAC[n%QNHAC.length],src:"Xăm Quán Âm · Vô Ưu Tự",file:"la-xam-"+n});}));}
+
+/* ---------- nhắc lịch mùng 1, rằm, ngày lễ (.ics) ---------- */
+function icsReminders(){const ev=LUNAR.upcoming(new Date(),380),p=n=>String(n).padStart(2,"0"),url=location.origin+location.pathname;
+  const lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Vo Uu Tu//Lich//VI","CALSCALE:GREGORIAN","X-WR-CALNAME:Vô Ưu Tự · Mùng 1 và Rằm"];
+  ev.forEach((e,i)=>{const d=e.date,ds=`${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}`;
+    lines.push("BEGIN:VEVENT",`UID:vut-${ds}-${i}@vo-uu-tu`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,"").slice(0,15)}Z`,`DTSTART:${ds}T123000Z`,`DTEND:${ds}T130000Z`,`SUMMARY:${e.name} · Vô Ưu Tự`,
+      `DESCRIPTION:Hôm nay ${e.name.toLowerCase()}. Ghé Vô Ưu Tự thắp nén nhang\\, tụng một thời kinh: ${url}`,`URL:${url}`,"BEGIN:VALARM","TRIGGER:-PT0M","ACTION:DISPLAY","DESCRIPTION:Vô Ưu Tự","END:VALARM","END:VEVENT");});
+  lines.push("END:VCALENDAR");const blob=new Blob([lines.join("\r\n")],{type:"text/calendar"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="vo-uu-tu-mung-1-ram.ics";document.body.appendChild(a);a.click();a.remove();
+  toast("Đã tải lịch nhắc mùng 1, rằm và các ngày lễ trong một năm tới. Mở tệp để thêm vào lịch điện thoại.",6000);}
+
+/* ---------- Sổ tu tập (mở rộng) ---------- */
+function meritBook(){
+  const total=Object.values(merit).reduce((a,b)=>a+b,0),r=rtState(),nq=store.get("queBook",[]).length;
+  openSheet("Sổ tu tập","Những việc lành bạn đã làm",`
+    <p class="lede">Sổ ghi lại những việc lành bạn đã làm, để tự nhắc mình tinh tấn, không để so đo hơn kém.</p>
+    <div class="row"><button class="btn" id="mbRetreat">${r?(r.done.length>=r.len?"Khóa tu đã xong":`Khóa tu: ngày ${Math.min(r.done.length+1,r.len)}/${r.len}`):"Bắt đầu khóa tu"}</button><button class="btn ghost" id="mbQue">Sổ lá xăm (${nq})</button></div>
+    <div class="row"><button class="btn ghost" id="mbDen">Gửi đèn cầu an</button><button class="btn ghost" id="mbIcs">Nhắc mùng 1, rằm</button></div>
+    <div class="merit-grid">${Object.keys(MERIT_LABEL).map(k=>`<div><b>${merit[k]||0}</b><span>${MERIT_LABEL[k]}</span></div>`).join("")}</div>
+    <p class="muted">Lục Tổ Huệ Năng dạy: làm việc lành bên ngoài là gieo phước; còn công đức nằm ở tự tánh, ở chỗ tâm mình thanh tịnh, khiêm cung, bình đẳng. Vì vậy công đức không đếm được, không mua bán được.</p>
+    <p class="muted">Sổ chỉ lưu trên thiết bị này của bạn.</p>
+    <span class="muted">Bài hồi hướng</span>
+    <p class="verse">Nguyện đem công đức này<br>Hướng về khắp tất cả<br>Đệ tử và chúng sanh<br>Đều trọn thành Phật đạo.</p>
+    <button class="btn" id="hhBtn" ${total?"":"disabled"}>Hồi hướng công đức</button><span class="muted" id="hhMsg"></span>`,null);
+  $("#mbRetreat").addEventListener("click",retreat);$("#mbQue").addEventListener("click",queBook);$("#mbDen").addEventListener("click",()=>denSend());$("#mbIcs").addEventListener("click",icsReminders);
+  const b=$("#hhBtn");b&&b.addEventListener("click",()=>{bell(196,.5);b.disabled=true;$("#hhMsg").textContent="Đã hồi hướng. Nguyện cho tất cả đều được bình an.";retreatMark("doc");
+    for(let i=0;i<6;i++)later(()=>{const o=glow(0xffd28a,.6,.9);floatObj(o,new THREE.Vector3(rand(-6,6),1.2,rand(-16,-10)),new THREE.Vector3(rand(-1,1),4.8,-24.5),8000,.6,.2);},i*300);});
+}
+
+/* ---------- đèn cầu an gửi người thân ---------- */
+const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const b64d=s=>decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/"))));
+let DEN=null;try{if(QS.get("den")){const o=JSON.parse(b64d(QS.get("den")));DEN={to:String(o.t||"").slice(0,30).trim(),w:String(o.w||"").slice(0,160).trim(),f:String(o.f||"").slice(0,30).trim()};if(!DEN.to)DEN=null;}}catch(e){DEN=null;}
+function denLink(o){return location.origin+location.pathname+"?den="+b64e(JSON.stringify({t:o.to,w:o.w,f:o.f}));}
+function denSend(pre){
+  const h=HOT.find(x=>x.id==="pond");
+  openSheet("Đèn cầu an","Thắp đèn cầu an cho người thân",`<p class="lede">Thắp một ngọn đèn trên hồ sen cho người bạn thương, rồi gửi lời chúc để họ mở ra thấy ngọn đèn đang sáng cho mình.</p>
+    <label class="f" for="dnTo">Thắp cho ai</label><input type="text" id="dnTo" maxlength="30" placeholder="Ví dụ: Mẹ, Ba, chị Lan" value="${esc(pre&&pre.to||"")}">
+    <label class="f" for="dnW">Lời chúc</label><textarea id="dnW" maxlength="160" placeholder="Ví dụ: Cầu cho mẹ luôn mạnh khỏe, bình an, mỗi ngày đều vui.">${esc(pre&&pre.w||"")}</textarea>
+    <label class="f" for="dnF">Tên bạn (không bắt buộc)</label><input type="text" id="dnF" maxlength="30" placeholder="Ví dụ: con gái Mai" value="${esc(store.get("denFrom",""))}">
+    <p class="note">Lời chúc nằm ngay trong đường dẫn, không lưu ở máy chủ. Ai có đường dẫn đều đọc được.</p>
+    <div class="row"><button class="btn" id="dnGo">Thắp đèn</button><span class="muted" id="dnMsg"></span></div>`,h.focus);
+  $("#dnGo").addEventListener("click",()=>{const to=$("#dnTo").value.trim(),f=$("#dnF").value.trim();let w=$("#dnW").value.trim();if(!to){$("#dnMsg").textContent="Bạn nhập tên người nhận nhé.";return;}
+    if(!w)w=`Cầu cho ${to} luôn bình an, mạnh khỏe, mọi việc thuận duyên.`;store.set("denFrom",f);
+    releaseLantern(`Cầu an cho ${to}`,true);addMerit("nguyen");bell(196,.45);const link=denLink({to,w,f});
+    $("#sheetBody").innerHTML=`<p class="lede">Ngọn đèn cho ${esc(to)} đang trôi trên hồ sen.</p><p class="verse">${esc(w)}</p>
+      <span class="muted">Gửi lời chúc để ${esc(to)} mở ra thấy ngọn đèn</span>
+      <div class="row"><button class="btn" id="dnShare">Gửi qua Zalo, Messenger…</button><button class="btn ghost" id="dnCopy">Sao chép đường dẫn</button><button class="btn ghost" id="dnCard">Lưu thiệp</button></div><span class="muted" id="dnMsg2"></span>`;
+    const text=`${f?f+" đã thắp":"Có người thương đã thắp"} một ngọn đèn cầu an cho ${to} ở Vô Ưu Tự. Mở để xem nhé:`;
+    $("#dnShare").addEventListener("click",async()=>{try{if(navigator.share){await navigator.share({title:"Đèn cầu an · Vô Ưu Tự",text,url:link});return;}}catch(e){if(e&&e.name==="AbortError")return;}copy();});
+    const copy=async()=>{try{await navigator.clipboard.writeText(text+" "+link);$("#dnMsg2").textContent="Đã sao chép. Dán vào Zalo hoặc Messenger để gửi.";}catch(e){$("#dnMsg2").textContent=link;}};
+    $("#dnCopy").addEventListener("click",copy);
+    $("#dnCard").addEventListener("click",()=>shareCard({eyebrow:"Đèn cầu an",title:`Cho ${to}`,body:w,src:f?`Từ ${f}`:"",file:"den-cau-an"}));});
+}
+if(DEN){const ic=$(".intro-card"),ey=ic&&ic.querySelector(".eyebrow");if(ey)ey.textContent="Có người gửi bạn một ngọn đèn";
+  const lede=ic&&ic.querySelector(".lede");if(lede)lede.insertAdjacentHTML("beforebegin",`<div class="den-gift"><p><b>${esc(DEN.f||"Một người thương")}</b> đã thắp đèn cầu an cho <b>${esc(DEN.to)}</b> tại Vô Ưu Tự.</p><p class="verse">${esc(DEN.w)}</p><p class="muted">Bước vào Tự để thấy ngọn đèn đang trôi trên hồ sen.</p></div>`);}
+function denArrive(){if(!DEN)return;const h=HOT.find(x=>x.id==="pond");if(S.z>15){S.x=-1.5;S.z=14;}
+  walkTo(h,()=>{releaseLantern(`Cầu an cho ${DEN.to}`,true);bell(196,.4);
+    openSheet("Đèn cầu an",`Ngọn đèn cho ${DEN.to}`,`<p class="lede">${esc(DEN.f||"Một người thương")} đã thắp ngọn đèn này cho ${esc(DEN.to)}.</p><p class="verse">${esc(DEN.w)}</p>
+      <p class="muted">Bạn có thể niệm một câu “Nam mô Dược Sư Lưu Ly Quang Vương Phật” để cùng hồi hướng, hoặc thắp một ngọn đèn đáp lại.</p>
+      <div class="row"><button class="btn" id="dnBack">Thắp đèn đáp lại</button><button class="btn ghost" id="dnNiem">Niệm Phật Dược Sư</button></div>`,h.focus);
+    $("#dnBack").addEventListener("click",()=>denSend({to:DEN.f||""}));$("#dnNiem").addEventListener("click",()=>{mo(.4);later(()=>bell(208,.3),500);addMerit("niem");toast("Nam mô Dược Sư Lưu Ly Quang Vương Phật.");});});}
+
+/* ---------- hiện diện thật & thời kinh tối chung ---------- */
+let LIVE=null;
+function liveText(){return LIVE&&LIVE.n>0?`${LIVE.n} người đang trong Tự`:"Đại chúng mô phỏng";}
+async function herePing(){if(!S.entered||document.visibilityState!=="visible")return;try{const j=await api("here",{chant:!!(CH&&CH.playing)});LIVE={n:j.n||1,chant:j.chant||0};if(S.crowd)$("#liveCount").textContent=liveText();}catch(e){}}
+setInterval(herePing,90000);
+const eveningOn=()=>{const h=new Date().getHours(),m=new Date().getMinutes();return h===20&&m<30;};
+function eveningBanner(){if(!eveningOn()||store.get("eveSeen","")===dayKey(new Date()))return;
+  banner("eve",`<span class="eyebrow">Thời kinh tối chung · 20:00</span><p>Đại chúng đang tụng kinh cầu an${LIVE&&LIVE.chant?` · ${LIVE.chant} người đang tụng`:""}. Mời bạn vào góc tụng niệm cùng tụng.</p>`,
+    [{label:"Vào tụng cùng",fn:()=>{store.set("eveSeen",dayKey(new Date()));walkTo(HOT.find(x=>x.id==="chant"),()=>chant("cauan"));}},{label:"Để sau",ghost:true,fn:()=>store.set("eveSeen",dayKey(new Date()))}]);}
+setInterval(()=>{if(S.entered)eveningBanner();},60000);
+
+/* ---------- hồi âm lời nguyện ---------- */
+async function prayerEcho(){try{const j=await api("wall");const seen=store.get("niemSeen",{});let add=0;(j.mine||[]).forEach(p=>{if(p.st==="Đã duyệt"){const d=(p.n||0)-(seen[p.id]||0);if(seen[p.id]!=null&&d>0)add+=d;seen[p.id]=p.n||0;}});store.set("niemSeen",seen);
+  if(add>0)banner("echo",`<span class="eyebrow">Tường tâm nguyện</span><p>Đã có thêm ${add} người niệm cho lời nguyện của bạn. Bạn không một mình.</p>`,[{label:"Xem tường",fn:()=>walkTo(HOT.find(x=>x.id==="wall"),wall)},{label:"Đóng",ghost:true}]);}catch(e){}}
+
+/* ---------- trình duyệt trong Zalo / Facebook ---------- */
+const INAPP=/Zalo|FBAN|FBAV|FB_IAB|Instagram|Line\//i.test(navigator.userAgent);
+function inappHint(){if(!INAPP||store.get("inappSeen",0))return;banner("inapp",`<span class="eyebrow">Mẹo nhỏ</span><p>Bạn đang mở trong Zalo hoặc Facebook. Để âm thanh và hình ảnh mượt hơn, bấm dấu ba chấm ở góc trên rồi chọn “Mở bằng trình duyệt”.</p>`,[{label:"Đã hiểu",fn:()=>store.set("inappSeen",1)}]);}
+
+/* ---------- áo tăng lữ: chỉ dành cho người xuất gia ---------- */
+function setLook(k,v){
+  if(k==="outfit"&&v==="tang"&&!store.get("tangOk",0)){syncDressChips();
+    let el=$("#tangAsk");if(!el){el=document.createElement("div");el.id="tangAsk";el.className="coach";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");document.body.appendChild(el);}
+    el.hidden=false;el.style.alignItems="center";el.style.paddingBottom="16px";
+    el.innerHTML=`<div class="coach-card"><span class="eyebrow">Y phục tăng lữ</span><h2>Chỉ dành cho người xuất gia</h2>
+      <p>Y áo tăng lữ là pháp phục của chư Tăng, chư Ni. Nếu bạn không phải người xuất gia, khoác y áo này là chưa đúng phép và có thể thành bất kính. Xin bạn chọn áo lam hoặc áo dài.</p>
+      <div class="row"><button class="btn" id="tgLam">Chọn áo lam</button><button class="chip" id="tgOk">Tôi là người xuất gia</button></div></div>`;
+    $("#tgLam").addEventListener("click",()=>{el.hidden=true;setLook("outfit","lam");});$("#tgOk").addEventListener("click",()=>{store.set("tangOk",1);el.hidden=true;setLook("outfit","tang");});$("#tgLam").focus();return;}
+  LOOK={...LOOK,[k]:v};store.set("look",LOOK);restyleAvatar();syncDressChips();}
+if(LOOK.outfit==="tang"&&!store.get("tangOk",0)){LOOK={...LOOK,outfit:"lam"};store.set("look",LOOK);restyleAvatar();syncDressChips();}
+DRESS[2][2]="Pháp phục của chư Tăng, chư Ni. Chỉ dành cho người xuất gia.";
+
+/* ---------- cài đặt: chữ lớn, chế độ nhẹ, cài lên điện thoại ---------- */
+if(store.get("bigText",0))document.documentElement.classList.add("big");
+let installEvt=null;addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;});
+const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent),STANDALONE=matchMedia("(display-mode: standalone)").matches||navigator.standalone;
+function renderSettings(){const el=$("#abSettings");if(!el)return;
+  el.innerHTML=`<span class="muted">Cài đặt</span>
+    <label class="check"><input type="checkbox" id="stBig" ${store.get("bigText",0)?"checked":""}><span>Chữ lớn hơn</span></label>
+    <label class="check"><input type="checkbox" id="stLite" ${LITE?"checked":""}><span>Chế độ nhẹ cho máy yếu (ít người, hình ảnh nhẹ hơn; tải lại trang để áp dụng)</span></label>
+    ${STANDALONE?"":`<div class="row"><button class="btn ghost" id="stInstall">Cài Vô Ưu Tự lên điện thoại</button><button class="btn ghost" id="stIcs">Nhắc mùng 1, rằm</button></div><span class="muted" id="stMsg"></span>`}`;
+  $("#stBig").addEventListener("change",e=>{store.set("bigText",e.target.checked?1:0);document.documentElement.classList.toggle("big",e.target.checked);});
+  $("#stLite").addEventListener("change",e=>{store.set("lite",e.target.checked?1:0);$("#stLite").nextElementSibling.textContent="Đã lưu. Tải lại trang để áp dụng.";});
+  const bi=$("#stInstall");if(bi)bi.addEventListener("click",async()=>{if(installEvt){installEvt.prompt();try{await installEvt.userChoice;}catch(e){}installEvt=null;return;}
+    $("#stMsg").textContent=IOS?"Trên iPhone: mở bằng Safari, bấm nút Chia sẻ (ô vuông có mũi tên), chọn “Thêm vào MH chính”.":"Mở menu ba chấm của trình duyệt, chọn “Cài đặt ứng dụng” hoặc “Thêm vào màn hình chính”.";});
+  const bc=$("#stIcs");if(bc)bc.addEventListener("click",icsReminders);}
+
+/* ---------- lịch âm trên giao diện ---------- */
+{const lbl=LUNAR.label(NOW),occ=FEAST||(SEASON&&SEASON_TEXT[SEASON])||"";
+ const br=$("#hud .brand");if(br)br.insertAdjacentHTML("beforeend",`<span class="lunar" title="${esc(lbl)}">${esc(lbl.replace(/ năm .*/,""))}${FEAST?" · "+esc(FEAST):""}</span>`);
+ const ic=$(".intro-card .eyebrow");if(ic&&!DEN)ic.insertAdjacentHTML("afterend",`<span class="muted intro-day">Hôm nay ${esc(lbl.charAt(0).toLowerCase()+lbl.slice(1))}${occ?". "+esc(occ):""}${eveningOn()?" Thời kinh tối chung đang diễn ra.":""}</span>`);
+ const row=$("#enterBtn").parentElement;row.insertAdjacentHTML("beforeend",`<button class="btn ghost" id="quickBtn">Ghé 3 phút</button>`);
+ $("#quickBtn").addEventListener("click",()=>{$("#enterBtn").click();setTimeout(quick,500);});}
+{const bar=$("#postureBar");if(bar)bar.insertAdjacentHTML("beforeend",`<button class="pill" id="denBtn">Gửi đèn cầu an</button>`);$("#denBtn").addEventListener("click",()=>denSend());}
+
+/* ---------- xăm: lưu vào sổ và tạo thẻ ---------- */
+const _showQueHook=(n,dom,cat,ti,l1,l2)=>{queBookAdd(n,dom);const b=$("#qAgain");if(b)b.insertAdjacentHTML("afterend",`<button class="btn ghost" id="qCard">Lưu thẻ lá xăm</button>`);
+  const c=$("#qCard");c&&c.addEventListener("click",()=>shareCard({eyebrow:`Quẻ số ${n} · ${QCAT[cat]}`,title:ti,verse:[l1+",",l2+"."],body:QNHAC[n%QNHAC.length],src:"Xăm Quán Âm · Vô Ưu Tự",file:"la-xam-"+n}));};
+
+/* ---------- khi bước vào Tự ---------- */
+$("#enterBtn").addEventListener("click",()=>{setTimeout(()=>{herePing();eveningBanner();inappHint();prayerEcho();denArrive();},1200);});
+if(store.get("lite",0)===0&&LITE&&!store.get("liteTold",0)){store.set("liteTold",1);}
+$("#enterBtn").disabled=false;$("#enterBtn").textContent="Bước vào Tự";
+
 /* ================= navigation ================= */
 function walkTo(h,onArrive){
   closeSheet();const pts=[];let cx=S.x,cz=S.z;const tz=h.stand[1],deep=z=>z<-19.6;
@@ -1930,7 +2262,7 @@ function setTime(k){const t=TIMES[k];S.time=k;skyMat.map=skyTex(t.sky);skyMat.ne
   $("#timeLbl").textContent=t.name;}
 $("#timeBtn").addEventListener("click",()=>{const k=TORDER[(TORDER.indexOf(S.time)+1)%3];setTime(k);toast(k==="sang"?"Trời đã sáng.":k==="chieu"?"Nắng chiều đang xuống.":"Màn đêm buông xuống, đèn trong Tự đã thắp.",2600);});
 {const h=new Date().getHours();setTime(h>=5&&h<16?"sang":h>=16&&h<18?"chieu":"dem");}
-let live=0;function liveText(){return "Đại chúng mô phỏng";}
+let live=0;
 setInterval(()=>{live+=Math.round(rand(-6,8));if(S.crowd)$("#liveCount").textContent=liveText();},5000);
 
 // intro choices
@@ -2046,12 +2378,13 @@ function frame(){
 addEventListener("resize",()=>updateOffsets());
 if(coarse)$("#joy").style.display="";
 /* soft sun shadows on larger screens */
-if(!coarse){renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
+if(!coarse&&!LITE){renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
   const sc=sun.shadow.camera;sc.left=-34;sc.right=34;sc.top=34;sc.bottom=-34;sc.near=1;sc.far=170;sun.shadow.bias=-.0006;sun.shadow.normalBias=.03;
   scene.traverse(o=>{if(!o.isMesh||o===skyMesh)return;const g=o.geometry;if(!g.boundingSphere)g.computeBoundingSphere();const r=g.boundingSphere.radius*Math.max(o.scale.x,o.scale.y,o.scale.z);o.receiveShadow=true;o.castShadow=r>.1&&r<14;});}
 requestAnimationFrame(frame);
 window.__vut={S,person,setLook,walkTo,HOT,incense,chant,pond,wall,meritBook,bellTower,setTime,xin:xinXam,bode,avatar};window.__setTime=setTime;
 })();
 </script>
+<script>if("serviceWorker" in navigator&&location.protocol==="https:")addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body>
 </html>
