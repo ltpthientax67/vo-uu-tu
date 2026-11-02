@@ -1,5 +1,5 @@
 /* Vô Ưu Tự · service worker: trang luôn lấy bản mới khi có mạng; âm thanh, thư viện 3D, phông chữ lưu sẵn để mở nhanh. */
-const CACHE = "vut-1.3";
+const CACHE = "vut-1.4";
 const CORE = ["./", "index.html", "config.js", "version.json", "manifest.webmanifest", "icon-192.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).catch(() => {})); self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });

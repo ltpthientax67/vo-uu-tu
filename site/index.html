@@ -1059,11 +1059,16 @@ const HOT=[
  {id:"quanam",name:"Tượng Quán Thế Âm",sub:"Niệm Quán Âm cầu bình an",stand:[6.2,12.1],yaw:-Math.PI/2,r:1.6,kind:"quanam",action:"Niệm Quán Âm tại đây",focus:{pos:[3.4,2.4,11.2],look:[8.6,4.6,12.5]},mk:[8.6,7.9,12.5]},
  {id:"thap",name:"Bảo tháp bảy tầng",sub:"Lời nhắc về việc lành",stand:[9.3,7],yaw:-Math.PI/2,r:2.6,kind:"info",text:"Người xưa nói: cứu một người còn hơn xây bảy tầng tháp. Một việc lành cho người đang khổ quý hơn mọi công trình.",mk:[12.4,11.2,7.6]},
  {id:"bell",name:"Gác chuông",sub:"Thỉnh một tiếng chuông",stand:[-6.3,-2.5],yaw:Math.PI/2,r:2.2,kind:"bell",action:"Thỉnh chuông",focus:{pos:[-5.4,2.3,-0.9],look:[-8.6,2.6,-2.6]},mk:[-8.6,6.4,-2.5]},
- {id:"pond",name:"Hồ sen",sub:"Thả muộn phiền theo đèn hoa đăng",stand:[-3.3,8],yaw:Math.PI/2,r:2.3,kind:"pond",action:"Thả đèn hoa đăng",focus:{pos:[-3.0,2.5,9.8],look:[-8,0,7.4]},mk:[-8,1.6,8]},
+ {id:"pond",name:"Hồ sen",sub:"Thả đèn hoa đăng, phóng sanh cá",stand:[-3.3,8],yaw:Math.PI/2,r:2.3,kind:"pond",action:"Thả đèn hoa đăng",focus:{pos:[-3.0,2.5,9.8],look:[-8,0,7.4]},mk:[-8,1.6,8]},
  {id:"bowl",name:"Lư hương",sub:"Thắp nhang, dâng lời nguyện",stand:[0,-16.3],yaw:0,r:2,kind:"incense",action:"Thắp nhang",focus:{pos:[0,2.5,-17.3],look:[0,1.98,-18.75]},mk:[0,2.9,-18.7]},
  {id:"buddha",name:"Tôn tượng Phật",sub:"Chiêm bái, lạy Phật",stand:[2.4,-21.3],yaw:.45,r:1.8,kind:"buddha",action:"Chiêm bái tôn tượng",focus:{pos:[0,3.55,-20.4],look:[0,3.55,-25.5]},face:{pos:[0,4.42,-24.55],look:[0,4.4,-25.5]},mk:null},
  {id:"chant",name:"Góc tụng niệm",sub:"Niệm Phật, tụng kinh, thiền thở",stand:[6.6,-16.4],yaw:.67,r:2,kind:"chant",action:"Ngồi xuống tụng niệm",focus:{pos:[6.5,1.75,-15.4],look:[2,2.6,-24.6]},mk:[7.4,1.9,-18.1]},
  {id:"wall",name:"Tường tâm nguyện",sub:"Niệm cho người đang cần",stand:[-8.4,-15.5],yaw:Math.PI/2,r:2,kind:"wall",action:"Xem tâm nguyện đại chúng",focus:{pos:[-7.2,2.4,-15.5],look:[-10.6,2.35,-15.5]},mk:[-10.3,4.5,-15.5]}
+ ,{id:"dinh",name:"Đỉnh hương",sub:"Thắp nhang lễ trời đất trước khi vào chánh điện",stand:[3.4,4],yaw:-Math.PI/2,r:1.8,kind:"dinh",action:"Thắp nhang ở đỉnh",focus:{pos:[3.2,2.3,5.4],look:[5.5,1.6,4]},mk:[5.5,3.2,4]}
+ ,{id:"kinh",name:"Tàng kinh",sub:"Kệ kinh Đại thừa, lộ trình đọc kinh",stand:[-8.3,-20.5],yaw:Math.PI/2,r:1.8,kind:"kinh",action:"Xem kệ kinh",focus:{pos:[-7.3,2.1,-20.5],look:[-10.6,1.8,-20.5]},mk:[-10.2,4.1,-20.5]}
+ ,{id:"tranh",name:"Tranh Phật tích",sub:"Bốn sự tích cuộc đời Đức Phật",stand:[8.3,-19.0],yaw:-Math.PI/2,r:1.8,kind:"tranh",action:"Xem tranh Phật tích",focus:{pos:[7.0,2.7,-18],look:[10.6,2.75,-18]},mk:[10.3,4.2,-18]}
+ ,{id:"dang",name:"Dâng hoa quả",sub:"Bày dĩa trái cây, bình hoa lên bàn Phật",stand:[-.6,-21.2],yaw:0,r:1.4,kind:"dang",action:"Dâng hoa quả",focus:{pos:[-.6,2.6,-21.3],look:[-.6,1.9,-23.7]},mk:null}
+ ,{id:"trong",name:"Chuông trống Bát Nhã",sub:"Tả chung hữu cổ",stand:[-8.3,-9.3],yaw:Math.PI/2,r:1.6,kind:"trong",action:"Đánh chuông trống",focus:{pos:[-7.4,2.0,-9.6],look:[-9.85,1.8,-10.4]},mk:[-9.85,3.6,-10.4]}
 ];
 const markers=[];HOT.forEach(h=>{if(!h.mk)return;const m=glow(0xffd28a,.55,.95);add(m,...h.mk);m.userData.hot=h;const l=textSprite(h.name,{size:26,maxW:300});l.scale.multiplyScalar(.8);add(l,h.mk[0],h.mk[1]+.5,h.mk[2]);m.userData.label=l;markers.push(m);});
 
@@ -1161,7 +1166,9 @@ function pond(){
     <textarea id="wText" maxlength="240" placeholder="Ví dụ: Tôi sợ không kịp hạn chót cuối tháng, và thấy mình không đủ giỏi."></textarea>
     <p class="note"><span>🔒</span><span>Những gì bạn viết chỉ nằm trên màn hình này. Không được gửi đi, không được lưu lại.</span></p>
     <div id="wSup"></div>
-    <button class="btn" id="wBtn" disabled>Thả đèn</button>`,h.focus);
+    <button class="btn" id="wBtn" disabled>Thả đèn</button>
+    <div class="row"><button class="btn ghost" id="psBtn">Phóng sanh cá</button><button class="btn ghost" id="dnBtn2">Gửi đèn cầu an cho người thân</button></div>`,h.focus);
+  $("#psBtn").addEventListener("click",phongSanh);$("#dnBtn2").addEventListener("click",()=>denSend());
   const ta=$("#wText");ta.addEventListener("input",()=>{$("#wBtn").disabled=ta.value.trim().length<2;if(RISK.test(ta.value))$("#wSup").innerHTML=supportCard();});
   $("#wBtn").addEventListener("click",()=>{const t=ta.value.trim();const risky=RISK.test(t);releaseLantern(t.length>60?t.slice(0,58)+"…":t,true);addMerit("tha");bell(220,.35);
     $("#sheetBody").innerHTML=`<p class="lede">Chiếc đèn đang trôi ra giữa hồ. Lúc này bạn không cần mang điều đó theo nữa.</p>${risky?supportCard():""}<p class="muted">Nếu ngày mai nó quay lại, bạn có thể thả thêm một lần nữa.</p><div class="row"><button class="btn" id="wMore">Thả thêm một điều</button><button class="btn ghost" id="wHall">Vào chánh điện thắp nhang</button></div>`;
@@ -1732,7 +1739,7 @@ function webRegForm(note,edit){
 }
 
 // ===== ĐỢT 1: Tường tâm nguyện chung (có duyệt), thông báo của Tự, báo bản mới, hướng dẫn lần đầu, báo lỗi =====
-const APP_VER="1.3";
+const APP_VER="1.4";
 const ERRS=[];
 addEventListener("error",e=>{ERRS.push(String(e.message||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
 addEventListener("unhandledrejection",e=>{const r=e.reason;if(r&&r.code)return;ERRS.push(String((r&&r.message)||r||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
@@ -2205,6 +2212,255 @@ $("#enterBtn").addEventListener("click",()=>{setTimeout(()=>{herePing();eveningB
 if(store.get("lite",0)===0&&LITE&&!store.get("liteTold",0)){store.set("liteTold",1);}
 $("#enterBtn").disabled=false;$("#enterBtn").textContent="Bước vào Tự";
 
+// ===== ĐỢT 4: kệ kinh (Tàng kinh), tranh Phật tích, trống Bát Nhã và chuông, bình hoa đèn lưu ly,
+// dâng hoa quả lên Phật, đỉnh hương lộ thiên mới, phóng sanh ở hồ sen =====
+const ST_Y=.62; // mặt sàn chánh điện
+/* ---------- kệ kinh dựa tường trái ---------- */
+const SHELF={x:-10.42,z:-20.5,w:3.4,h:2.6,d:.5};const shelfBooks=[];
+{const wd=M(0x5a2a18,{roughness:.6}),x=SHELF.x,z=SHELF.z,y0=ST_Y;
+ box(SHELF.d,SHELF.h,.08,wd,x,y0+SHELF.h/2,z-SHELF.w/2);box(SHELF.d,SHELF.h,.08,wd,x,y0+SHELF.h/2,z+SHELF.w/2);box(.05,SHELF.h,SHELF.w,M(0x3a1a10),x-.22,y0+SHELF.h/2,z);
+ box(SHELF.d+.12,.12,SHELF.w+.2,mat.gold,x+.02,y0+SHELF.h+.06,z);
+ const levels=[.12,.75,1.38,2.0];levels.forEach(ly=>box(SHELF.d,.05,SHELF.w,wd,x,y0+ly,z));
+ const cols=[0xb8862e,0x8e2318,0xc9a347,0x6b2a1a,0xd8b25a,0x7a3a22],gold=mat.gold;
+ levels.forEach((ly,li)=>{let zz=z-SHELF.w/2+.12;
+   while(zz<z+SHELF.w/2-.18){const th=rand(.07,.13),hh=rand(.38,.5);const c=pick(cols);
+     if(Math.random()<.18&&li<3){for(let k=0;k<4;k++){box(.32,.05,.26,M(pick(cols),{roughness:.6}),x+.02,y0+ly+.05+k*.055,zz+.13);}zz+=.32;continue;}
+     const b=box(.3,hh,th,M(c,{roughness:.55}),x+.03,y0+ly+.025+hh/2,zz+th/2);box(.302,.03,th+.004,gold,x+.03,y0+ly+.025+hh*.82,zz+th/2);
+     if(li===1||li===2)shelfBooks.push(b);zz+=th+.012;}});
+ const pl=new THREE.Mesh(new THREE.PlaneGeometry(2.4,.5),new THREE.MeshStandardMaterial({map:plaqueTex("TÀNG KINH",{font:54}),roughness:.5}));pl.position.set(x+.12,y0+SHELF.h+.42,z);pl.rotation.y=Math.PI/2;scene.add(pl);
+ rect(x-.3,x+.3,z-SHELF.w/2-.1,z+SHELF.w/2+.1);}
+
+/* ---------- tranh Phật tích sơn mài trên tường phải ---------- */
+function phatTichTex(i){return canvasTex(384,512,(x,w,h)=>{
+  const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,"#5a140e");g.addColorStop(1,"#2a0a07");x.fillStyle=g;x.fillRect(0,0,w,h);
+  x.strokeStyle="#d9b25a";x.fillStyle="#d9b25a";x.lineWidth=3;x.lineCap="round";x.lineJoin="round";
+  const T=(t)=>{x.font='600 30px "Cormorant Garamond",Georgia,serif';x.textAlign="center";x.fillText(t,w/2,h-30);};
+  x.strokeRect(14,14,w-28,h-28);
+  const lotus=(cx,cy,s)=>{for(let k=-2;k<=2;k++){x.beginPath();x.ellipse(cx+k*s*.32,cy-s*.2,s*.18,s*.5,k*.35,0,7);x.stroke();}x.beginPath();x.moveTo(cx-s*.9,cy+s*.3);x.quadraticCurveTo(cx,cy+s*.6,cx+s*.9,cy+s*.3);x.stroke();};
+  const sitter=(cx,cy,s)=>{x.beginPath();x.arc(cx,cy-s*1.15,s*.22,0,7);x.fill();x.beginPath();x.moveTo(cx,cy-s*.92);x.quadraticCurveTo(cx-s*.42,cy-s*.6,cx-s*.48,cy-s*.05);x.quadraticCurveTo(cx-s*.9,cy+s*.1,cx-s*.75,cy+s*.3);x.lineTo(cx+s*.75,cy+s*.3);x.quadraticCurveTo(cx+s*.9,cy+s*.1,cx+s*.48,cy-s*.05);x.quadraticCurveTo(cx+s*.42,cy-s*.6,cx,cy-s*.92);x.fill();
+    x.save();x.globalAlpha=.35;x.beginPath();x.arc(cx,cy-s*1.15,s*.5,0,7);x.stroke();x.restore();};
+  const tree=(cx,base,s)=>{x.beginPath();x.moveTo(cx,base);x.quadraticCurveTo(cx-s*.1,base-s*.6,cx,base-s);x.stroke();for(let k=0;k<9;k++){const a=-Math.PI*(.1+.8*k/8),r=s*.75;x.beginPath();x.ellipse(cx+Math.cos(a)*r*.8,base-s-Math.sin(-a)*r*.45+s*.15,s*.22,s*.14,a,0,7);x.stroke();}};
+  if(i===0){tree(w*.7,h*.62,150);for(let k=0;k<7;k++)lotus(70+k*38,h*.78-k*18,26);T("Đản sanh");}
+  if(i===1){x.beginPath();x.arc(w*.72,95,34,0,7);x.stroke();x.beginPath();x.arc(w*.72-12,90,30,0,7);x.save();x.fillStyle="#3a0e0a";x.fill();x.restore();
+    x.beginPath();x.moveTo(30,260);x.lineTo(80,215);x.lineTo(130,260);x.moveTo(40,260);x.lineTo(40,320);x.lineTo(120,320);x.lineTo(120,260);x.stroke();
+    x.beginPath();x.moveTo(120,330);x.bezierCurveTo(200,320,240,360,340,350);x.stroke();
+    x.beginPath();x.moveTo(210,330);x.lineTo(250,300);x.lineTo(300,300);x.lineTo(330,280);x.moveTo(250,300);x.lineTo(245,345);x.moveTo(300,300);x.lineTo(305,345);x.stroke();
+    for(let k=0;k<4;k++){x.beginPath();x.moveTo(230+k*30,410);x.lineTo(245+k*30,370);x.lineTo(260+k*30,410);x.stroke();}T("Xuất gia");}
+  if(i===2){tree(w/2,h*.48,140);sitter(w/2,h*.74,70);x.beginPath();for(let k=0;k<8;k++){const a=k/8*6.283;x.moveTo(w*.84,70);x.lineTo(w*.84+Math.cos(a)*16,70+Math.sin(a)*16);}x.stroke();T("Thành đạo");}
+  if(i===3){const cx=w/2,cy=h*.38;x.beginPath();x.arc(cx,cy,78,0,7);x.stroke();x.beginPath();x.arc(cx,cy,16,0,7);x.stroke();for(let k=0;k<8;k++){const a=k/8*6.283;x.beginPath();x.moveTo(cx+Math.cos(a)*16,cy+Math.sin(a)*16);x.lineTo(cx+Math.cos(a)*78,cy+Math.sin(a)*78);x.stroke();x.beginPath();x.arc(cx+Math.cos(a)*88,cy+Math.sin(a)*88,6,0,7);x.fill();}
+    [-1,1].forEach(s=>{const dx=cx+s*95,dy=h*.72;x.beginPath();x.ellipse(dx,dy,44,22,0,0,7);x.stroke();x.beginPath();x.moveTo(dx-s*36,dy-8);x.lineTo(dx-s*58,dy-48);x.lineTo(dx-s*70,dy-44);x.stroke();
+      x.beginPath();x.moveTo(dx-s*58,dy-48);x.lineTo(dx-s*52,dy-70);x.moveTo(dx-s*62,dy-50);x.lineTo(dx-s*72,dy-70);x.stroke();for(let k=-1;k<=1;k+=2){x.beginPath();x.moveTo(dx+k*22,dy+18);x.lineTo(dx+k*24,dy+38);x.stroke();}});T("Chuyển pháp luân");}
+});}
+const PT_Z=[-21.4,-19.6,-16.4,-14.6];
+PT_Z.forEach((z,i)=>{const fr=box(.06,2.12,1.66,mat.gold,10.66,2.78,z);const p=new THREE.Mesh(new THREE.PlaneGeometry(1.5,1.98),new THREE.MeshStandardMaterial({map:phatTichTex(i),roughness:.35,metalness:.15}));p.position.set(10.62,2.78,z);p.rotation.y=-Math.PI/2;scene.add(p);});
+const PHAT_TICH=[["Đản sanh","Thái tử Tất Đạt Đa ra đời dưới cây Vô Ưu trong vườn Lâm Tỳ Ni. Tương truyền Ngài bước bảy bước, mỗi bước nở một đóa sen.","Mỗi người đều mang hạt giống giác ngộ, như hoa sen sẵn trong bùn."],
+ ["Xuất gia","Đêm khuya, Thái tử rời hoàng cung, bỏ lại ngai vàng và vợ con để đi tìm con đường thoát khổ cho muôn loài.","Buông bỏ không phải là mất mát, mà là mở lòng cho điều lớn hơn."],
+ ["Thành đạo","Sau sáu năm khổ hạnh rồi chọn con đường Trung đạo, Ngài ngồi thiền dưới cội Bồ đề và thành đạo khi sao mai vừa mọc.","Giác ngộ đến từ tâm tĩnh lặng và sáng suốt, không từ hành xác hay buông thả."],
+ ["Chuyển pháp luân","Tại vườn Lộc Uyển, Đức Phật giảng bài pháp đầu tiên về Tứ Diệu Đế cho năm anh em Kiều Trần Như. Bánh xe Chánh pháp bắt đầu lăn.","Khổ có nguyên nhân, và khổ có thể chấm dứt bằng con đường Bát Chánh Đạo."]];
+function phatTich(){const h=HOT.find(x=>x.id==="tranh");
+  openSheet("Tranh Phật tích","Bốn sự tích của Đức Phật",`<p class="lede">Bốn bức sơn mài kể lại những mốc lớn trong cuộc đời Đức Phật Thích Ca Mâu Ni.</p>
+    ${PHAT_TICH.map((t,i)=>`<div class="practice" data-i="${i}"><b>${i+1}. ${t[0]}</b><p>${t[1]}</p><p class="muted">${t[2]}</p><button class="chip" data-look="${i}">Xem bức tranh</button></div>`).join("")}`,h.focus);
+  $$("#sheetBody [data-look]").forEach(b=>b.addEventListener("click",()=>{const z=PT_Z[+b.dataset.look];S.focus={pos:[8.2,2.75,z],look:[10.6,2.75,z]};}));retreatMark("doc");}
+
+/* ---------- trống Bát Nhã (trái) và chuông (phải) ở hai góc trước: tả chung hữu cổ ---------- */
+{const wd=M(0x5a2a18,{roughness:.6}),red=M(0x9a2418,{roughness:.45}),skin=M(0xe2d2b0,{roughness:.8});
+ const X=-9.85,Z=-10.4;[-1,1].forEach(s=>box(.12,2.3,.12,wd,X,ST_Y+1.15,Z+s*.75));box(.14,.14,1.7,wd,X,ST_Y+2.25,Z);box(.5,.1,1.7,wd,X,ST_Y+.05,Z);
+ const dr=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,.62,28,1,true),red);dr.rotation.z=Math.PI/2;dr.position.set(X,ST_Y+1.3,Z);dr.scale.set(1,1,1);scene.add(dr);
+ const bulge=new THREE.Mesh(new THREE.SphereGeometry(.55,24,12),red);bulge.scale.set(.52,.95,.95);bulge.position.copy(dr.position);scene.add(bulge);
+ [-1,1].forEach(s=>{const f=new THREE.Mesh(new THREE.CircleGeometry(.47,28),skin);f.position.set(X+s*.32,ST_Y+1.3,Z);f.rotation.y=s*Math.PI/2;scene.add(f);
+   for(let k=0;k<16;k++){const a=k/16*6.283;sph(.022,mat.gold,X+s*.3,ST_Y+1.3+Math.sin(a)*.49,Z+Math.cos(a)*.49,6);}});
+ rect(X-.4,X+.4,Z-.9,Z+.9);
+ const BX=9.85,BZ=-10.4;[-1,1].forEach(s=>box(.12,2.5,.12,wd,BX,ST_Y+1.25,BZ+s*.7));box(.14,.14,1.6,wd,BX,ST_Y+2.45,BZ);box(.5,.1,1.6,wd,BX,ST_Y+.05,BZ);
+ const bp=[[0,0],[.34,0],[.36,.05],[.33,.3],[.29,.62],[.27,.78],[.2,.86],[.06,.9],[0,.9]].map(([r,y])=>new THREE.Vector2(r,y));
+ const bel=new THREE.Mesh(new THREE.LatheGeometry(bp,28),M(0x6b5a32,{metalness:.65,roughness:.35,side:THREE.DoubleSide}));bel.position.set(BX,ST_Y+1.12,BZ);scene.add(bel);
+ cyl(.03,.03,.32,wd,BX,ST_Y+2.2,BZ,6);[.2,.45,.62].forEach(y=>{const r=new THREE.Mesh(new THREE.TorusGeometry(.335-y*.08,.012,6,28),mat.gold);r.rotation.x=Math.PI/2;r.position.set(BX,ST_Y+1.12+y,BZ);scene.add(r);});
+ rect(BX-.4,BX+.4,BZ-.85,BZ+.85);}
+function drumHit(v=.8){if(!A||!A.on)return;const c=A.ctx,t=c.currentTime,o=c.createOscillator(),g=c.createGain();o.type="sine";o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(48,t+.35);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+1.2);o.connect(g);g.connect(A.master);o.start(t);o.stop(t+1.3);}
+function chungTrong(){const h=HOT.find(x=>x.id==="trong");
+  openSheet("Chuông trống Bát Nhã","Tả chung, hữu cổ",`<p class="lede">Trong chánh điện, chuông đặt bên trái Đức Phật (bên phải người bước vào), trống đặt bên phải Ngài. Chuông trống cùng vang trong các lễ lớn, gọi là chuông trống Bát Nhã.</p>
+    <p class="muted">Tiếng trống thúc giục tinh tấn, tiếng chuông nhắc tâm trở về. Hồi chuông trống Bát Nhã nguyện cho tiếng pháp vang khắp, ai nghe cũng được an lành.</p>
+    <div class="row"><button class="btn" id="ctDrum">Đánh ba hồi trống</button><button class="btn ghost" id="ctBoth">Chuông trống cùng vang</button></div>`,h.focus);
+  $("#ctDrum").addEventListener("click",()=>{for(let i=0;i<9;i++)later(()=>drumHit(.9-i*.05),i<3?i*700:i<6?2400+(i-3)*450:3900+(i-6)*300);});
+  $("#ctBoth").addEventListener("click",()=>{drumHit();later(()=>bell(110,.5),500);later(()=>drumHit(.7),1400);later(()=>bell(110,.45),2000);later(()=>drumHit(.7),2800);later(()=>bell(110,.4),3400);addMerit("chuong");});}
+
+/* ---------- bình hoa và đèn lưu ly hai góc sau ---------- */
+[-9.6,9.6].forEach(x=>{const z=-25.7;cyl(.32,.38,.5,M(0x5a2a18),x,ST_Y+.25,z,16);
+  const vp=[[0,0],[.16,0],[.22,.12],[.24,.32],[.15,.6],[.12,.72],[.17,.86]].map(([r,y])=>new THREE.Vector2(r,y));
+  const v=new THREE.Mesh(new THREE.LatheGeometry(vp,24),M(0xe8e4d8,{roughness:.25,metalness:.05}));v.position.set(x,ST_Y+.5,z);scene.add(v);
+  [.25,.45].forEach(y=>{const r=new THREE.Mesh(new THREE.TorusGeometry(.235,.012,6,24),M(0x2f4f8a));r.rotation.x=Math.PI/2;r.position.set(x,ST_Y+.5+y,z);scene.add(r);});
+  for(let k=0;k<9;k++){const a=k/9*6.283,h=rand(.5,.8);const st=cyl(.008,.008,h,M(0x3f7a3a),x+Math.cos(a)*.06,ST_Y+1.36+h/2-.1,z+Math.sin(a)*.06,4);st.rotation.set(Math.sin(a)*.25,0,-Math.cos(a)*.25);
+    const fl=sph(.06,M(k%3?0xf2f0e8:0xe9a7b4),x+Math.cos(a)*(.06+h*.25),ST_Y+1.3+h,z+Math.sin(a)*(.06+h*.25),8);fl.scale.y=1.3;}
+  cyl(.03,.03,2.2,mat.gold,x+(x<0?.75:-.75),ST_Y+1.1,z,8);const lamp=sph(.16,M(0xd23a2a,{emissive:0xc0401c,emissiveIntensity:.8,transparent:true,opacity:.9}),x+(x<0?.75:-.75),ST_Y+2.3,z,14);lamp.add(glow(0xff6a3a,1.2,.45));
+  rect(x-.5,x+.5,z-.5,z+.5);});
+
+/* ---------- dâng hoa quả ---------- */
+const FRUITS=[["mangcau","Mãng cầu"],["sung","Sung"],["dua","Dừa"],["dudu","Đu đủ"],["xoai","Xoài"],["buoi","Bưởi"],["thanhlong","Thanh long"],["chuoi","Chuối"],["cam","Cam"],["nho","Nho"],["tao","Táo"],["le","Lê"]];
+const FLOWERS=[["sen","Hoa sen"],["hue","Hoa huệ"],["cuc","Cúc vàng"],["vantho","Vạn thọ"],["hong","Hoa hồng"],["layon","Lay ơn"]];
+function fruitMesh(k){const g=new THREE.Group(),P=(c,o={})=>M(c,Object.assign({roughness:.55},o)),S=(r,m,x=0,y=0,z=0,sx=1,sy=1,sz=1)=>{const s=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),m);s.position.set(x,y,z);s.scale.set(sx,sy,sz);g.add(s);return s;};
+  const stem=(y,c=0x5a4a2a)=>{const s=new THREE.Mesh(new THREE.CylinderGeometry(.006,.008,.04,5),P(c));s.position.y=y;g.add(s);};
+  if(k==="mangcau"){const m=P(0x9cbf62);S(.1,m,0,.1,0,1,1.1,1);const im=new THREE.InstancedMesh(new THREE.SphereGeometry(.022,6,4),P(0x86a84e),60),mm=new THREE.Matrix4();for(let i=0;i<60;i++){const u=Math.acos(1-2*(i+.5)/60),v=i*2.4;mm.makeTranslation(Math.sin(u)*Math.cos(v)*.098,.1+Math.cos(u)*.108,Math.sin(u)*Math.sin(v)*.098);im.setMatrixAt(i,mm);}g.add(im);stem(.21);}
+  if(k==="sung"){[[0,0,0],[.05,0,.03],[-.05,0,.02],[0,0,-.05],[.02,.06,0],[-.025,.05,-.02]].forEach(([x,y,z])=>S(.035,P(Math.random()<.4?0xb0503a:0x9bb04a),x,.04+y,z,1,1.1,1));}
+  if(k==="dua"){S(.14,P(0x6f9a3a),0,.14,0,1,1.05,1);const top=new THREE.Mesh(new THREE.ConeGeometry(.06,.06,10),P(0x557a2c));top.position.y=.29;g.add(top);}
+  if(k==="dudu"){S(.08,P(0xe9a03a),0,.08,0,1,1,1.9).rotation.y=rand(0,3);}
+  if(k==="xoai"){S(.06,P(0xf2c94c),0,.06,0,1.5,1,1).rotation.y=rand(0,3);}
+  if(k==="buoi"){const m=P(0xc8d45a);S(.13,m,0,.13,0);S(.07,m,0,.25,0);stem(.32,0x3f6a2a);}
+  if(k==="thanhlong"){S(.075,P(0xd8346e),0,.08,0,1,1.35,1);for(let i=0;i<10;i++){const a=i/10*6.283,c=new THREE.Mesh(new THREE.ConeGeometry(.018,.06,5),P(0x7ab04a));c.position.set(Math.cos(a)*.065,.04+(i%3)*.04,Math.sin(a)*.065);c.rotation.set(Math.sin(a)*.9,0,-Math.cos(a)*.9);g.add(c);}}
+  if(k==="chuoi"){for(let i=0;i<5;i++){const c=new THREE.Mesh(new THREE.TorusGeometry(.12,.022,6,14,1.6),P(0xf0d24a));c.position.set(-.04+i*.02,.12,(i-2)*.035);c.rotation.set(0,Math.PI/2,-.2);g.add(c);}stem(.2,0x6a5a2a);}
+  if(k==="cam"){S(.065,P(0xf08a24),0,.065,0);stem(.13,0x3f6a2a);}
+  if(k==="nho"){for(let i=0;i<14;i++){const a=i*2.4,r=.04*(1-i/16);S(.022,P(0x6a3a7a),Math.cos(a)*r,.03+i*.008,Math.sin(a)*r);}}
+  if(k==="tao"){S(.06,P(0xc3322a),0,.06,0,1,.9,1);stem(.11);}
+  if(k==="le"){const pts=[[0,0],[.05,.01],[.065,.05],[.05,.1],[.03,.14],[.012,.16],[0,.165]].map(([r,y])=>new THREE.Vector2(r,y));const l=new THREE.Mesh(new THREE.LatheGeometry(pts,14),P(0xd8cf6a));g.add(l);stem(.17);}
+  return g;}
+const FSIZE={dua:.14,buoi:.13,mangcau:.1,thanhlong:.08,dudu:.1,chuoi:.12,xoai:.07,cam:.065,tao:.06,le:.065,nho:.05,sung:.06};
+function flowerVase(k){const g=new THREE.Group();const vp=[[0,0],[.06,0],[.08,.05],[.085,.13],[.05,.22],[.045,.27],[.065,.32]].map(([r,y])=>new THREE.Vector2(r,y));
+  g.add(new THREE.Mesh(new THREE.LatheGeometry(vp,20),M(0xb8862e,{metalness:.6,roughness:.3})));
+  const col={sen:0xeaa0b0,hue:0xf6f4ec,cuc:0xf2c42a,vantho:0xf08a1a,hong:0xc8202a,layon:0xe8506a}[k];
+  for(let i=0;i<7;i++){const a=i/7*6.283,h=rand(.32,.48),st=new THREE.Mesh(new THREE.CylinderGeometry(.005,.005,h,4),M(0x3f7a3a));st.position.set(Math.cos(a)*.025,.3+h/2,Math.sin(a)*.025);st.rotation.set(Math.sin(a)*.3,0,-Math.cos(a)*.3);g.add(st);
+    const tip=new THREE.Vector3(Math.cos(a)*(.025+h*.15),.3+h,Math.sin(a)*(.025+h*.15));
+    if(k==="sen"){if(i>3)continue;const b=new THREE.Mesh(new THREE.SphereGeometry(.05,10,8),M(col));b.scale.set(1,1.5,1);b.position.copy(tip);g.add(b);}
+    else if(k==="layon"||k==="hue"){for(let j=0;j<4;j++){const f=new THREE.Mesh(new THREE.SphereGeometry(.022,8,6),M(col));f.scale.set(1,1.4,1);f.position.copy(tip).add(new THREE.Vector3(0,-j*.045,0));g.add(f);}}
+    else{const f=new THREE.Mesh(new THREE.SphereGeometry(k==="hong"?.032:.04,10,8),M(col,{roughness:.7}));f.scale.y=.7;f.position.copy(tip);g.add(f);}}
+  return g;}
+let offeringG=null;
+function placeOffering(o){if(offeringG){scene.remove(offeringG);offeringG=null;}if(!o||!o.fruits||!o.fruits.length)return;
+  const g=new THREE.Group();g.position.set(-.85,1.745,-23.62);
+  const pp=[[0,0],[.1,0],[.1,.04],[.06,.06],[.06,.09],[.3,.12],[.34,.16],[.32,.165]].map(([r,y])=>new THREE.Vector2(r,y));g.add(new THREE.Mesh(new THREE.LatheGeometry(pp,32),M(0xc9a347,{metalness:.7,roughness:.3,side:THREE.DoubleSide})));
+  const list=o.fruits.slice().sort((a,b)=>(FSIZE[b]||.08)-(FSIZE[a]||.08)),top=list[0],ring=list.slice(1);
+  const ringItems=[];ring.forEach(k=>{const n=(FSIZE[k]||.08)>.09?1:2;for(let i=0;i<n;i++)ringItems.push(k);});if(!ringItems.length)ringItems.push(top,top);
+  ringItems.forEach((k,i)=>{const a=i/ringItems.length*6.283,f=fruitMesh(k),r=.2;f.position.set(Math.cos(a)*r,.15,Math.sin(a)*r);f.rotation.y=-a;g.add(f);});
+  const t=fruitMesh(top);t.position.set(0,.18,0);t.scale.setScalar(1.05);g.add(t);
+  if(o.flower){const v=flowerVase(o.flower);v.position.set(1.7,0,.05);v.scale.setScalar(1.25);g.add(v);}
+  const gl=glow(0xffd28a,1.1,.25);gl.position.set(0,.4,0);g.add(gl);
+  scene.add(g);offeringG=g;}
+{const o=store.get("offering",null);if(o&&Date.now()-o.at<36*3600e3)placeOffering(o);}
+function dangLe(){const h=HOT.find(x=>x.id==="dang");let sel=[],fl="sen";
+  const render=()=>{$("#sheetBody").innerHTML=`<p class="lede">Chọn hoa và trái cây để bày một dĩa quả dâng lên Đức Phật. Lễ vật quý ở lòng thành, không ở nhiều hay ít.</p>
+    <span class="muted">Trái cây (chọn tối đa 5 loại · đã chọn ${sel.length})</span>
+    <div class="chips" id="dlF">${FRUITS.map(([k,n])=>`<button class="chip" data-k="${k}" aria-pressed="${sel.includes(k)}">${n}</button>`).join("")}</div>
+    <button class="chip" id="dlNam">Mâm ngũ quả miền Nam: mãng cầu, sung, dừa, đu đủ, xoài</button>
+    <span class="muted">Hoa</span>
+    <div class="chips" id="dlH">${FLOWERS.map(([k,n])=>`<button class="chip" data-h="${k}" aria-pressed="${k===fl}">${n}</button>`).join("")}</div>
+    <p class="note">Người miền Nam hay chọn mãng cầu, sung, dừa, đu đủ, xoài, đọc lái thành “cầu vừa đủ xài”: mong đủ đầy, không cầu dư dả.</p>
+    <div class="row"><button class="btn" id="dlGo" ${sel.length?"":"disabled"}>Bày lên bàn Phật</button><span class="muted" id="dlMsg"></span></div>`;
+    $$("#dlF [data-k]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.k;if(sel.includes(k))sel=sel.filter(x=>x!==k);else if(sel.length<5)sel.push(k);else{$("#dlMsg").textContent="Tối đa 5 loại.";return;}render();}));
+    $("#dlNam").addEventListener("click",()=>{sel=["mangcau","sung","dua","dudu","xoai"];render();});
+    $$("#dlH [data-h]").forEach(b=>b.addEventListener("click",()=>{fl=b.dataset.h;render();}));
+    $("#dlGo").addEventListener("click",offer);};
+  function offer(){const o={fruits:sel.slice(),flower:fl,at:Date.now()};store.set("offering",o);placeOffering(o);bell(196,.45);later(()=>mo(.35),900);addMerit("dang");
+    S.focus={pos:[-.6,2.35,-22.2],look:[-.6,1.9,-23.7]};
+    const names=sel.map(k=>FRUITS.find(f=>f[0]===k)[1].toLowerCase()).join(", "),fn=FLOWERS.find(f=>f[0]===fl)[1].toLowerCase();
+    $("#sheetBody").innerHTML=`<p class="lede">Dĩa ${esc(names)} và bình ${esc(fn)} đã được bày lên bàn Phật.</p>
+      <p class="verse">Kính dâng hoa thơm, trái ngọt,<br>con nguyện lòng mình cũng thơm như hoa, ngọt như quả,<br>đem điều lành đến cho người quanh mình.</p>
+      <p class="muted">Lễ vật sẽ ở trên bàn Phật đến hết ngày mai. Ngoài đời, sau khi dâng cúng, hoa quả được thọ lộc chia cho mọi người cùng hưởng.</p>
+      <div class="row"><button class="btn" id="dlLay">Lạy Phật ba lạy</button><button class="btn ghost" id="dlAgain">Bày dĩa khác</button></div>`;
+    $("#dlLay").addEventListener("click",()=>{closeSheet();if(S.pose==="sit")setPose("stand");setPose("lay");});$("#dlAgain").addEventListener("click",()=>{sel=[];render();S.focus=h.focus;});}
+  openSheet("Dâng lễ","Dâng hoa quả lên Phật","",h.focus);render();}
+
+/* ---------- đỉnh hương lộ thiên (thay đỉnh cũ) ---------- */
+{const old=[];scene.children.forEach(o=>{if(o.position&&Math.abs(o.position.x-DINH.x)<1&&Math.abs(o.position.z-DINH.z)<1&&o.position.y<2.5&&o!==dinhTip&&o.isMesh)old.push(o);});old.forEach(o=>scene.remove(o));
+ const bz=M(0x6b4a26,{metalness:.65,roughness:.38,side:THREE.DoubleSide}),gold=mat.gold,stone=mat.stone,X=DINH.x,Z=DINH.z;
+ const oct=(r,h,y,m)=>{const c=cyl(r,r*1.04,h,m,X,y,Z,8);c.rotation.y=Math.PI/8;return c;};oct(1.05,.22,.11,stone);oct(.85,.2,.32,stone);
+ for(let i=0;i<3;i++){const a=i/3*6.283+Math.PI/6,pts=[];for(let k=0;k<=8;k++){const t=k/8;pts.push(new THREE.Vector3(X+Math.cos(a)*(.34+.16*Math.sin(t*Math.PI*.9)),.42+.56*t,Z+Math.sin(a)*(.34+.16*Math.sin(t*Math.PI*.9))));}
+   scene.add(taperTube(new THREE.CatmullRomCurve3(pts),16,.09,.06,8,bz));sph(.1,gold,X+Math.cos(a)*.34,.46,Z+Math.sin(a)*.34,10);}
+ const prof=[[.0,0],[.3,.0],[.5,.06],[.62,.2],[.66,.38],[.62,.54],[.52,.62],[.5,.68],[.58,.74],[.6,.78]].map(([r,y])=>new THREE.Vector2(r,y));
+ const body=new THREE.Mesh(new THREE.LatheGeometry(prof,36),bz);body.position.set(X,.95,Z);scene.add(body);
+ [.2,.38].forEach(y=>{const r=new THREE.Mesh(new THREE.TorusGeometry(y===.38?.66:.62,.02,8,40),gold);r.rotation.x=Math.PI/2;r.position.set(X,.95+y,Z);scene.add(r);});
+ const rim=new THREE.Mesh(new THREE.TorusGeometry(.6,.035,8,40),gold);rim.rotation.x=Math.PI/2;rim.position.set(X,1.73,Z);scene.add(rim);
+ for(let k=0;k<8;k++){const a=k/8*6.283;const m=new THREE.Mesh(new THREE.SphereGeometry(.07,10,8),gold);m.scale.set(1,.6,.3);m.position.set(X+Math.cos(a)*.665,1.28,Z+Math.sin(a)*.665);m.lookAt(X,1.28,Z);scene.add(m);}
+ [-1,1].forEach(s=>{const e=new THREE.Mesh(new THREE.TorusGeometry(.14,.035,8,20,Math.PI),bz);e.position.set(X+s*.42,1.76,Z);e.rotation.y=Math.PI/2;scene.add(e);
+   const e2=new THREE.Mesh(new THREE.TorusGeometry(.14,.012,6,20,Math.PI),gold);e2.position.set(X+s*.42,1.76,Z);e2.rotation.y=Math.PI/2;e2.scale.setScalar(1.05);scene.add(e2);});
+ const sand=new THREE.Mesh(new THREE.CircleGeometry(.56,32),mat.sand);sand.rotation.x=-Math.PI/2;sand.position.set(X,1.68,Z);scene.add(sand);
+ const n=26,im=new THREE.InstancedMesh(new THREE.CylinderGeometry(.008,.008,.45,4),mat.stick,n),tips=new THREE.InstancedMesh(new THREE.SphereGeometry(.014,5,4),new THREE.MeshBasicMaterial({color:0xff7a30}),n),mm=new THREE.Matrix4(),q=new THREE.Quaternion();
+ for(let i=0;i<n;i++){const a=rand(0,6.283),r=rand(.05,.45),tl=new THREE.Euler(rand(-.2,.2),0,rand(-.2,.2));q.setFromEuler(tl);mm.compose(new THREE.Vector3(X+Math.cos(a)*r,1.9,Z+Math.sin(a)*r),q,new THREE.Vector3(1,1,1));im.setMatrixAt(i,mm);
+   const tp=new THREE.Vector3(0,.225,0).applyQuaternion(q).add(new THREE.Vector3(X+Math.cos(a)*r,1.9,Z+Math.sin(a)*r));mm.makeTranslation(tp.x,tp.y,tp.z);tips.setMatrixAt(i,mm);}
+ scene.add(im);scene.add(tips);dinhTip.position.set(X,2.15,Z);const L=new THREE.PointLight(0xff8a40,.5,3.5,1.8);L.position.set(X,2.2,Z);scene.add(L);}
+function dinhHuong(){const h=HOT.find(x=>x.id==="dinh");
+  openSheet("Sân Tự","Đỉnh hương lộ thiên",`<p class="lede">Đỉnh hương đặt giữa sân, trước chánh điện. Người đi chùa thắp nhang ở đây trước tiên, kính lễ trời đất và mười phương chư Phật, rồi mới vào chánh điện.</p>
+    <p class="muted">Đỉnh ba chân hai quai là kiểu lư lớn quen thuộc ở các chùa Nam Bộ. Khói hương bay lên như lời nguyện gửi khắp mười phương.</p>
+    <p class="verse">Nguyện cho mưa thuận gió hòa,<br>quốc thái dân an, nhà nhà bình yên.</p>
+    <div class="row"><button class="btn" id="dhGo">Thắp ba nén nhang</button><span class="muted" id="dhMsg"></span></div>`,h.focus);
+  $("#dhGo").addEventListener("click",()=>{$("#dhGo").disabled=true;[-1,0,1].forEach((k,i)=>later(()=>{const s=makeStick(true);s.position.set(DINH.x+k*.12,1.68,DINH.z-.08);s.rotation.z=k*.08;scene.add(s);if(typeof planted!=="undefined"){planted.push(s);}},i*350));
+    later(()=>{bell(174,.4);addMerit("nhang",3);$("#dhMsg").textContent="Ba nén nhang đã cắm. Mời bạn vào chánh điện.";},1200);});}
+
+/* ---------- phóng sanh ở hồ sen ---------- */
+mat.water.transparent=true;mat.water.opacity=.72;mat.water.needsUpdate=true;
+{const bt=new THREE.Mesh(new THREE.CircleGeometry(POND.r-.05,48),M(0x1c3634,{roughness:1}));bt.rotation.x=-Math.PI/2;bt.position.set(POND.x,.012,POND.z);scene.add(bt);}
+const fishes=[];
+function makeFish(kind){const g=new THREE.Group(),c={chepdo:[0xe8562a,0xf2efe6],chepvang:[0xf0b42a,0xf6e7b8],ro:[0x6e7a5a,0x8f9a72],koi:[0xf2efe6,0xd8402a]}[kind]||[0xe8562a,0xf2efe6];
+  if(kind==="rua"){const sh=new THREE.Mesh(new THREE.SphereGeometry(.14,14,8,0,6.283,0,Math.PI/2),M(0x5a6a3a,{roughness:.6}));sh.scale.set(1,.55,1.25);g.add(sh);
+    const hd=new THREE.Mesh(new THREE.SphereGeometry(.045,10,8),M(0x7a8a5a));hd.position.set(0,.02,-.2);g.add(hd);
+    [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx,sz])=>{const f=new THREE.Mesh(new THREE.SphereGeometry(.035,8,6),M(0x7a8a5a));f.scale.set(1.4,.4,.8);f.position.set(sx*.13,0,sz*.11);g.add(f);});g.userData.turtle=true;g.scale.setScalar(1.5);return g;}
+  const body=new THREE.Mesh(new THREE.SphereGeometry(.08,14,10),M(c[0],{roughness:.4}));body.scale.set(.55,.32,1.3);g.add(body);
+  const patch=new THREE.Mesh(new THREE.SphereGeometry(.081,12,8,0,Math.PI,0,Math.PI/2),M(c[1],{roughness:.4}));patch.scale.set(.55,.32,.8);patch.position.z=.02;patch.rotation.y=rand(0,3);g.add(patch);
+  const tg=new THREE.BufferGeometry();tg.setAttribute("position",new THREE.Float32BufferAttribute([0,0,.08, -.06,0,.2, .06,0,.2, 0,.03,.08, 0,-.03,.08, 0,0,.2],3));tg.setIndex([0,1,2,3,4,5]);tg.computeVertexNormals();
+  const tail=new THREE.Mesh(tg,new THREE.MeshStandardMaterial({color:c[0],side:THREE.DoubleSide,transparent:true,opacity:.85}));tail.position.z=.06;g.add(tail);g.userData.tail=tail;
+  const fin=new THREE.Mesh(new THREE.ConeGeometry(.02,.06,4),M(c[0]));fin.position.set(0,.035,0);fin.rotation.x=-.8;g.add(fin);g.scale.setScalar(kind==="ro"?1.7:2.2);return g;}
+function addSwimmer(kind,from){const f=makeFish(kind);const r=rand(1.1,3.2),a=rand(0,6.283);f.position.set(POND.x+Math.cos(a)*r,.0,POND.z+Math.sin(a)*r);scene.add(f);
+  const o={f,r,a,sp:(f.userData.turtle?.08:rand(.18,.35))*(Math.random()<.5?1:-1),ph:rand(0,6),y:f.userData.turtle?.03:.026};fishes.push(o);return o;}
+["koi","chepdo","chepvang","koi","chepdo","ro"].forEach(k=>addSwimmer(k));
+let fishLast=performance.now();
+(function fishLoop(){const now=performance.now(),dt=Math.min(.1,(now-fishLast)/1000);fishLast=now;const T=now/1000;
+  fishes.forEach(o=>{if(o.jump)return;o.a+=o.sp*dt/o.r*2.2;o.r+=Math.sin(T*.3+o.ph)*.002;o.r=Math.max(.9,Math.min(3.4,o.r));
+    const x=POND.x+Math.cos(o.a)*o.r,z=POND.z+Math.sin(o.a)*o.r;o.f.position.set(x,o.y+Math.sin(T*1.7+o.ph)*.008,z);
+    const sg=o.sp>0?1:-1;o.f.lookAt(x+Math.sin(o.a)*sg,o.f.position.y,z-Math.cos(o.a)*sg);if(o.f.userData.tail)o.f.userData.tail.rotation.y=Math.sin(T*8+o.ph)*.4;});
+  requestAnimationFrame(fishLoop);})();
+function splash(x,z){const r=new THREE.Mesh(new THREE.RingGeometry(.05,.09,28),new THREE.MeshBasicMaterial({color:0xdfeef0,transparent:true,opacity:.8,side:THREE.DoubleSide}));r.rotation.x=-Math.PI/2;r.position.set(x,.06,z);scene.add(r);
+  tween(1400,p=>{r.scale.setScalar(1+p*7);r.material.opacity=.8*(1-p);},()=>scene.remove(r));}
+const PS_KIND=[["chepdo","Cá chép đỏ"],["chepvang","Cá chép vàng"],["ro","Cá rô đồng"],["rua","Rùa"]];
+function phongSanh(){const h=HOT.find(x=>x.id==="pond");let kind="chepdo",num=3;
+  const render=()=>{$("#sheetBody").innerHTML=`<p class="lede">Phóng sanh là trả lại sự sống, nuôi lớn lòng từ. Ở miền Nam, người ta hay thả cá, thả rùa xuống ao chùa vào ngày rằm, mùng một.</p>
+    <span class="muted">Loài phóng sanh</span><div class="chips" id="psK">${PS_KIND.map(([k,n])=>`<button class="chip" data-k="${k}" aria-pressed="${k===kind}">${n}</button>`).join("")}</div>
+    <span class="muted">Số lượng</span><div class="chips" id="psN">${[1,3,7].map(n=>`<button class="chip" data-n="${n}" aria-pressed="${n===num}">${n}</button>`).join("")}</div>
+    <p class="note">Ngoài đời, phóng sanh đúng cách là thả đúng loài vào đúng môi trường sống, và không mua những con vật bị bắt chỉ để đem thả. Hằng ngày ăn chay, không sát sanh cũng là phóng sanh.</p>
+    <div class="row"><button class="btn" id="psGo">Làm lễ phóng sanh</button><button class="btn ghost" id="psBack">Trở lại thả đèn</button></div>`;
+    $$("#psK [data-k]").forEach(b=>b.addEventListener("click",()=>{kind=b.dataset.k;render();}));$$("#psN [data-n]").forEach(b=>b.addEventListener("click",()=>{num=+b.dataset.n;render();}));
+    $("#psGo").addEventListener("click",rite);$("#psBack").addEventListener("click",pond);};
+  function rite(){const lines=["Nam mô A Di Đà Phật.","Các con nay được trở về với nước,","nguyện quy y Phật, quy y Pháp, quy y Tăng,","sống đời an lành, không còn sợ hãi,","sớm thoát khổ, được sanh về cõi lành.","Nam mô A Di Đà Phật."];
+    $("#sheetBody").innerHTML=`<span class="muted">Lời nguyện phóng sanh (theo mõ, đọc thầm cùng)</span><div class="verse" id="psV">${lines.map((l,i)=>`<span data-i="${i}" style="opacity:.35;display:block">${l}</span>`).join("")}</div>`;
+    lines.forEach((l,i)=>later(()=>{mo(.4);$$("#psV [data-i]").forEach(s=>s.style.opacity=+s.dataset.i<=i?1:.35);},i*1500));
+    later(()=>{bell(196,.4);release();},lines.length*1500+300);}
+  function release(){const sx=-4.6,sz=8.3;for(let i=0;i<num;i++)later(()=>{const o=addSwimmer(kind);o.jump=true;const to=o.f.position.clone(),from=new THREE.Vector3(sx,.5,sz);o.f.position.copy(from);
+      tween(1100,p=>{o.f.position.lerpVectors(from,to,p);o.f.position.y=.5*(1-p)+Math.sin(p*Math.PI)*.6+(o.y)*p;o.f.rotation.x=(p-.5)*1.4;},()=>{o.f.rotation.x=0;o.jump=false;splash(to.x,to.z);});},i*450);
+    later(()=>{addMerit("phongsanh",num);const n=PS_KIND.find(k=>k[0]===kind)[1].toLowerCase();
+      $("#sheetBody").innerHTML=`<p class="lede">${num} ${esc(n)} đã về với hồ sen, đang bơi giữa những đóa sen.</p><p class="muted">Nguyện cho mọi loài đều được sống an lành, không bị hại, không sợ hãi.</p>
+        <div class="row"><button class="btn" id="psMore">Phóng sanh thêm</button><button class="btn ghost" id="psLamp">Thả đèn hoa đăng</button></div>`;
+      $("#psMore").addEventListener("click",()=>{render();});$("#psLamp").addEventListener("click",pond);},num*450+1600);}
+  openSheet("Hồ sen","Phóng sanh","",h.focus);render();}
+
+/* ---------- Tàng kinh: giới thiệu các bộ kinh Đại thừa ---------- */
+const SUTRA_GROUPS=["Tánh Không và trí tuệ: phá bỏ bám chấp","Bồ Tát hạnh và khai thị giác ngộ","Hành trì, cầu an và Tịnh Độ"];
+const SUTRAS=[
+ {g:0,t:"Bát Nhã Tâm Kinh",dd:"Khoảng 260 chữ, tóm lược tinh yếu của bộ Đại Bát Nhã 600 quyển. Đây là bài kinh hành giả Đại thừa thường thuộc lòng.",nd:"Tuyên thuyết Tánh Không của vạn pháp: “Sắc bất dị không, không bất dị sắc”. Thấy rõ năm uẩn đều không thì vượt qua mọi khổ ách.",act:["Tụng Tâm Kinh","tamkinh"]},
+ {g:0,t:"Kinh Kim Cang",dd:"Kim Cang Bát Nhã Ba La Mật Kinh, văn bản nền tảng của Thiền tông. Lục Tổ Huệ Năng ngộ đạo khi nghe câu “Ưng vô sở trụ nhi sanh kỳ tâm”.",nd:"Dùng trí tuệ sắc bén như kim cương phá ngã chấp và pháp chấp. Làm lành, tu hành mà không dính mắc vào công đức hay kết quả.",trich:["Nhất thiết hữu vi pháp,","Như mộng, huyễn, bào, ảnh,","Như lộ, diệc như điện,","Ưng tác như thị quán."],tm:"Tất cả pháp hữu vi như mộng, như huyễn, như bọt nước, như bóng; như sương, như điện chớp; nên quán chiếu như vậy."},
+ {g:1,t:"Kinh Diệu Pháp Liên Hoa",dd:"Kinh Pháp Hoa, được tôn xưng là “vua các kinh” trong truyền thống Bắc truyền.",nd:"Hội Tam thừa về Nhất thừa: mọi con đường tu tập rốt cuộc đều dẫn về Phật đạo, và tất cả chúng sinh đều có Phật tánh. Kinh dùng nhiều thí dụ như nhà lửa, gã cùng tử để nói về phương tiện thiện xảo."},
+ {g:1,t:"Kinh Duy Ma Cật",dd:"Cuộc đối thoại giữa cư sĩ Duy Ma Cật với các vị Đại Bồ Tát và Thánh đệ tử.",nd:"Đề cao Bồ Tát đạo giữa đời: sống trong gia đình, làm ăn buôn bán mà tâm vẫn thanh tịnh, vì “tâm tịnh thì cõi Phật tịnh”. Rất gần với người tu tại gia."},
+ {g:1,t:"Kinh Hoa Nghiêm",dd:"Bộ kinh đồ sộ và uyên bác bậc nhất về thế giới quan Đại thừa.",nd:"Trùng trùng duyên khởi: một là tất cả, tất cả là một, mọi sự chiếu soi và chứa đựng lẫn nhau. Phẩm Nhập Pháp Giới kể hành trình Thiện Tài Đồng Tử tham học 53 vị thiện tri thức."},
+ {g:2,t:"Kinh A Di Đà",dd:"Cùng với Kinh Vô Lượng Thọ là kim chỉ nam của pháp môn Tịnh Độ.",nd:"Mô tả cõi Tây Phương Cực Lạc; khuyên hành giả đủ tín, nguyện, hạnh, chuyên niệm danh hiệu Phật A Di Đà.",act:["Niệm A Di Đà","adida"]},
+ {g:2,t:"Kinh Vô Lượng Thọ",dd:"Kinh Tịnh Độ thuật lại nhân hạnh của Đức Phật A Di Đà.",nd:"Kể 48 đại nguyện của Tỳ-kheo Pháp Tạng (tiền thân Phật A Di Đà) và sự trang nghiêm của cõi Cực Lạc.",act:["Niệm A Di Đà","adida"]},
+ {g:2,t:"Phẩm Phổ Môn",dd:"Phẩm thứ 25 của Kinh Pháp Hoa, thường được tụng riêng để cầu an.",nd:"Nói về hạnh nguyện lắng nghe tiếng kêu khổ của chúng sinh và khả năng ứng hiện vô số thân để cứu độ của Bồ Tát Quán Thế Âm.",act:["Niệm Quán Âm","quanam"]},
+ {g:2,t:"Kinh Địa Tạng Bổn Nguyện",dd:"Thường được tụng trong mùa Vu Lan và khi cầu siêu.",nd:"Dạy về đạo hiếu, luật nhân quả, các cõi khổ và đại nguyện của Bồ Tát Địa Tạng: “Địa ngục vị không, thệ bất thành Phật”.",act:["Tụng cầu siêu","causieu"]},
+ {g:2,t:"Kinh Dược Sư",dd:"Kinh cầu an phổ biến, nhất là khi trong nhà có người đau ốm.",nd:"Nói về 12 đại nguyện của Đức Phật Dược Sư Lưu Ly Quang, chữa thân bệnh và tâm bệnh, cầu bình an cho đời sống hiện tại.",act:["Tụng cầu an","cauan"]}];
+function glowBook(i){const b=shelfBooks[(i*5+3)%shelfBooks.length];if(!b)return;const g=glow(0xffd28a,.9,.85);g.position.set(.2,0,0);b.add(g);const x0=b.position.x;tween(500,p=>{b.position.x=x0+.12*p;});later(()=>{b.remove(g);tween(500,p=>{b.position.x=x0+.12*(1-p);});},4000);}
+function tangKinh(sel){const h=HOT.find(x=>x.id==="kinh");
+  if(sel==null){openSheet("Tàng kinh","Kệ kinh Đại thừa",`<p class="lede">Kinh điển Đại thừa rất đồ sộ. Đây là những bộ kinh quan trọng, xếp theo ba nhóm. Chọn một bộ để xem giới thiệu.</p>
+      ${SUTRA_GROUPS.map((gname,gi)=>`<span class="muted">${gi+1}. ${gname}</span><div class="chips">${SUTRAS.map((s,i)=>s.g===gi?`<button class="chip" data-s="${i}">${s.t}</button>`:"").join("")}</div>`).join("")}
+      <div class="practice"><b>Lộ trình gợi ý cho người mới</b>
+        <p><b>Bước 1, đọc và tụng:</b> Bát Nhã Tâm Kinh (ngắn, dễ thuộc) và Kinh Địa Tạng (dễ hiểu về nhân quả, đạo hiếu).</p>
+        <p><b>Bước 2, mở rộng tư duy:</b> Kinh Kim Cang và Kinh Duy Ma Cật, để phá chấp và đem đạo vào đời sống hằng ngày.</p>
+        <p><b>Bước 3, thấu suốt toàn cảnh:</b> Kinh Pháp Hoa và Kinh Hoa Nghiêm, để hiểu đại nguyện và con đường thành Phật.</p></div>
+      <p class="note">Đây là phần giới thiệu tóm tắt. Toàn văn kinh nên đọc theo bản dịch của chư tôn đức được Giáo hội phổ biến, và hỏi thêm quý thầy khi chưa rõ.</p>`,h.focus);
+    $$("#sheetBody [data-s]").forEach(b=>b.addEventListener("click",()=>tangKinh(+b.dataset.s)));return;}
+  const s=SUTRAS[sel];glowBook(sel);retreatMark("doc");addMerit("docKinh");
+  openSheet("Tàng kinh",s.t,`<span class="muted">${SUTRA_GROUPS[s.g]}</span>
+    <div class="practice"><b>Đặc điểm</b><p>${s.dd}</p></div><div class="practice"><b>Nội dung</b><p>${s.nd}</p></div>
+    ${s.trich?`<span class="muted">Bài kệ</span><p class="verse">${s.trich.join("<br>")}</p><p class="muted">${s.tm}</p>`:""}
+    <div class="row">${s.act?`<button class="btn" id="tkAct">${s.act[0]}</button>`:""}<button class="btn ghost" id="tkBack">Các bộ kinh khác</button><button class="btn ghost" id="tkAsk">Hỏi về kinh này</button></div>`,h.focus);
+  if(s.act)$("#tkAct").addEventListener("click",()=>{const c=HOT.find(x=>x.id==="chant");walkTo(c,()=>chant(s.act[1]));});
+  $("#tkBack").addEventListener("click",()=>tangKinh());$("#tkAsk").addEventListener("click",()=>phap("ask",`Con muốn hiểu thêm về ${s.t}: `));}
+
+Object.assign(MERIT_LABEL,{dang:"Lễ vật đã dâng",phongsanh:"Sinh linh đã phóng sanh",docKinh:"Lần tìm hiểu kinh"});
+
 /* ================= navigation ================= */
 function walkTo(h,onArrive){
   closeSheet();const pts=[];let cx=S.x,cz=S.z;const tz=h.stand[1],deep=z=>z<-19.6;
@@ -2213,7 +2469,7 @@ function walkTo(h,onArrive){
   if(deep(tz))pts.push([0,-16.6],[2.4,-16.6],[2.4,tz],h.stand);else pts.push([0,tz],h.stand);
   S.auto={pts,i:0,h,onArrive};$("#gotoMenu").hidden=true;
 }
-function runHot(h){if(h.kind==="incense")incense();else if(h.kind==="pond")pond();else if(h.kind==="chant")chant();else if(h.kind==="wall")wall();else if(h.kind==="quanam")chant("quanam",h.focus,"Tượng Quán Thế Âm");else if(h.kind==="bell")bellTower();else if(h.kind==="buddha")behold();else if(h.kind==="xam")xinXam();else if(h.kind==="bode")bode();else toast(h.text);}
+function runHot(h){if(h.kind==="incense")incense();else if(h.kind==="pond")pond();else if(h.kind==="chant")chant();else if(h.kind==="wall")wall();else if(h.kind==="quanam")chant("quanam",h.focus,"Tượng Quán Thế Âm");else if(h.kind==="bell")bellTower();else if(h.kind==="buddha")behold();else if(h.kind==="xam")xinXam();else if(h.kind==="bode")bode();else if(h.kind==="dinh")dinhHuong();else if(h.kind==="kinh")tangKinh();else if(h.kind==="tranh")phatTich();else if(h.kind==="dang")dangLe();else if(h.kind==="trong")chungTrong();else toast(h.text);}
 function behold(){
   const h=HOT.find(x=>x.id==="buddha");let n=0;
   openSheet("Chánh điện","Chiêm bái tôn tượng",`
@@ -2382,7 +2638,7 @@ if(!coarse&&!LITE){renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE
   const sc=sun.shadow.camera;sc.left=-34;sc.right=34;sc.top=34;sc.bottom=-34;sc.near=1;sc.far=170;sun.shadow.bias=-.0006;sun.shadow.normalBias=.03;
   scene.traverse(o=>{if(!o.isMesh||o===skyMesh)return;const g=o.geometry;if(!g.boundingSphere)g.computeBoundingSphere();const r=g.boundingSphere.radius*Math.max(o.scale.x,o.scale.y,o.scale.z);o.receiveShadow=true;o.castShadow=r>.1&&r<14;});}
 requestAnimationFrame(frame);
-window.__vut={S,person,setLook,walkTo,HOT,incense,chant,pond,wall,meritBook,bellTower,setTime,xin:xinXam,bode,avatar};window.__setTime=setTime;
+window.__vut={S,person,setLook,tangKinh,dangLe,phatTich,phongSanh,dinhHuong,chungTrong,walkTo,HOT,incense,chant,pond,wall,meritBook,bellTower,setTime,xin:xinXam,bode,avatar};window.__setTime=setTime;
 })();
 </script>
 <script>if("serviceWorker" in navigator&&location.protocol==="https:")addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
