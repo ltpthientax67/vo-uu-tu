@@ -1,5 +1,6 @@
 /**
- * VÔ ƯU TỰ – Máy chủ dữ liệu trên Google Sheets (Google Apps Script) · bản 3 (thêm đếm người đang có mặt)
+ * VÔ ƯU TỰ – Máy chủ dữ liệu trên Google Sheets (Google Apps Script) · bản 4
+ * (bản 3: đếm người đang có mặt; bản 4: ghi giờ vào từng lượt, người dùng thấy nhau trong Tự, trang quản trị xem ai đang online)
  * Lưu: đăng ký dùng thử, góp ý, câu hỏi Phật pháp, Tường tâm nguyện, thông báo, báo lỗi, lượt vào Tự.
  * Có các lệnh quản trị (cần mật khẩu) cho trang quan-tri.html.
  *
@@ -12,7 +13,7 @@
  */
 
 const OWNER_EMAIL = '';          // Điền email của bạn để nhận thư báo khi có đăng ký, câu hỏi, tâm nguyện chờ duyệt, báo lỗi. Để trống nếu không cần.
-const MAX_CALLS_PER_10_MIN = 60; // Chống spam: số lần gọi tối đa của một người trong 10 phút.
+const MAX_CALLS_PER_10_MIN = 120; // Chống spam: số lần gọi tối đa của một người trong 10 phút.
 
 const SHEETS = {
   DangKy: ['Mã người dùng', 'Thời gian đăng ký', 'Tên gọi', 'Độ tuổi', 'Tỉnh/thành', 'Liên hệ', 'Muốn dùng để', 'Thiết bị', 'Đồng ý lưu thông tin', 'Cập nhật lần cuối'],
@@ -21,7 +22,7 @@ const SHEETS = {
   TamNguyen: ['Mã', 'Thời gian', 'Mã người gửi', 'Lời nguyện', 'Cầu cho', 'Trạng thái', 'Số lượt niệm'],
   ThongBao: ['Mã', 'Thời gian', 'Nội dung', 'Đang hiện'],
   BaoLoi: ['Mã', 'Thời gian', 'Mã người dùng', 'Mô tả', 'Thiết bị', 'Lỗi kỹ thuật', 'Phiên bản', 'Đã xử lý'],
-  LuotVao: ['Ngày', 'Mã người dùng', 'Thiết bị', 'Phiên bản']
+  LuotVao: ['Ngày', 'Mã người dùng', 'Thiết bị', 'Phiên bản', 'Giờ vào', 'Thời điểm']
 };
 const ST_WAIT = 'Chờ duyệt', ST_OK = 'Đã duyệt', ST_HIDE = 'Ẩn';
 
@@ -198,32 +199,62 @@ function faq_() {
     .slice(-30).reverse().map(function (r) { return { q: String(r[3]), a: String(r[5]) }; });
 }
 
-/** Lời chào khi vào Tự: ghi lượt vào (mỗi người một lần mỗi ngày) và trả về thông báo đang hiện. */
+/** Lời chào khi vào Tự: ghi mỗi lượt vào (cách nhau từ 20 phút trở lên tính là lượt mới) kèm giờ vào, trả về thông báo đang hiện. */
 function hello_(cid, p) {
-  const c = CacheService.getScriptCache(), today = day_(), k = 'v_' + today + '_' + cid;
+  const c = CacheService.getScriptCache(), k = 'v_' + cid;
   if (!c.get(k)) {
-    c.put(k, '1', 21600);
-    sheet_('LuotVao').appendRow([today, cid, cell_(p.dev, 30), cell_(p.ver, 30)]);
+    c.put(k, '1', 1200);
+    const sh = sheet_('LuotVao');
+    if (!c.get('lv_head') && sh.getLastColumn() < SHEETS.LuotVao.length) sh.getRange(1, 1, 1, SHEETS.LuotVao.length).setValues([SHEETS.LuotVao]).setFontWeight('bold').setBackground('#f3e3c0');
+    c.put('lv_head', '1', 21600);
+    const now = new Date();
+    sh.appendRow([day_(now), cid, cell_(p.dev, 30), cell_(p.ver, 30), "'" + Utilities.formatDate(now, 'Asia/Ho_Chi_Minh', 'HH:mm'), now]);
   }
   return { ok: true, ann: annList_(true) };
 }
 
-/** Hiện diện thật: mỗi người báo "đang ở trong Tự" khoảng 90 giây một lần; đếm người có mặt trong 3 phút gần nhất. */
+/** Hiện diện thật: mỗi người báo "đang ở trong Tự" khoảng 15 giây một lần, kèm vị trí, dáng, trang phục (không có thông tin cá nhân).
+ *  Trả về số người có mặt và vị trí những người khác để mọi người thấy nhau. Ai im lặng quá 70 giây coi như đã rời đi. */
+const PRES_TTL = 70000;
+function presRead_(c) { try { return JSON.parse(c.get('pres') || '{}'); } catch (err) { return {}; } }
 function here_(cid, p) {
   const c = CacheService.getScriptCache(), lock = LockService.getScriptLock();
   lock.waitLock(5000);
   try {
-    let m = {};
-    try { m = JSON.parse(c.get('pres') || '{}'); } catch (err) { m = {}; }
-    const now = Date.now();
-    Object.keys(m).forEach(function (k) { if (now - m[k][0] > 180000) delete m[k]; });
-    m[cid] = [now, p.chant === true ? 1 : 0];
+    const m = presRead_(c), now = Date.now();
+    Object.keys(m).forEach(function (k) { if (!Array.isArray(m[k]) || now - m[k][0] > PRES_TTL) delete m[k]; });
+    const q = p.s || {}, num = function (v, lo, hi) { v = Number(v); return isFinite(v) ? Math.max(lo, Math.min(hi, Math.round(v * 100) / 100)) : 0; };
+    const st = {
+      i: String(q.i || '').replace(/[^a-z0-9]/gi, '').slice(0, 10),
+      x: num(q.x, -60, 60), z: num(q.z, -60, 60), y: num(q.y, -20, 20),
+      o: ['lam', 'aodai', 'tang'].indexOf(q.o) >= 0 ? q.o : 'lam', f: q.f ? 1 : 0,
+      p: ['stand', 'sit', 'lay', 'chao'].indexOf(q.p) >= 0 ? q.p : 'stand',
+      n: clean_(q.n, 20).replace(/[<>"&]/g, '')
+    };
+    const prev = m[cid];
+    m[cid] = [now, p.chant === true ? 1 : 0, prev ? prev[2] : now, st];
     const s = JSON.stringify(m);
-    if (s.length < 95000) c.put('pres', s, 900);
+    if (s.length < 95000) c.put('pres', s, 600);
     let n = 0, ch = 0;
-    Object.keys(m).forEach(function (k) { n++; if (m[k][1]) ch++; });
-    return { ok: true, n: n, chant: ch };
+    const peers = [];
+    Object.keys(m).forEach(function (k) {
+      n++; if (m[k][1]) ch++;
+      if (k !== cid && m[k][3] && m[k][3].i && peers.length < 40) { const o = m[k][3]; peers.push({ i: o.i, x: o.x, z: o.z, y: o.y, o: o.o, f: o.f, p: o.p, n: o.n, a: now - m[k][0] }); }
+    });
+    return { ok: true, n: n, chant: ch, peers: peers };
   } finally { lock.releaseLock(); }
+}
+function zone_(x, z) {
+  const d = function (a, b) { return Math.sqrt((x - a) * (x - a) + (z - b) * (z - b)); };
+  if (z < -8 && Math.abs(x) < 11) return 'Chánh điện';
+  if (d(-8, 8) < 5.5) return 'Hồ sen';
+  if (d(13, 0.4) < 4) return 'Cội Bồ đề';
+  if (d(8.6, 12.5) < 3.2) return 'Tượng Quán Âm';
+  if (d(-8.6, -2.5) < 3.2) return 'Gác chuông';
+  if (d(6.6, 10.2) < 2) return 'Bàn xin xăm';
+  if (d(5.5, 4) < 2.5) return 'Đỉnh hương';
+  if (z > 19) return 'Cổng Tam Quan';
+  return 'Sân Tự';
 }
 
 function annList_(onlyOn) {
@@ -286,6 +317,28 @@ function admin_(action, p) {
     return { id: String(r[0]), at: ts_(r[1]), q: String(r[3]), share: r[4] === 'Có', a: String(r[5] || ''), pub: r[6] === true, ad: ts_(r[7]) }; }) };
   if (action === 'a_wall') return { ok: true, items: rows_('TamNguyen').slice(-400).reverse().map(function (r) {
     return { id: String(r[0]), at: ts_(r[1]), t: String(r[3]), w: String(r[4]), st: String(r[5]), n: Number(r[6]) || 0 }; }) };
+  if (action === 'a_live') {
+    const m = presRead_(CacheService.getScriptCache()), now = Date.now(), regs = {}, devs = {};
+    rows_('DangKy').forEach(function (r) { regs[r[0]] = String(r[2]); });
+    rows_('LuotVao').forEach(function (r) { devs[r[1]] = String(r[2]); });
+    const items = Object.keys(m).filter(function (k) { return Array.isArray(m[k]) && now - m[k][0] <= PRES_TTL; }).map(function (k) {
+      const v = m[k], st = v[3] || {};
+      return { id: k.slice(0, 8), name: regs[k] || '', shown: st.n || '', dev: devs[k] || '', since: v[2] || v[0], last: v[0], chant: !!v[1], zone: st.i ? zone_(st.x, st.z) : '', pose: st.p || '', outfit: st.o || '' };
+    }).sort(function (a, b) { return a.since - b.since; });
+    return { ok: true, items: items };
+  }
+  if (action === 'a_visits') {
+    const regs = {};
+    rows_('DangKy').forEach(function (r) { regs[r[0]] = String(r[2]); });
+    const all = rows_('LuotVao'), today = day_(), uniq = {}, uToday = {};
+    let sToday = 0;
+    all.forEach(function (r) { const d = r[0] instanceof Date ? day_(r[0]) : String(r[0]); uniq[r[1]] = 1; if (d === today) { sToday++; uToday[r[1]] = 1; } });
+    const items = all.slice(-300).reverse().map(function (r) {
+      const d = r[0] instanceof Date ? day_(r[0]) : String(r[0]);
+      return { day: d, time: String(r[4] || '').replace(/^'/, ''), at: ts_(r[5]), id: String(r[1]).slice(0, 8), name: regs[r[1]] || '', dev: String(r[2]), ver: String(r[3]) };
+    });
+    return { ok: true, items: items, sum: { sessionsToday: sToday, peopleToday: Object.keys(uToday).length, peopleAll: Object.keys(uniq).length, sessionsAll: all.length } };
+  }
   if (action === 'a_ann') return { ok: true, items: annList_(false) };
   if (action === 'a_fb') return { ok: true,
     fb: rows_('GopY').slice(-300).reverse().map(function (r) { return { at: ts_(r[0]), name: String(r[2]), star: Number(r[3]) || 0, like: String(r[4]), fix: String(r[5]) }; }),

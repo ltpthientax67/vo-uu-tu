@@ -86,6 +86,7 @@ code{font-size:12px;color:var(--mist-2)}
     <div class="row"><button class="btn ghost sm" id="refresh">Làm mới</button><a class="btn ghost sm" href="./" target="_blank" rel="noopener" style="text-decoration:none">Mở Tự</a><button class="btn ghost sm" id="logout">Thoát</button></div></div>
   <nav class="tabs" role="tablist" id="tabs">
     <button class="tab" role="tab" data-t="home" aria-selected="true">Tổng quan</button>
+    <button class="tab" role="tab" data-t="visits">Lượt vào</button>
     <button class="tab" role="tab" data-t="qa">Hỏi đáp <span class="badge" id="bQa" hidden></span></button>
     <button class="tab" role="tab" data-t="wall">Tâm nguyện <span class="badge" id="bWall" hidden></span></button>
     <button class="tab" role="tab" data-t="ann">Thông báo</button>
@@ -124,7 +125,7 @@ $("#logout").addEventListener("click",()=>{try{sessionStorage.removeItem("vut-ad
 if(KEY){$("#key").value="";login();}
 
 /* ---------- điều hướng ---------- */
-let CUR="home";const VIEWS={home,qa,wall,ann,fb,reg};
+let CUR="home";const VIEWS={home,visits,qa,wall,ann,fb,reg};
 function go(t){CUR=t;$$(".tab").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.t===t)));$("#main").innerHTML=`<section><p class="muted">Đang tải…</p></section>`;VIEWS[t]().catch(e=>{$("#main").innerHTML=`<section><p class="flag">${esc(errMsg(e))}</p></section>`;});}
 $$(".tab").forEach(b=>b.addEventListener("click",()=>go(b.dataset.t)));
 $("#refresh").addEventListener("click",()=>go(CUR));
@@ -142,6 +143,7 @@ async function home(){
   if(s.bugOpen)todo.push(`<li><a data-go="fb">${s.bugOpen} báo lỗi chưa xử lý</a></li>`);
   $("#main").innerHTML=`<section>
     <div class="sec-head"><h2>Tổng quan</h2><span class="muted">Cập nhật ${fmt(Date.now())}</span></div>
+    <div class="card live" style="margin-top:14px" id="liveCard"><b style="color:var(--paper)">Đang ở trong Tự</b><p class="muted">Đang tải…</p></div>
     <div class="card" style="margin-top:14px"><b style="color:var(--paper)">Việc cần làm</b>${todo.length?`<ul class="todo">${todo.join("")}</ul>`:`<span class="okc">Không có việc nào đang chờ. Tự đang yên.</span>`}</div>
     <div class="tiles">
       <div class="tile"><b>${s.days[s.days.length-1].n}</b><span class="muted">người ghé hôm nay</span></div>
@@ -158,6 +160,36 @@ async function home(){
       <span class="muted">Mỗi người chỉ tính một lần mỗi ngày.</span></div>
   </section>`;
   $$("[data-go]").forEach(a=>a.addEventListener("click",()=>go(a.dataset.go)));
+  loadLive();
+}
+
+
+/* ---------- Đang ở trong Tự (tự làm mới 20 giây một lần) ---------- */
+const hm=t=>t?new Date(t).toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"}):"";
+const dur=ms=>{const m=Math.round(ms/60000);return m<1?"vừa vào":m<60?`${m} phút`:`${Math.floor(m/60)} giờ ${m%60} phút`;};
+const who=x=>x.name?`<b style="color:var(--paper)">${esc(x.name)}</b>${x.shown&&x.shown!==x.name?` <span class="muted">(hiện tên “${esc(x.shown)}”)</span>`:""}`:x.shown?`<b style="color:var(--paper)">${esc(x.shown)}</b> <span class="muted">· khách #${esc(x.id)}</span>`:`<span style="color:var(--paper)">Khách #${esc(x.id)}</span>`;
+async function loadLive(){const el=$("#liveCard");if(!el)return;
+  try{const {items}=await api("a_live");if(!$("#liveCard"))return;
+    el.innerHTML=`<div class="row" style="justify-content:space-between"><b style="color:var(--paper)">Đang ở trong Tự · ${items.length} người</b><span class="muted">Cập nhật ${hm(Date.now())} · tự làm mới mỗi 20 giây</span></div>
+      ${items.length?`<div class="tbl"><table><thead><tr><th>Người</th><th>Đang ở</th><th>Vào lúc</th><th>Đã ở</th><th>Thiết bị</th></tr></thead><tbody>${items.map(x=>`<tr><td>${who(x)}${x.chant?` <span class="badge" style="background:var(--lamp)">đang tụng</span>`:""}</td><td>${esc(x.zone||"–")}${x.pose==="sit"?" · ngồi":x.pose==="lay"?" · lạy Phật":""}</td><td>${hm(x.since)}</td><td>${dur(x.last-x.since)}</td><td class="muted">${esc(x.dev||"")}</td></tr>`).join("")}</tbody></table></div>`:`<p class="muted">Lúc này chưa có ai trong Tự.</p>`}
+      <p class="muted">Người chưa đăng ký dùng thử hiện là “Khách” kèm mã ngắn. Ai im lặng quá khoảng một phút (đóng trang, khóa màn hình) sẽ không còn trong danh sách.</p>`;}
+  catch(e){el.innerHTML=`<b style="color:var(--paper)">Đang ở trong Tự</b><p class="flag">${esc(errMsg(e))}</p>`;}}
+setInterval(()=>{if(CUR==="home"&&document.visibilityState==="visible")loadLive();},20000);
+
+/* ---------- Lượt vào ---------- */
+async function visits(){
+  const {items,sum}=await api("a_visits");
+  $("#main").innerHTML=`<section><div class="sec-head"><h2>Lượt vào Tự</h2><button class="btn ghost sm" id="vCsv">Tải danh sách (CSV)</button></div>
+    <div class="tiles">
+      <div class="tile"><b>${sum.peopleToday}</b><span class="muted">người vào hôm nay</span></div>
+      <div class="tile"><b>${sum.sessionsToday}</b><span class="muted">lượt vào hôm nay</span></div>
+      <div class="tile"><b>${sum.peopleAll}</b><span class="muted">người từng vào</span></div>
+      <div class="tile"><b>${sum.sessionsAll}</b><span class="muted">tổng lượt vào</span></div></div>
+    <p class="muted" style="margin-top:12px">Mỗi lần mở Tự cách nhau từ 20 phút trở lên được tính là một lượt. Lượt vào trước bản cập nhật máy chủ 4 chưa có giờ.</p>
+    <div class="tbl"><table><thead><tr><th>Ngày</th><th>Giờ vào</th><th>Người</th><th>Thiết bị</th><th>Phiên bản</th></tr></thead>
+    <tbody>${items.map(v=>`<tr><td>${esc(v.day.split("-").reverse().join("/"))}</td><td>${v.at?hm(v.at):esc(v.time||"–")}</td><td>${v.name?`<b style="color:var(--paper)">${esc(v.name)}</b>`:`Khách #${esc(v.id)}`}</td><td class="muted">${esc(v.dev)}</td><td class="muted">${esc(v.ver)}</td></tr>`).join("")}</tbody></table></div></section>`;
+  $("#vCsv").addEventListener("click",()=>{const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;const rows=[["Ngày","Giờ vào","Người","Mã","Thiết bị","Phiên bản"]].concat(items.map(v=>[v.day,v.at?hm(v.at):v.time,v.name||"Khách",v.id,v.dev,v.ver]));
+    const blob=new Blob(["﻿"+rows.map(r=>r.map(q).join(",")).join("\r\n")],{type:"text/csv"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="luot-vao-vo-uu-tu.csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);});
 }
 
 /* ---------- Hỏi đáp ---------- */

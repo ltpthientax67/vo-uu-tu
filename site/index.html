@@ -228,7 +228,7 @@ html.big .sheet-body,html.big .banner,html.big .coach-card,html.big .intro-card{
 </div>
 
 <button class="action" id="actionBtn" hidden><small id="actionSub"></small><strong id="actionLbl"></strong></button>
-<div class="posture" id="postureBar" hidden><button class="pill" id="sitBtn">Ngồi xếp bằng</button><button class="pill" id="layBtn2">Quỳ lạy</button><button class="pill" id="dressBtn">Trang phục</button></div>
+<div class="posture" id="postureBar" hidden><button class="pill" id="sitBtn">Ngồi xếp bằng</button><button class="pill" id="layBtn2">Quỳ lạy</button><button class="pill" id="chaoBtn">Chắp tay chào</button><button class="pill" id="dressBtn">Trang phục</button></div>
 <div class="goto" id="gotoWrap" hidden>
   <button class="pill" id="gotoBtn" aria-expanded="false" style="padding:9px 14px;font-size:13.5px">Đi đến…</button>
   <div class="goto-menu" id="gotoMenu" hidden></div>
@@ -954,7 +954,7 @@ function person(o={}){
   root.userData={hips,upper,legs,arms,robe,headG,elder,outfitC:outfit.lapC,outfit:oname,female};
   poseStand(root);return root;
 }
-function poseStand(p){const u=p.userData;u.legs.forEach(l=>{l.th.rotation.x=0;l.kn.rotation.x=0;});u.arms.forEach(a=>{a.sh.rotation.set(0,0,a.s*.07);a.el.rotation.x=.12;});u.hips.position.y=u.seated?.14:.92;u.upper.rotation.set(u.elder?-.12:0,0,0);u.headG.rotation.x=0;}
+function poseStand(p){if(p===window.__av&&(S.chaoUntil||0)>Date.now()&&!p.userData.seated){posePray(p,.18);return;}const u=p.userData;u.legs.forEach(l=>{l.th.rotation.x=0;l.kn.rotation.x=0;});u.arms.forEach(a=>{a.sh.rotation.set(0,0,a.s*.07);a.el.rotation.x=.12;});u.hips.position.y=u.seated?.14:.92;u.upper.rotation.set(u.elder?-.12:0,0,0);u.headG.rotation.x=0;}
 function poseWalk(p,ph,amp=.42){const u=p.userData,sw=Math.sin(ph);u.legs[0].th.rotation.x=sw*amp;u.legs[1].th.rotation.x=-sw*amp;u.legs[0].kn.rotation.x=-Math.max(0,-sw)*amp*1.4;u.legs[1].kn.rotation.x=-Math.max(0,sw)*amp*1.4;
   u.arms.forEach((a,i)=>{a.sh.rotation.set((i?sw:-sw)*amp*.75,0,a.s*.07);a.el.rotation.x=.3;});u.hips.position.y=.92+Math.abs(Math.cos(ph))*.02;u.upper.rotation.set(u.elder?-.14:-.03,0,0);u.headG.rotation.x=0;}
 function posePray(p,bow=0,lap=false){const u=p.userData;u.arms.forEach(a=>{if(lap==="book"){a.sh.rotation.set(.62,a.s*.42,0);a.el.rotation.x=1.15;}else if(lap){a.sh.rotation.set(.32,a.s*.35,0);a.el.rotation.x=1.05;}else{a.sh.rotation.set(.3,a.s*.67,0);a.el.rotation.x=1.9;}});
@@ -987,7 +987,7 @@ const walkers=[];
 function addWalker(p,ri,i,ox){const r=ROUTES[ri],n=r[i];p.position.set(n.x,0,n.z);crowdGroup.add(p);walkers.push({p,route:r,i:(i+1)%r.length,x:n.x+ox,z:n.z,ox,speed:rand(.8,1.15)*(p.userData.elder?.7:1),wait:0,ph:rand(0,6)});}
 [[0,3],[1,2],[2,2],[3,2],[4,2]].forEach(([ri,n])=>{for(let k=0;k<n;k++)addWalker(person(),ri,(k*2)%ROUTES[ri].length,rand(-.25,.25));});
 {const fam=[person({female:true,outfit:"aodai"}),person({female:false,outfit:"casual"}),person({child:true,outfit:"casual"})];fam.forEach((p,k)=>{addWalker(p,0,0,(k-1)*.55);const w=walkers[walkers.length-1];w.z+=k*.4;w.speed=.85;});}
-const avatar=person({outfit:"lam",female:false,elder:false,skin:0xd2a07a});{const r=glow(0xe2b36a,1.3,.35);r.position.y=.05;avatar.add(r);}scene.add(avatar);
+const avatar=person({outfit:"lam",female:false,elder:false,skin:0xd2a07a});{const r=glow(0xe2b36a,1.3,.35);r.position.y=.05;avatar.add(r);}scene.add(avatar);window.__av=avatar;
 /* postures: sit cross-legged (toggle) and full prostration (quỳ lạy, 3 times) */
 function setSeated(p,on){const u=p.userData;if(!u.seatG){const lm=pm(u.outfitC),g=new THREE.Group();
     [-1,1].forEach(s=>{const knee=[s*.36,-.05,-.27],foot=[-s*.17,s>0?-.03:-.1,-.15];limbBetween(g,[s*.09,0,0],knee,.09,.078,lm);limbBetween(g,knee,foot,.07,.055,lm);const f=new THREE.Mesh(PG.foot,pm(0xc99570));f.position.set(...foot);f.rotation.y=s*1.3;g.add(f);});
@@ -1741,7 +1741,7 @@ function webRegForm(note,edit){
 }
 
 // ===== ĐỢT 1: Tường tâm nguyện chung (có duyệt), thông báo của Tự, báo bản mới, hướng dẫn lần đầu, báo lỗi =====
-const APP_VER="1.4";
+const APP_VER="1.5";
 const ERRS=[];
 addEventListener("error",e=>{ERRS.push(String(e.message||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
 addEventListener("unhandledrejection",e=>{const r=e.reason;if(r&&r.code)return;ERRS.push(String((r&&r.message)||r||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
@@ -1882,9 +1882,10 @@ function dressUp(){const prev=S.view;setView("tp");
     <div class="chips" id="dressList">${DRESS.map(([k,n])=>`<button class="chip" data-o="${k}">${n}</button>`).join("")}</div>
     <div class="chips" id="dressG"><button class="chip" data-g="0">Nam</button><button class="chip" data-g="1">Nữ</button></div>
     <div id="dressNote" class="muted"></div>
+    <label class="f" for="dispName">Tên hiện trên đầu khi gặp người khác trong Tự (không bắt buộc, để trống sẽ hiện “Phật tử”)</label><input type="text" id="dispName" maxlength="20" placeholder="Ví dụ: Diệu Hạnh, chị Mai" value="${esc(store.get("dispName",""))}">
     <div class="row"><button class="btn" id="dressOk">Xong</button><button class="btn ghost" id="dressBack">${prev==="fp"?"Xong và trở lại góc nhìn bằng mắt mình":"Giữ góc nhìn phía sau"}</button></div>`,null);
   const note=()=>{const d=DRESS.find(x=>x[0]===LOOK.outfit);$("#dressNote").textContent=d?d[2]:"";};
-  bindDress("#sheetBody");syncDressChips();note();$$("#sheetBody [data-o]").forEach(b=>b.addEventListener("click",note));
+  bindDress("#sheetBody");syncDressChips();note();$("#dispName").addEventListener("input",e=>{store.set("dispName",e.target.value.trim().slice(0,20));});$$("#sheetBody [data-o]").forEach(b=>b.addEventListener("click",note));
   $("#dressOk").addEventListener("click",closeSheet);$("#dressBack").addEventListener("click",()=>{if(prev==="fp")setView("fp");closeSheet();});}
 $("#dressBtn").addEventListener("click",dressUp);
 bindDress("#introDress");syncDressChips();restyleAvatar();
@@ -2153,8 +2154,38 @@ function denArrive(){if(!DEN)return;const h=HOT.find(x=>x.id==="pond");if(S.z>15
 /* ---------- hiện diện thật & thời kinh tối chung ---------- */
 let LIVE=null;
 function liveText(){return LIVE&&LIVE.n>0?`${LIVE.n} người đang trong Tự`:"Đại chúng mô phỏng";}
-async function herePing(){if(!S.entered||document.visibilityState!=="visible")return;try{const j=await api("here",{chant:!!(CH&&CH.playing)});LIVE={n:j.n||1,chant:j.chant||0};if(S.crowd)$("#liveCount").textContent=liveText();}catch(e){}}
-setInterval(herePing,90000);
+/* ---------- gặp nhau trong Tự: người thật đang có mặt hiện thành nhân vật có tên ---------- */
+const PID=Math.random().toString(36).slice(2,10);
+const PEERS=new Map(),peersGroup=new THREE.Group();scene.add(peersGroup);let pingBusy=false;
+function myState(){return{i:PID,x:+S.x.toFixed(2),z:+S.z.toFixed(2),y:+(((S.yaw%6.2832)+6.2832)%6.2832).toFixed(2),o:LOOK.outfit,f:LOOK.female?1:0,
+  p:S.pose==="sit"?"sit":S.pose==="lay"?"lay":((S.chaoUntil||0)>Date.now()?"chao":"stand"),n:store.get("dispName","")};}
+async function herePing(){if(!S.entered||document.visibilityState!=="visible"||pingBusy)return;pingBusy=true;
+  try{const j=await api("here",{chant:!!(CH&&CH.playing),s:myState()});LIVE={n:j.n||1,chant:j.chant||0};if(S.crowd)$("#liveCount").textContent=liveText();syncPeers(j.peers||[]);}catch(e){}finally{pingBusy=false;}}
+setInterval(herePing,15000);
+function removePeer(k){const P=PEERS.get(k);if(P){peersGroup.remove(P.g);PEERS.delete(k);}}
+function syncPeers(list){const seen=new Set();let first=!syncPeers.done;syncPeers.done=true;
+  list.forEach(q=>{if(!q.i||q.a>60000)return;seen.add(q.i);let P=PEERS.get(q.i);
+    if(P&&(P.o!==q.o||P.f!==q.f)){removePeer(q.i);P=null;}
+    if(!P){const g=person({outfit:q.o,female:!!q.f,elder:false,exact:true});const ring=glow(0xffd28a,1.15,.5);ring.position.y=.05;g.add(ring);g.position.set(q.x,groundY(q.x,q.z),q.z);g.rotation.y=q.y;peersGroup.add(g);
+      P={g,o:q.o,f:q.f,x:q.x,z:q.z,tx:q.x,tz:q.z,ty:q.y,ph:Math.random()*6,p:"stand",n:null,label:null};PEERS.set(q.i,P);
+      if(!first)toast(`${q.n||"Một Phật tử"} vừa bước vào Tự.`,3200);}
+    const name=q.n||"Phật tử";if(P.n!==name){if(P.label)P.g.remove(P.label);P.label=textSprite(name,{size:24,maxW:260});P.label.scale.multiplyScalar(.85);P.label.position.y=2.2;P.g.add(P.label);P.n=name;}
+    P.tx=q.x;P.tz=q.z;P.ty=q.y;
+    if(P.p!==q.p){if(P.p==="sit")setSeated(P.g,false);if(q.p==="sit")setSeated(P.g,true);
+      if(q.p==="chao"&&Math.hypot(q.x-S.x,q.z-S.z)<8)toast(`${name} chắp tay chào bạn. Bạn có thể bấm “Chắp tay chào” để đáp lễ.`,4200);
+      P.p=q.p;P.t0=performance.now();}});
+  [...PEERS.keys()].forEach(k=>{if(!seen.has(k))removePeer(k);});}
+let pLast=performance.now();
+(function peerLoop(){const now=performance.now(),dt=Math.min(.1,(now-pLast)/1000);pLast=now;peersGroup.visible=S.entered&&S.crowd!==false;
+  PEERS.forEach(P=>{const dx=P.tx-P.x,dz=P.tz-P.z,d=Math.hypot(dx,dz);let moving=false;
+    if(d>.08){const sp=Math.min(d,dt*Math.max(1.2,d/4));P.x+=dx/d*sp;P.z+=dz/d*sp;moving=true;const ty=Math.atan2(-dx,-dz);let dy=((ty-P.g.rotation.y+Math.PI)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)-Math.PI;P.g.rotation.y+=dy*Math.min(1,dt*6);}
+    else{let dy=((P.ty-P.g.rotation.y+Math.PI)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)-Math.PI;P.g.rotation.y+=dy*Math.min(1,dt*3);}
+    P.g.position.set(P.x,groundY(P.x,P.z),P.z);
+    if(P.p==="sit")posePray(P.g,0,true);else if(P.p==="lay")poseLay(P.g,((now-(P.t0||now))/1000)%13.5);else if(P.p==="chao")posePray(P.g,.18);
+    else if(moving){P.ph+=dt*6.2;poseWalk(P.g,P.ph);}else poseStand(P.g);});
+  requestAnimationFrame(peerLoop);})();
+function chao(){S.chaoUntil=Date.now()+6000;herePing();bell(220,.2);toast("Bạn chắp tay chào đại chúng. Nam mô A Di Đà Phật.",2600);}
+$("#chaoBtn").addEventListener("click",chao);
 const eveningOn=()=>{const h=new Date().getHours(),m=new Date().getMinutes();return h===20&&m<30;};
 function eveningBanner(){if(!eveningOn()||store.get("eveSeen","")===dayKey(new Date()))return;
   banner("eve",`<span class="eyebrow">Thời kinh tối chung · 20:00</span><p>Đại chúng đang tụng kinh cầu an${LIVE&&LIVE.chant?` · ${LIVE.chant} người đang tụng`:""}. Mời bạn vào góc tụng niệm cùng tụng.</p>`,
