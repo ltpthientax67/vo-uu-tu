@@ -58,7 +58,8 @@ function setup() {
 
 /** Xem mật khẩu trang quản trị (mở Nhật ký thực thi sau khi chạy). */
 function xemMatKhauQuanTri() { Logger.log('Mật khẩu trang quản trị: ' + adminKey_()); }
-/** Đổi sang mật khẩu mới (mật khẩu cũ hết hiệu lực ngay). */
+/** Quên mật khẩu: chạy hàm này để tạo mật khẩu ngẫu nhiên mới (mật khẩu cũ hết hiệu lực ngay), xem trong Nhật ký thực thi.
+ *  Muốn đặt mật khẩu do mình chọn: đăng nhập trang quản trị, bấm "Đổi mật khẩu". */
 function doiMatKhauQuanTri() {
   PropertiesService.getScriptProperties().deleteProperty('ADMIN_KEY');
   Logger.log('Mật khẩu mới: ' + adminKey_());
@@ -312,6 +313,12 @@ function admin_(action, p) {
   if (fails >= 10) return { ok: false, error: 'locked' };
   if (clean_(p.key, 60) !== adminKey_()) { c.put('afail', String(fails + 1), 900); return { ok: false, error: 'bad_key' }; }
   if (action === 'a_login') return { ok: true };
+  if (action === 'a_setKey') {
+    const nk = String(p.newKey == null ? '' : p.newKey).trim();
+    if (nk.length < 8 || nk.length > 60 || /\s/.test(nk)) return { ok: false, error: 'weak_key' };
+    PropertiesService.getScriptProperties().setProperty('ADMIN_KEY', nk);
+    return { ok: true };
+  }
   if (action === 'a_stats') return { ok: true, stats: stats_() };
   if (action === 'a_qs') return { ok: true, items: rows_('HoiDap').slice(-300).reverse().map(function (r) {
     return { id: String(r[0]), at: ts_(r[1]), q: String(r[3]), share: r[4] === 'Có', a: String(r[5] || ''), pub: r[6] === true, ad: ts_(r[7]) }; }) };

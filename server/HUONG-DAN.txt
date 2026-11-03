@@ -35,6 +35,8 @@ CẬP NHẬT MÁY CHỦ LÊN BẢN MỚI NHẤT (bản 4) – làm mỗi khi Cod
 CHỦ TRÌ TỰ HẰNG NGÀY: TRANG QUẢN TRỊ
 ===========================================================================
  Mở https://vo-uu-tu.netlify.app/quan-tri.html, nhập mật khẩu quản trị.
+ - Đổi mật khẩu theo ý mình: bấm "Đổi mật khẩu" ở góc trên, nhập mật khẩu mới hai lần (ít nhất 8 ký tự, không dấu cách).
+ - Quên mật khẩu: trong Apps Script chạy hàm doiMatKhauQuanTri, xem mật khẩu ngẫu nhiên mới trong Nhật ký thực thi.
  - Tổng quan: ai đang ở trong Tự lúc này (tên nếu đã đăng ký, đang ở đâu, vào lúc mấy giờ), số người ghé mỗi ngày, việc đang chờ bạn.
  - Lượt vào: từng lượt vào kèm ngày giờ, thiết bị; tải được file CSV.
  - Hỏi đáp: viết lời đáp, tick "Đăng vào Hỏi đáp chung" nếu người hỏi cho phép.

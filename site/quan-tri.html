@@ -83,7 +83,7 @@ code{font-size:12px;color:var(--mist-2)}
 <div id="app" hidden>
 <header>
   <div class="bar"><div><small>Vô Ưu Tự</small><h1>Quản trị Tự</h1></div>
-    <div class="row"><button class="btn ghost sm" id="refresh">Làm mới</button><a class="btn ghost sm" href="./" target="_blank" rel="noopener" style="text-decoration:none">Mở Tự</a><button class="btn ghost sm" id="logout">Thoát</button></div></div>
+    <div class="row"><button class="btn ghost sm" id="refresh">Làm mới</button><a class="btn ghost sm" href="./" target="_blank" rel="noopener" style="text-decoration:none">Mở Tự</a><button class="btn ghost sm" id="pwBtn">Đổi mật khẩu</button><button class="btn ghost sm" id="logout">Thoát</button></div></div>
   <nav class="tabs" role="tablist" id="tabs">
     <button class="tab" role="tab" data-t="home" aria-selected="true">Tổng quan</button>
     <button class="tab" role="tab" data-t="visits">Lượt vào</button>
@@ -121,6 +121,19 @@ async function login(){
   catch(e){$("#loginMsg").textContent=errMsg(e);KEY="";}
 }
 $("#loginBtn").addEventListener("click",login);$("#key").addEventListener("keydown",e=>{if(e.key==="Enter")login();});
+$("#pwBtn").addEventListener("click",()=>{CUR="pw";$$(".tab").forEach(b=>b.setAttribute("aria-selected","false"));
+  $("#main").innerHTML=`<section><div class="sec-head"><h2>Đổi mật khẩu quản trị</h2></div>
+    <div class="card" style="margin-top:14px;max-width:460px">
+      <label class="muted" for="pw1">Mật khẩu mới (ít nhất 8 ký tự, không có dấu cách)</label><input type="password" id="pw1" autocomplete="new-password">
+      <label class="muted" for="pw2">Nhập lại mật khẩu mới</label><input type="password" id="pw2" autocomplete="new-password">
+      <div class="row"><button class="btn" id="pwSave">Lưu mật khẩu mới</button><span class="muted" id="pwMsg"></span></div>
+      <p class="muted">Nên dùng cụm dễ nhớ với bạn nhưng khó đoán, ví dụ ghép 3–4 chữ không dấu và vài con số. Nếu quên mật khẩu: mở Apps Script, chạy hàm doiMatKhauQuanTri rồi xem mật khẩu mới trong Nhật ký thực thi.</p></div></section>`;
+  $("#pwSave").addEventListener("click",async()=>{const a=$("#pw1").value.trim(),b=$("#pw2").value.trim(),m=$("#pwMsg");
+    if(a.length<8||/\s/.test(a)){m.textContent="Mật khẩu cần ít nhất 8 ký tự và không có dấu cách.";return;}if(a!==b){m.textContent="Hai lần nhập chưa giống nhau.";return;}
+    $("#pwSave").disabled=true;m.textContent="Đang lưu…";
+    try{await api("a_setKey",{newKey:a});KEY=a;try{if(localStorage.getItem("vut-admin"))localStorage.setItem("vut-admin",a);sessionStorage.setItem("vut-admin",a);}catch(e){}
+      m.textContent="Đã đổi. Từ giờ đăng nhập bằng mật khẩu mới.";toast("Đã đổi mật khẩu quản trị");}
+    catch(e){m.textContent=e&&e.code==="weak_key"?"Mật khẩu chưa hợp lệ.":errMsg(e);}finally{$("#pwSave").disabled=false;}});});
 $("#logout").addEventListener("click",()=>{try{sessionStorage.removeItem("vut-admin");localStorage.removeItem("vut-admin");}catch(e){}location.reload();});
 if(KEY){$("#key").value="";login();}
 
