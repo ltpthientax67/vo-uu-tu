@@ -1757,7 +1757,7 @@ function webRegForm(note,edit){
 }
 
 // ===== ĐỢT 1: Tường tâm nguyện chung (có duyệt), thông báo của Tự, báo bản mới, hướng dẫn lần đầu, báo lỗi =====
-const APP_VER="1.6";
+const APP_VER="1.7";
 const ERRS=[];
 addEventListener("error",e=>{ERRS.push(String(e.message||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
 addEventListener("unhandledrejection",e=>{const r=e.reason;if(r&&r.code)return;ERRS.push(String((r&&r.message)||r||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
@@ -2864,6 +2864,260 @@ $("#enterBtn").addEventListener("click",()=>{setTimeout(()=>{chayReminder();gioR
 window.__vut5={guideStart,thien,anChay,bietOn,truyen,huongLinh,nhaTo,hoPhap,diLac,sideDoor};
 
 function routeVia(h){const p=[];if(S.z<-7.7){const L=h.stand[0]>0?2.2:-2.2;if(S.z<-19.6)p.push([2.4,S.z],[2.4,-16.6]);p.push([L,Math.min(S.z,-9.6)],[L,-9.6],[L,-5.6]);}return p.concat(h.via,[h.stand]);}
+
+// ===== ĐỢT 7: chữ tên điểm rõ nét, cảnh quan quanh Tự (non bộ, thác nước, hàng cau, cây sứ, chậu kiểng, ghế đá),
+// chim bồ câu, bướm ngày, đom đóm đêm, chuông gió, kinh tụng âm Hán Việt =====
+
+/* ---------- chữ tên các điểm: nét gấp đôi, nền mờ, luôn cùng cỡ trên màn hình, mờ dần khi ở xa ---------- */
+function labelSprite(text){const k=2,size=30*k,pad=18*k,c=document.createElement("canvas"),x=c.getContext("2d");x.font=`600 ${size}px "Be Vietnam Pro",sans-serif`;
+  const w=Math.ceil(x.measureText(text).width)+pad*2,h=Math.ceil(size*1.6);c.width=w;c.height=h;x.font=`600 ${size}px "Be Vietnam Pro",sans-serif`;
+  const r=h/2;x.fillStyle="rgba(12,18,18,.72)";x.beginPath();x.moveTo(r,0);x.lineTo(w-r,0);x.arc(w-r,r,r,-Math.PI/2,Math.PI/2);x.lineTo(r,h);x.arc(r,r,r,Math.PI/2,Math.PI*1.5);x.fill();
+  x.strokeStyle="rgba(226,179,106,.7)";x.lineWidth=2*k;x.stroke();x.fillStyle="#f6e7c4";x.textAlign="center";x.textBaseline="middle";x.fillText(text,w/2,h/2+2);
+  const t=new THREE.CanvasTexture(c);t.anisotropy=ANISO;t.minFilter=THREE.LinearFilter;
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false,sizeAttenuation:false}));s.userData.aspect=w/h;return s;}
+const LABEL_H=coarse?.052:.04;
+const dotTex=canvasTex(32,32,(x,w,h)=>{x.clearRect(0,0,w,h);const g=x.createRadialGradient(16,16,0,16,16,16);g.addColorStop(0,"rgba(255,255,255,1)");g.addColorStop(.5,"rgba(255,255,255,.6)");g.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=g;x.fillRect(0,0,w,h);});
+if(shafts.dust){shafts.dust.material.map=dotTex;shafts.dust.material.size=.06;shafts.dust.material.needsUpdate=true;}
+markers.forEach(m=>{const old=m.userData.label,n=labelSprite(m.userData.hot.name);n.position.copy(old.position);n.scale.set(LABEL_H*n.userData.aspect,LABEL_H,1);n.renderOrder=5;scene.remove(old);scene.add(n);m.userData.label=n;});
+(function labelFade(){const cp=camera.position;markers.forEach(m=>{const l=m.userData.label,d=cp.distanceTo(l.position),o=d<2?0:d<4?(d-2)/2:d>26?Math.max(0,1-(d-26)/6):1;l.material.opacity=o;l.visible=o>.02&&!S.sheetOpen;});requestAnimationFrame(labelFade);})();
+
+/* ---------- hòn non bộ và thác nước nhỏ bên hồ sen ---------- */
+{const NB={x:-10.6,z:10.9},rock=M(0x5b584f,{roughness:.95}),moss=M(0x47603a,{roughness:1});
+ const parts=[[0,.5,0,1.1,1.2],[.5,.3,.6,.75,.7],[-.6,.35,.4,.7,.8],[.1,1.3,-.1,.6,1.0],[-.25,2.0,.05,.42,.8],[.35,1.85,.2,.3,.6],[.05,2.55,-.05,.25,.6]];
+ parts.forEach(([dx,y,dz,r,sy],i)=>{const g=new THREE.IcosahedronGeometry(r,3),p=g.attributes.position,ph=rand(0,6);for(let k=0;k<p.count;k++){const vx=p.getX(k),vy=p.getY(k),vz=p.getZ(k),n=1+.13*Math.sin(vx*5+ph)*Math.cos(vz*4+ph)+.07*Math.sin(vy*9);p.setXYZ(k,vx*n,vy*n,vz*n);}g.computeVertexNormals();
+   const m=new THREE.Mesh(g,i%3===2?moss:rock);m.scale.y=sy;m.position.set(NB.x+dx,y*.9,NB.z+dz);m.rotation.y=rand(0,6);m.castShadow=!coarse;scene.add(m);});
+ [[.15,2.2,.35],[-.45,1.4,.55],[.55,.9,.6]].forEach(([dx,y,dz])=>{cyl(.025,.04,.35,M(0x5a3b26),NB.x+dx,y,NB.z+dz,6);const c=sph(.2,M(0x3f6a34),NB.x+dx,y+.25,NB.z+dz,8);c.scale.set(1.3,.6,1.1);});
+ const tw=new THREE.Group();const tb=new THREE.Mesh(new THREE.BoxGeometry(.14,.14,.14),mat.plaster);tw.add(tb);const tr=new THREE.Mesh(new THREE.ConeGeometry(.15,.1,4),mat.tile);tr.position.y=.12;tr.rotation.y=Math.PI/4;tw.add(tr);tw.position.set(NB.x-.15,2.9,NB.z);scene.add(tw);
+ const wt=canvasTex(32,128,(x,w,h)=>{for(let i=0;i<40;i++){x.fillStyle=`rgba(230,245,250,${rand(.25,.7)})`;x.fillRect(rand(0,w),rand(0,h),rand(1,3),rand(10,30));}});wt.wrapT=THREE.RepeatWrapping;
+ const fall=new THREE.Mesh(new THREE.PlaneGeometry(.38,1.7),new THREE.MeshBasicMaterial({map:wt,transparent:true,opacity:.75,depthWrite:false,side:THREE.DoubleSide}));fall.position.set(NB.x+.55,.95,NB.z-.62);fall.rotation.y=-.7;scene.add(fall);
+ const foam=new THREE.Mesh(new THREE.RingGeometry(.05,.45,24),new THREE.MeshBasicMaterial({color:0xeaf6f8,transparent:true,opacity:.45,depthWrite:false}));foam.rotation.x=-Math.PI/2;foam.position.set(NB.x+.75,.07,NB.z-.85);scene.add(foam);
+ (function flow(){wt.offset.y-=.012;foam.scale.setScalar(1+.08*Math.sin(performance.now()/300));requestAnimationFrame(flow);})();
+ circ(NB.x,NB.z,1.3);}
+
+/* ---------- hàng cau dọc tường, cây sứ trắng, chậu kiểng, ghế đá ---------- */
+function cau(x,z,h){const tr=M(0x9a917c,{roughness:.9});const t=cyl(.07,.1,h,tr,x,h/2,z,8);t.rotation.z=rand(-.05,.05);
+  for(let k=0;k<5;k++)cyl(.105,.105,.03,M(0x7a7262),x,h*(.2+k*.15),z,8);
+  const top=new THREE.Vector3(x,h,z),fm=new THREE.MeshStandardMaterial({color:0x4f7a36,side:THREE.DoubleSide,roughness:.8});
+  for(let k=0;k<9;k++){const a=k/9*6.283+rand(-.2,.2),len=rand(1.2,1.7),pts=[];for(let i=0;i<=6;i++){const u=i/6;pts.push(new THREE.Vector3(x+Math.cos(a)*len*u,h+.15+Math.sin(u*Math.PI*.9)*.35-u*u*.6,z+Math.sin(a)*len*u));}
+    const cv=new THREE.CatmullRomCurve3(pts),g=new THREE.BufferGeometry(),P=[],I=[];for(let i=0;i<=12;i++){const u=i/12,p=cv.getPointAt(u),w=.32*Math.sin(Math.PI*Math.min(1,u*1.15)),side=new THREE.Vector3(-Math.sin(a),0,Math.cos(a)).multiplyScalar(w);
+      P.push(p.x-side.x,p.y-.06*u,p.z-side.z,p.x+side.x,p.y-.06*u,p.z+side.z);if(i<12){const b=i*2;I.push(b,b+1,b+2,b+1,b+3,b+2);}}
+    g.setAttribute("position",new THREE.Float32BufferAttribute(P,3));g.setIndex(I);g.computeVertexNormals();scene.add(new THREE.Mesh(g,fm));}
+  const nut=sph(.12,M(0x8a6a2a),x,h-.12,z,8);nut.scale.set(1.2,1.4,1.2);circ(x,z,.25);}
+[[-15.0,18.8],[-15.0,15.6],[15.0,18.8],[15.0,16.2],[-15.0,-6.4],[15.0,-6.6],[-15.1,-25.5],[15.1,-25.5]].forEach(([x,z])=>cau(x,z,rand(5.2,6.6)));
+function su(x,z){const tr=M(0x7d7468,{roughness:.9}),fl=new THREE.MeshStandardMaterial({color:0xfbf6ea,emissive:0x2a2418,roughness:.6}),lf=M(0x4d7a3a);
+  cyl(.12,.16,1.1,tr,x,.55,z,8);const pts=[];for(let b=0;b<5;b++){const a=b/5*6.283+rand(-.3,.3),len=rand(.7,1.1);const br=cyl(.05,.08,len,tr,x+Math.cos(a)*len*.35,1.35,z+Math.sin(a)*len*.35,6);br.rotation.set(Math.sin(a)*.75,0,-Math.cos(a)*.75);
+    const ex=x+Math.cos(a)*len*.7,ez=z+Math.sin(a)*len*.7,ey=1.75;const l=sph(.28,lf,ex,ey,ez,8);l.scale.set(1.2,.5,1.2);for(let k=0;k<7;k++)pts.push([ex+rand(-.25,.25),ey+rand(.08,.2),ez+rand(-.25,.25)]);}
+  const im=new THREE.InstancedMesh(new THREE.SphereGeometry(.055,6,4),fl,pts.length),mm=new THREE.Matrix4();pts.forEach((p,i)=>{mm.makeTranslation(...p);im.setMatrixAt(i,mm);});scene.add(im);circ(x,z,.35);}
+[[9.4,-4.4],[-12.6,5.4],[13.9,10.9]].forEach(([x,z])=>su(x,z));
+function kieng(x,z){const pot=new THREE.Mesh(new THREE.LatheGeometry([[0,0],[.22,0],[.3,.12],[.32,.32],[.36,.36],[0,.36]].map(([r,y])=>new THREE.Vector2(r,y)),20),M(0x2f5b7a,{roughness:.3}));pot.position.set(x,.42,z);scene.add(pot);
+  box(.6,.42,.6,mat.stone,x,.21,z);const tr=M(0x5a3b26);const t=cyl(.04,.07,.5,tr,x,1.0,z,6);t.rotation.z=.4;const t2=cyl(.03,.05,.4,tr,x-.15,1.25,z,6);t2.rotation.z=-.6;
+  [[-.28,1.35,0,.22],[.12,1.3,.08,.2],[-.05,1.55,-.05,.18]].forEach(([dx,y,dz,r])=>{const c=sph(r,M(0x3f6a34),x+dx,y,z+dz,8);c.scale.set(1.4,.5,1.2);});circ(x,z,.35);}
+[[-3.1,16.2],[3.1,16.2],[-3.1,11.6],[3.1,11.6]].forEach(([x,z])=>kieng(x,z));
+function bench(x,z,ry){const g=new THREE.Group();const st=mat.stone;[[-.5],[.5]].forEach(([dx])=>{const l=new THREE.Mesh(new THREE.BoxGeometry(.14,.4,.38),st);l.position.set(dx,.2,0);g.add(l);});
+  const s=new THREE.Mesh(new THREE.BoxGeometry(1.4,.08,.46),st);s.position.y=.44;g.add(s);g.position.set(x,0,z);g.rotation.y=ry;scene.add(g);circ(x,z,.6);}
+bench(10.4,2.3,-.9);bench(-3.4,4.6,.5);bench(-5.4,13.6,-.5);
+
+/* ---------- chim bồ câu sân Tự, bướm ban ngày, đom đóm ban đêm ---------- */
+const birds=[];
+function makeBird(){const g=new THREE.Group(),c=pick([0x8a8e94,0x9a9690,0xb8b2a8]);const b=new THREE.Mesh(new THREE.SphereGeometry(.09,10,8),M(c));b.scale.set(.75,.7,1.25);b.position.y=.12;g.add(b);
+  const h=new THREE.Mesh(new THREE.SphereGeometry(.05,8,6),M(0x6a6e78));h.position.set(0,.2,-.1);g.add(h);const bk=new THREE.Mesh(new THREE.ConeGeometry(.012,.04,5),M(0xd8a040));bk.rotation.x=-Math.PI/2;bk.position.set(0,.2,-.16);g.add(bk);
+  const wl=new THREE.Mesh(new THREE.SphereGeometry(.07,8,6),M(c));wl.scale.set(.25,.5,1.1);wl.position.set(-.06,.13,.01);g.add(wl);const wr=wl.clone();wr.position.x=.06;g.add(wr);g.userData={h,wl,wr};return g;}
+[[2.2,6.5],[2.8,7.2],[1.9,7.6],[-1.8,3.2],[-2.3,2.6]].forEach(([x,z])=>{const g=makeBird();g.position.set(x,0,z);g.rotation.y=rand(0,6);scene.add(g);birds.push({g,hx:x,hz:z,st:"ground",t:0,peck:rand(0,4)});});
+const butterflies=[],flies=[];
+{const wing=new THREE.PlaneGeometry(.12,.1);wing.translate(.06,0,0);
+ for(let i=0;i<7;i++){const g=new THREE.Group(),m=new THREE.MeshBasicMaterial({color:pick([0xf6d86a,0xffffff,0xf0a050,0x9fd0f0]),side:THREE.DoubleSide});const l=new THREE.Mesh(wing,m),r=new THREE.Mesh(wing,m);r.scale.x=-1;g.add(l,r);g.userData={l,r,cx:pick([-8,5,9,-3]),cz:pick([8,-6.5,12,15]),ph:rand(0,6),sp:rand(.3,.6)};scene.add(g);butterflies.push(g);}
+ const n=70,p=[],base=[];for(let i=0;i<n;i++){const a=rand(0,6.283),r=rand(1,7),cx=i%2?-8:12.5,cz=i%2?8:5;base.push([cx+Math.cos(a)*r,rand(.4,2.2),cz+Math.sin(a)*r,rand(0,6)]);p.push(0,0,0);}
+ const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(p,3));const ff=new THREE.Points(g,new THREE.PointsMaterial({map:dotTex,color:0xd8ff8a,size:.16,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}));scene.add(ff);flies.push(ff,base);}
+let aLast=performance.now();
+(function lifeLoop(){const now=performance.now(),dt=Math.min(.1,(now-aLast)/1000),T=now/1000;aLast=now;const day=S.time!=="dem";
+  birds.forEach(b=>{const g=b.g,d=Math.hypot(g.position.x-S.x,g.position.z-S.z);
+    if(b.st==="ground"){g.position.y=0;b.peck+=dt;const pk=Math.sin(b.peck*5)>.6;g.userData.h.position.y=pk?.13:.2;g.userData.h.position.z=pk?-.14:-.1;if(Math.random()<dt*.3)g.rotation.y+=rand(-.8,.8);
+      if(d<2.4&&S.entered){b.st="fly";b.t=0;b.from=g.position.clone();const a=rand(0,6.283);b.to=new THREE.Vector3(b.hx+Math.cos(a)*rand(3,6),0,b.hz+Math.sin(a)*rand(3,6));b.to.x=Math.max(-14,Math.min(14,b.to.x));b.to.z=Math.max(-5,Math.min(19,b.to.z));g.lookAt(b.to.x,g.position.y,b.to.z);g.rotateY(Math.PI);}}
+    else{b.t+=dt/1.6;const u=Math.min(1,b.t);g.position.lerpVectors(b.from,b.to,u);g.position.y=Math.sin(u*Math.PI)*2.2;const f=Math.sin(T*28)*.9;g.userData.wl.rotation.z=f;g.userData.wr.rotation.z=-f;if(u>=1){b.st="ground";g.userData.wl.rotation.z=0;g.userData.wr.rotation.z=0;}}});
+  butterflies.forEach(g=>{const u=g.userData;g.visible=day;if(!day)return;const a=T*u.sp+u.ph;g.position.set(u.cx+Math.cos(a)*1.6+Math.sin(a*2.3)*.5,.7+Math.sin(a*1.7)*.35,u.cz+Math.sin(a)*1.2);g.rotation.y=-a;const f=Math.sin(T*18+u.ph)*1.1;u.l.rotation.y=f;u.r.rotation.y=-f;});
+  const [ff,base]=flies;ff.material.opacity+=((day?0:.95)-ff.material.opacity)*.05;if(ff.material.opacity>.02){const p=ff.geometry.attributes.position;base.forEach((b,i)=>{p.setXYZ(i,b[0]+Math.sin(T*.4+b[3])*.6,b[1]+Math.sin(T*.9+b[3]*2)*.25,b[2]+Math.cos(T*.35+b[3])*.6);});p.needsUpdate=true;ff.material.size=.13+.05*Math.sin(T*3);}
+  requestAnimationFrame(lifeLoop);})();
+
+/* ---------- chuông gió ở góc mái gác chuông: thỉnh thoảng ngân nhẹ ---------- */
+function windChime(){if(!A||!A.on||!S.entered||document.visibilityState!=="visible")return;const c=A.ctx,t0=c.currentTime,notes=[1318,1568,1760,2093,2349],n=2+(Math.random()*3|0);
+  for(let i=0;i<n;i++){const t=t0+i*rand(.12,.35),o=c.createOscillator(),g=c.createGain();o.type="sine";o.frequency.value=pick(notes);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.035,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+2.4);o.connect(g);g.connect(A.master);o.start(t);o.stop(t+2.5);}}
+setInterval(()=>{if(Math.random()<.45)windChime();},9000);
+
+/* ---------- kinh tụng toàn văn âm Hán Việt (nguồn âm Hán Việt: dự án kinh_nhat_tung, phạm vi công cộng; phần nghĩa do Vô Ưu Tự diễn ý) ---------- */
+CHANTS.kinhadida={name:"Kinh A Di Đà",type:"text",full:true,lines:()=>KINH_AD,note:"Kinh A Di Đà (bản dịch Hán của ngài Cưu Ma La Thập), tụng âm Hán Việt trọn bài. Dòng chữ nhỏ là diễn ý tiếng Việt của từng đoạn để hiểu nghĩa, không phải bản dịch từng câu. Thường tụng để cầu siêu và trong khóa lễ Tịnh Độ."};
+CHANTS.phomon={name:"Phẩm Phổ Môn",type:"text",full:true,lines:()=>KINH_PM,note:"Phẩm Phổ Môn, kinh Pháp Hoa, phần văn xuôi tụng âm Hán Việt trọn vẹn, có diễn ý tiếng Việt từng đoạn. Phần kệ trùng tụng sẽ bổ sung sau khi đối chiếu bản nghi thức chuẩn. Thường tụng để cầu an."};
+CHANTS.duocsu={name:"Dược Sư",type:"text",full:true,lines:()=>KINH_DS,note:"Nghi thức Dược Sư rút gọn: lược ý mười hai đại nguyện, chú Dược Sư và hồng danh. Toàn văn kinh Dược Sư sẽ bổ sung khi có bản âm Hán Việt đã đối chiếu. Thường tụng cầu an cho người đau ốm."};
+const KINH_AD=[L("Nam Mô Liên Trì Hải Hội Phật Bồ Tát.","Kính lạy chư Phật, Bồ Tát trong hải hội Liên Trì.",3,"Khai kinh"),
+ L("Như thị ngã văn: Nhất thời Phật tại Xá vệ quốc, Kỳ thọ Cấp cô độc viên, dữ đại Tỳ kheo tăng, thiên nhị bá ngũ thập nhân câu, giai thị đại A la hán, chúng sở tri thức:","Tôi nghe như vầy: một thời Đức Phật ở nước Xá Vệ, trong vườn Kỳ Thọ Cấp Cô Độc, cùng đại chúng Tỳ kheo một nghìn hai trăm năm mươi vị, đều là bậc đại A La Hán mà mọi người đều biết.",1,"Kinh A Di Đà"),
+ L("Trưởng lão Xá lợi phất, Ma ha Mục kiền liên, Ma ha Ca diếp, Ma ha Ca chiên diên, Ma ha Câu hy la, Li bà đa, Châu lợi bàn đà dà, Nan đà, A nan đà, La hầu la, Kiều phạm ba đề, Tân đầu lô phả la đọa, Ca lưu đà di, Ma ha Kiếp tân na, Bạc câu la, A nâu lâu đà, như thị đẳng chư đại đệ tử,","Đó là các Trưởng lão Xá Lợi Phất, Đại Mục Kiền Liên, Đại Ca Diếp, Đại Ca Chiên Diên, A Nan, La Hầu La… cùng các vị đại đệ tử như vậy.",1,null),
+ L("tinh chư Bồ tát ma ha tát.","Cùng các vị đại Bồ Tát như Văn Thù Sư Lợi, Di Lặc, Càn Đà Ha Đề, Thường Tinh Tấn, với Đế Thích và vô lượng chư thiên, đại chúng cùng dự hội.",1,null),
+ L("Văn thù Sư lợi pháp vương tử, A dật đa Bồ tát, Càng đà ha đề Bồ tát, Thường tinh tấn Bồ tát, dữ như thị đẳng, chư đại Bồ tát;","",1,null),
+ L("cập Thích đề hoàn nhân đẳng, vô lượng chư thiên, đại chúng câu.","",1,null),
+ L("Nhĩ thời Phật cáo Trưởng lão Xá lợi phất:","Phật bảo Trưởng lão Xá Lợi Phất: từ đây về phương Tây, qua mười muôn ức cõi Phật, có thế giới tên Cực Lạc; cõi ấy có Phật hiệu A Di Đà, hiện đang thuyết pháp. Gọi là Cực Lạc vì chúng sinh ở đó không có các khổ, chỉ hưởng những niềm vui.",1,null),
+ L("Tùng thị Tây phương quá thập vạn ức Phật độ, hữu thế giới danh viết Cực lạc kỳ độ hữu Phật hiệu A di đà, kim hiện tại thuyết pháp.","",1,null),
+ L("Xá lợi phất! Bỉ độ hà cố danh vi Cực lạc?","",1,null),
+ L("Kỳ quốc chúng sanh vô hữu chúng khổ, đản thọ chư lạc, cố danh Cực lạc.","",1,null),
+ L("Hựu Xá lợi phất! Cực lạc quốc độ, thất trùng lan thuẫn, thất trùng la võng, thất trùng hàng thọ, giai thị tứ bảo, châu tráp vi nhiễu, thị cố bỉ quốc danh vi Cực lạc.","Cõi Cực Lạc có bảy lớp lan can, bảy lớp lưới báu, bảy hàng cây báu, đều bằng bốn thứ báu, bao quanh khắp nơi; vì thế gọi là Cực Lạc.",1,null),
+ L("Hựu Xá lợi phất! Cực lạc quốc độ, hữu thất bảo trì, bát công đức thủy, sung mãn kỳ trung, trì để thuần dĩ kim sa bố địa, Tứ biên giai đạo, kim ngân, lưu ly, pha lê hiệp thành;","Cõi ấy có ao bảy báu, đầy nước tám công đức, đáy ao trải cát vàng; bốn bên bậc thềm bằng vàng, bạc, lưu ly, pha lê; trên có lầu gác trang hoàng bằng các thứ báu.",1,null),
+ L("thượng hữu, lâu các, diệc dĩ kim, ngân, lưu ly, pha lê, xa cừ, xích châu, mã não nhi nghiêm sức chi.","",1,null),
+ L("Trì chung liên hoa, đại như xa luân, thanh sắc thanh quang, huỳnh sắc huỳnh quang, xích sắc xích quang, bạch sắc bạch quang, vi diệu hương khiết.","Hoa sen trong ao lớn như bánh xe: sen xanh ánh xanh, sen vàng ánh vàng, sen đỏ ánh đỏ, sen trắng ánh trắng, thơm tho thanh khiết. Cõi Cực Lạc thành tựu công đức trang nghiêm như vậy.",1,null),
+ L("Xá lợi phất! Cực lạc quốc độ thành tựu như thị công đức trang nghiêm.","",1,null),
+ L("Hựu Xá lợi phất! Bỉ Phật quốc độ thường tác thiên nhạc, huỳnh kim vi địa, trú dạ lục thời, vũ thiên mạn đà la hoa, kỳ độ chúng sanh thường dĩ thanh đán, các dĩ y kích thạnh chúng diệu hoa cúng dường tha phương thập vạn ức Phật, tức dĩ thực thời hoàn đáo bổn quốc, phạn thực kinh hành.","Cõi Phật ấy thường trổi nhạc trời, đất bằng vàng ròng, ngày đêm sáu thời mưa hoa mạn đà la. Mỗi sáng sớm, chúng sinh đem hoa cúng dường mười muôn ức Phật ở phương khác, đến giờ ăn thì trở về, ăn xong kinh hành.",1,null),
+ L("Xá lợi phất! Cực lạc quốc độ thành tựu như thị công đức trang nghiêm.","",1,null),
+ L("Phục thứ Xá lợi phất! Bỉ quốc thường hữu chủng chủng kỳ diệu, tạp sắc chi điểu:","Cõi ấy có nhiều loài chim đẹp lạ: bạch hạc, khổng tước, anh võ, xá lợi, ca lăng tần già, cộng mạng; ngày đêm sáu thời hót tiếng hòa nhã, diễn nói năm căn, năm lực, bảy phần bồ đề, tám chánh đạo. Ai nghe cũng đều niệm Phật, niệm Pháp, niệm Tăng.",1,null),
+ L("Bạch hạc, Khổng tước, Anh vũ, Xá lợi, Ca lăng tần già, Cộng mạng chi điểu, thị chư chúng điểu, trú dạ lục thời, xuất hòa nhã âm, kỳ âm diễn xướng:","",1,null),
+ L("ngũ căn, ngũ lực, thất bồ đề phần, bát thánh đạo phần, như thị đẳng pháp, kỳ độ chúng sanh văn thị âm dĩ, giai tất niệm Phật, niệm Pháp, niệm Tăng.","",1,null),
+ L("Xá lợi phất, nhữ vật vị thử điểu, thiệt thị tội báo sở sanh.","Đừng cho rằng các loài chim ấy do tội báo sinh ra, vì cõi ấy không có ba đường ác, đến tên gọi cũng không có. Các loài chim đều do Phật A Di Đà hóa hiện để tiếng pháp được lan truyền.",1,null),
+ L("Sở dĩ giả hà? Bỉ Phật quốc độ vô tam ác đạo.","",1,null),
+ L("Xá lợi phất! Kỳ Phật quốc độ thượng vô tam ác đạo chi danh, hà huống hữu thiệt, thị chư chúng điểu, giai thị A di đà Phật dục linh pháp âm tuyên lưu biến hóa sở tác.","",1,null),
+ L("Xá lợi phất! Bỉ Phật quốc độ vi phong xuy động, chư bảo hàng thọ, cập bảo la võng, xuất vi diệu âm, thí như bá thiên chủng nhạc đồng thời cu tác, văn thị âm giả, tự nhiên giai sanh:","Gió nhẹ thổi qua hàng cây báu và lưới báu, phát ra âm thanh vi diệu như trăm nghìn thứ nhạc cùng trổi; ai nghe cũng tự nhiên sinh tâm niệm Phật, niệm Pháp, niệm Tăng.",1,null),
+ L("niệm Phật, niệm Pháp, niệm Tăng chi tâm.","",1,null),
+ L("Xá lợi phất! Kỳ Phật quốc độ, thành tựu, như thị công đức trang nghiêm.","",1,null),
+ L("Xá lợi phất! Ư nhữ ý vân hà?","Vì sao Phật ấy hiệu là A Di Đà? Vì ánh sáng của Phật vô lượng, soi khắp mười phương không chướng ngại; và thọ mạng của Phật cùng nhân dân nước ấy vô lượng vô biên, nên gọi là A Di Đà. Phật thành Phật đến nay đã mười kiếp.",1,null),
+ L("Bỉ Phật hà cố hiệu A di đà?","",1,null),
+ L("Xá lợi phất! Bỉ Phật quang minh vô lượng, chiếu thập phương quốc, vô sở chướng ngại, thị cố hiệu vi A di đà.","",1,null),
+ L("Hựu Xá lợi phất! Bỉ Phật thọ mạng, cập kỳ nhân dân, vô lượng vô biên a tăng kỳ kiếp, cố danh A di đà.","",1,null),
+ L("Xá lợi phất! A di đà Phật thành Phật dĩ lai, ư kim thập kiếp.","",1,null),
+ L("Hựu Xá lợi phất! Bỉ Phật hữu vô lượng vô biên Thanh văn đệ tử, giai A la hán, phi thị toán số chi sở năng tri;","Phật ấy có vô lượng đệ tử Thanh văn, đều là bậc A La Hán, không thể tính đếm; chúng Bồ Tát cũng nhiều như vậy.",1,null),
+ L("chư Bồ tát chúng diệc phục như thị.","",1,null),
+ L("Xá lợi phất! Bỉ Phật quốc độ thành tựu như thị công đức trang nghiêm.","",1,null),
+ L("Hựu Xá lợi phất! Cực lạc quốc độ chúng sanh sanh giả, giai thị a bệ bạt trí, kỳ trung đa hữu nhất sanh bổ xứ, kỳ số thậm đa phi thị toán số, sở năng tri chi, đản khả dĩ vô lượng vô biên a tăng kỳ thuyết.","Chúng sinh sinh về Cực Lạc đều là bậc không còn thoái lui; nhiều vị chỉ còn một đời nữa là thành Phật, số đông vô lượng vô biên.",1,null),
+ L("Xá lợi phất! Chúng sanh văn giả, ưng đương phát nguyện, nguyện sanh bỉ quốc.","Chúng sinh nghe vậy nên phát nguyện sinh về cõi ấy, để được cùng các bậc thượng thiện nhân hội họp một nơi. Nhưng không thể nhờ chút ít căn lành, phước đức mà được sinh về.",1,null),
+ L("Sở dĩ giả hà? Ðắc dữ như thị chư thượng thiện nhân câu hội nhất xứ.","",1,null),
+ L("Xá lợi phất! Bất khả dĩ thiểu thiện căn phước đức nhân duyên, đắc sanh bỉ quốc.","",1,null),
+ L("Xá lợi phất! Nhược hữu thiện nam tử, thiện nữ nhân, văn thuyết A di đà Phật, chấp trì danh hiệu, nhược nhất nhật, nhược nhị nhật, nhược tam nhật, nhược tứ nhật, nhược ngũ nhật, nhược lục nhật, nhược thất nhật, nhất tâm bất loạn.","Nếu thiện nam, tín nữ nghe nói đến Phật A Di Đà, giữ gìn danh hiệu một ngày cho đến bảy ngày, một lòng không tán loạn, thì khi lâm chung, Phật A Di Đà cùng thánh chúng hiện ra trước mặt; người ấy tâm không điên đảo, liền được sinh về cõi Cực Lạc. Thấy lợi ích ấy nên Phật khuyên chúng sinh phát nguyện sinh về.",1,null),
+ L("Kỳ nhân lâm mạng chung thời, A di đà Phật dữ chư Thánh chúng, hiện tại kỳ tiền, thị nhân chung thời, tâm bất điên đảo, tức đắc vãng sanh A di đà Phật Cực lạc quốc độ.","",1,null),
+ L("Xá lợi phất! Ngã kiến thị lợi, cố thuyết thử ngôn, nhược hữu chúng sanh văn thị thuyết giả, ưng đương phát nguyện, sanh bỉ quốc độ.","",1,null),
+ L("Xá lợi phất! Như ngã kim giả, tán thán A di đà Phật bất khả tư nghị công đức chi lợi.","Như Đức Thích Ca khen ngợi công đức không thể nghĩ bàn của Phật A Di Đà, chư Phật hằng hà sa số ở phương Đông như A Súc Bệ, Tu Di Tướng, Đại Tu Di, Tu Di Quang, Diệu Âm cũng đều nói lời chân thật: chúng sinh hãy tin kinh này, kinh được tất cả chư Phật hộ niệm.",1,"Chư Phật sáu phương"),
+ L("Ðông phương diệc hữu A súc bệ Phật, Tu di tướng Phật, Ðại Tu di Phật, Tu di Quang Phật, Diệu Âm Phật;","",1,null),
+ L("như thị đẳng hằng hà sa số chư Phật, các ư kỳ quốc, xuất quảng trường thiệt tướng, biến phú tam thiên đại thiên thế giới, thuyết thành thiệt ngôn:","",1,null),
+ L("Nhữ đẳng chúng sanh đương tín thị xưng tán bất khả tư nghị công đức nhất thiết chư Phật sở hộ niệm kinh.","",1,null),
+ L("Xá lợi phất! Nam phương thế giới hữu Nhật Nguyệt Ðăng Phật, Danh Văn Quang Phật, Ðại Diệm Kiên Phật, Tu di Ðăng Phật, Vô Lượng Tinh Tấn Phật;","Chư Phật phương Nam như Nhật Nguyệt Đăng, Danh Văn Quang, Đại Diệm Kiên, Tu Di Đăng, Vô Lượng Tinh Tấn cũng khuyên tin như vậy.",1,null),
+ L("như thị đẳng hằng hà sa số chư Phật, các ư kỳ quốc, xuất quảng trường thiệt tướng, biến phú tam thiên đại thiên thế giới, thuyết thành thiệt ngôn:","",1,null),
+ L("Nhữ đẳng chúng sanh đương tín thị, xưng tán bất khả tư nghị công đức nhất thiết chư Phật sở hộ niệm kinh.","",1,null),
+ L("Xá lợi phất! Tây Phương thế giới hữu Vô Lượng Thọ Phật, Vô Lượng Tướng Phật, Vô Lượng Tràng Phật, Ðại Quang Phật, Ðại Minh Phật, Bảo Tướng Phật, Tịnh Quang Phật;","Chư Phật phương Tây như Vô Lượng Thọ, Vô Lượng Tướng, Vô Lượng Tràng, Đại Quang, Đại Minh, Bảo Tướng, Tịnh Quang cũng khuyên tin như vậy.",1,null),
+ L("như thị đẳng hằng hà sa số chư Phật, các ư kỳ quốc, xuất quảng trường thiệt tướng, biến phú tam thiên đại thiên thế giới, thuyết thành thiệt ngôn:","",1,null),
+ L("Nhữ đẳng chúng sanh đương tín thị, xưng tán bất khả tư nghị công đức nhất thiết chư Phật sở hộ niệm kinh.","",1,null),
+ L("Xá lợi phất! Bắc phương thế giới, hữu Diệm Kiên Phật, Tối Thắng Âm Phật, Nan Thơ Phật, Nhật Sanh Phật, Võng Minh Phật;","Chư Phật phương Bắc như Diệm Kiên, Tối Thắng Âm, Nan Trở, Nhật Sanh, Võng Minh cũng khuyên tin như vậy.",1,null),
+ L("như thị đẳng hằng hà sa số chư Phật, các ư kỳ quốc, xuất quảng trường thiệt tướng, biến phú tam thiên đại thiên thế giới, thuyết thành thiệt ngôn:","",1,null),
+ L("Nhữ đẳng chúng sanh đương tín thị, xưng tán bất khả tư nghị công đức nhất thiết chư Phật sở hộ niệm kinh.","",1,null),
+ L("Xá lợi phất! Hạ phương thế giới, hữu Sư Tử Phật, Danh Văn Phật, Danh Quang Phật, Ðạt ma Phật, Pháp Tràng Phật, Trì Pháp Phật;","Chư Phật phương dưới như Sư Tử, Danh Văn, Danh Quang, Đạt Ma, Pháp Tràng, Trì Pháp cũng khuyên tin như vậy.",1,null),
+ L("như thị đẳng hằng hà sa số chư Phật, các ư kỳ quốc, xuất quảng trường thiệt tướng, biến phú tam thiên đại thiên thế giới, thuyết thành thiệt ngôn:","",1,null),
+ L("Nhữ đẳng chúng sanh đương tín thị, xưng tán bất khả tư nghị công đức nhất thiết chư Phật sở hộ niệm kinh.","",1,null),
+ L("Xá lợi phất! Thượng phương thế giới, hữu Phạm Âm Phật, Tú Vương Phật, Hương Thượng Phật, Hương Quang Phật, Ðại Diệm Kiên Phật, Tạp Sắc Bảo Hoa Nghiêm Thân Phật, Ta la thọ Vương Phật, Bảo Hoa Ðức Phật, Kiến Nhất Thiết Nghĩa Phật, Như Tu di Sơn Phật;","Chư Phật phương trên như Phạm Âm, Tú Vương, Hương Thượng, Hương Quang, Đại Diệm Kiên, Ta La Thọ Vương, Bảo Hoa Đức, Như Tu Di Sơn cũng khuyên tin như vậy.",1,null),
+ L("như thị đẳng hằng hà sa số chư Phật, các ư kỳ quốc, xuất quảng trường thiệt tướng, biến phú tam thiên đại thiên thế giới, thuyết thành thiệt ngôn:","",1,null),
+ L("Nhữ đẳng chúng sanh đương tín thị, xưng tán bất khả tư nghị công đức nhất thiết chư Phật sở hộ niệm kinh.","",1,null),
+ L("Xá lợi phất! Ư nhữ ý vân hà?","Vì sao gọi là kinh được tất cả chư Phật hộ niệm? Vì ai nghe kinh này mà thọ trì, và nghe danh hiệu chư Phật, đều được chư Phật hộ niệm, không thoái chuyển trên con đường giác ngộ. Vậy hãy tin nhận lời Phật dạy.",1,"Lưu thông"),
+ L("Hà cố danh vi: Nhất thiết chư Phật sở hộ niệm kinh?","",1,null),
+ L("Xá lợi phất! Nhược hữu thiện nam tử, thiện nữ nhân văn thị kinh thọ trì giả, cập văn chư Phật danh giả, thị chư thiện nam tử, thiện nữ nhân, giai vi nhất thiết chư Phật chi sở hộ niệm, giai đắc bất thối chuyển ư A nậu đa la Tam miệu tam bồ đề.","",1,null),
+ L("Thị cố Xá lợi phất! Nhữ đẳng giai đương tín thọ ngã ngữ, cập chư Phật sở thuyết.","",1,null),
+ L("Xá lợi phất! Nhược hữu nhân dĩ phát nguyện, kim phát nguyện, đương phát nguyện, dục sanh A di đà Phật quốc giả, thị chư nhân đẳng giai đắc bất thối chuyển ư a nậu đa la tam miệu tam bồ đề, ư bỉ quốc độ nhược dĩ sanh, nhược kim sanh, nhược đương sanh.","Ai đã, đang hay sẽ phát nguyện sinh về cõi Phật A Di Đà đều không thoái chuyển trên đường giác ngộ, và đã, đang hay sẽ sinh về cõi ấy. Vậy người có lòng tin nên phát nguyện sinh về.",1,null),
+ L("Thị cố Xá lợi phất! Chư thiện nam tử, thiện nữ nhân, nhược hữu tín giả, ưng đương phát nguyện sanh bỉ quốc độ.","",1,null),
+ L("Xá lợi phất! Như ngã kim giả, xưng tán chư Phật bất khả tư nghị công đức, bỉ chư Phật đẳng, diệc xưng tán ngã bất khả tư nghị công đức nhi tác thị ngôn:","Như Đức Thích Ca khen ngợi chư Phật, chư Phật cũng khen ngợi Ngài: Phật Thích Ca làm được việc rất khó, ở cõi Ta bà đời ác năm trược mà thành Phật, vì chúng sinh nói pháp khó tin này.",1,null),
+ L("Thích ca Mâu ni Phật năng vi thậm nan hy hữu chi sự, năng ư Ta bà quốc độ ngũ trược ác thế;","",1,null),
+ L("kiếp trược, kiến trược, phiền não trược, chúng sanh trược, mạng trược trung đắc A nậu đa la Tam miệu tam bồ đề, vị chư chúng sanh, thuyết thị nhất thiết thế gian nan tín chi pháp.","",1,null),
+ L("Xá lợi phất! Ðương tri ngã ư ngũ trược ác thế, hành thử nan sự, đắc A nậu đa la Tam miệu tam bồ đề, vị nhất thiết thế gian thuyết thử nan tín chi pháp, thị vi thậm nan.","Nên biết, ở đời ác năm trược mà làm được việc khó này, thành Phật và nói pháp khó tin cho tất cả thế gian, thật là rất khó. Phật nói kinh xong, ngài Xá Lợi Phất cùng các Tỳ kheo, trời, người, A tu la… nghe lời Phật dạy đều hoan hỷ tin nhận, đảnh lễ lui ra.",1,null),
+ L("Phật thuyết thử kinh dĩ, Xá lợi phất cập chư Tỳ kheo, nhất thiết thế gian, Thiên, nhân, A tu la đẳng, văn Phật sở thuyết, hoan hỷ tín thọ, tác lễ nhi khứ.","",1,null)];
+const KINH_PM=[L("Nam mô Đại Từ Đại Bi Cứu Khổ Cứu Nạn Linh Cảm Quán Thế Âm Bồ Tát.","Kính lạy Bồ Tát Quán Thế Âm đại từ đại bi, cứu khổ cứu nạn.",3,"Khai kinh"),
+ L("Diệu Pháp Liên Hoa Kinh, Quán Thế Âm Bồ Tát Phổ Môn Phẩm, đệ nhị thập ngũ.","Kinh Diệu Pháp Liên Hoa, phẩm thứ hai mươi lăm: Phổ Môn của Bồ Tát Quán Thế Âm.",1,null),
+ L("Nhĩ thời, Vô tận ý Bồ tát tức tùng tọa khởi, thiên đản hữu kiên, hiệp chưởng hướng Phật, nhi tác thị ngôn:","Lúc ấy Bồ Tát Vô Tận Ý từ chỗ ngồi đứng dậy, trịch áo bày vai phải, chắp tay hướng về Phật thưa: Bạch Thế Tôn, Bồ Tát Quán Thế Âm do nhân duyên gì mà tên là Quán Thế Âm?",1,"Phẩm Phổ Môn"),
+ L("Thế Tôn, Quán thế âm Bồ tát dĩ hà nhân duyên danh Quán thế âm?","",1,null),
+ L("Phật cáo Vô tận ý Bồ tát:","Phật bảo: Nếu có vô lượng chúng sinh đang chịu khổ não, nghe danh Bồ Tát Quán Thế Âm mà một lòng xưng niệm, Bồ Tát liền lắng nghe tiếng ấy và họ đều được giải thoát.",1,null),
+ L("Thiện nam tử, nhược hữu vô lượng bá thiên vạn ức chúng sanh, thọ chư khổ não, văn thị Quán thế âm Bồ tát nhất tâm xưng danh, Quán thế âm Bồ tát, tức thời quán kỳ âm thanh giai đắc giải thoát.","",1,null),
+ L("Nhược hữu trì thị Quán thế âm Bồ tát danh giả, thiết nhập đại hỏa, hỏa bất năng thiêu;","Người trì danh hiệu Bồ Tát, dù vào lửa lớn, lửa không đốt được, nhờ sức oai thần của Bồ Tát; nếu bị nước lớn cuốn trôi, xưng danh hiệu liền được đến chỗ cạn.",1,null),
+ L("do thị Bồ tát, oai thần lực cố.","",1,null),
+ L("Nhược vị đại thủy sở phiêu, xưng kỳ danh hiệu tức đắc thiển xứ.","",1,null),
+ L("Nhược hữu bá thiên vạn ức chúng sanh, vị cầu:","Nếu nhiều người vì tìm châu báu mà vào biển lớn, gió dữ thổi thuyền trôi dạt vào nước quỷ La sát, chỉ cần một người xưng danh Quán Thế Âm, cả thuyền đều thoát nạn. Vì nhân duyên ấy mà gọi là Quán Thế Âm.",1,null),
+ L("kim ngân, lưu ly, xa cừ, mã não, san hô, hổ phách, trân châu, đẳng bảo, nhập ư đại hải;","",1,null),
+ L("giả sử hắc phong xuy kỳ thuyền phưởng, phiêu đọa La sát quỷ quốc, kỳ trung nhược hữu nãi chí nhất nhân, xưng Quán thế âm Bồ tát danh giả, thị chư nhân đẳng giai đắc giải thoát La sát chi nạn.","",1,null),
+ L("Dĩ thị nhân duyên, danh Quán thế âm.","",1,null),
+ L("Nhược phục hữu nhân, lâm đương bị hại, xưng Quán thế âm Bồ tát danh giả, bỉ sở chấp đao trượng, tầm đoạn đoạn hoại, nhi đắc giải thoát.","Người sắp bị hại, xưng danh Bồ Tát thì dao gậy gãy từng khúc; dù quỷ dữ đầy khắp cõi cũng không thể hại; dù có tội hay không tội, bị gông cùm xiềng xích, xưng danh đều được thoát ra.",1,null),
+ L("Nhược tam thiên đại thiên quốc độ, mãn trung Dạ xoa, La sát, dục lai não nhân, văn kỳ xưng Quán thế âm Bồ tát danh giả, thị chư ác quỷ, thượng bất năng dĩ ác nhãn thị chi, huống phục gia hại.","",1,null),
+ L("Thiết phục hữu nhân, nhược hữu tội, nhược vô tội, nữu giới già tỏa, kiểm hệ kỳ thân, xưng Quán thế âm Bồ tát danh giả, giai tất đoạn hoại tức đắc giải thoát.","",1,null),
+ L("Nhược tam thiên đại thiên quốc độ, mãn trung oán tặc, hữu nhất thương chủ, tương chư thương nhân, tê trì trọng bảo kinh quá hiểm lộ, kỳ trung nhất nhân, tác thị xướng ngôn:","Giữa nơi đầy giặc cướp, đoàn buôn mang của báu qua đường hiểm; có người bảo mọi người đừng sợ, hãy một lòng xưng danh Quán Thế Âm, vì Bồ Tát ban sự không sợ hãi. Cả đoàn cùng xưng niệm liền được thoát. Sức oai thần của Bồ Tát lớn lao như vậy.",1,null),
+ L("Chư thiện nam tử, vật đắc khủng bố, nhữ đẳng ưng đương nhất tâm xưng Quán thế âm Bồ tát danh hiệu;","",1,null),
+ L("thị Bồ tát năng dĩ vô úy thí ư chúng sanh;","",1,null),
+ L("nhữ đẳng nhược xưng danh giả, ư thử oán tặc, đương đắc giải thoát.","",1,null),
+ L("Chúng thương nhân văn, câu phát thinh ngôn:","",1,null),
+ L("Nam mô Quán thế âm Bồ tát xưng kỳ danh cố, tức đắc giải thoát.","",1,null),
+ L("Vô tận ý! Quán thế âm Bồ tát ma ha tát, oai thần chi lực, nguy nguy như thị.","",1,null),
+ L("Nhược hữu chúng sanh đa ư dâm dục, thường niệm cung kính Quán thế âm Bồ tát tiện đắc ly dục;","Chúng sinh nhiều tham dục, sân hận, si mê, thường niệm cung kính Bồ Tát Quán Thế Âm liền được lìa tham, lìa sân, lìa si. Bồ Tát có sức oai thần lớn, nhiều lợi ích, nên chúng sinh thường phải một lòng nhớ niệm.",1,null),
+ L("nhược đa sân nhuế, thường niệm cung kính Quán thế âm Bồ tát, tiện đắc ly sân;","",1,null),
+ L("nhược đa ngu si, thường niệm cung kính Quán thế âm Bồ tát tiện đắc ly si.","",1,null),
+ L("Vô tận ý! Quán thế âm Bồ tát, hữu như thị đẳng đại oai thần lực, đa sở nhiêu ích.","",1,null),
+ L("Thị cố chúng sanh, thường ưng, tâm niệm.","",1,null),
+ L("Nhược hữu nữ nhân, thiết dục cầu nam, lễ bái cúng dường Quán thế âm Bồ tát, tiện sanh phước đức trí huệ chi nam;","Người nữ cầu con trai, lễ bái cúng dường Bồ Tát thì sinh con trai phước đức trí tuệ; cầu con gái thì sinh con gái đoan trang, khéo gieo gốc đức, được mọi người yêu kính.",1,null),
+ L("thiết dục cầu nữ, tiện sanh đoan chánh hữu tướng chi nữ, túc thực đức bổn, chúng nhân ái kính.","",1,null),
+ L("Vô tận ý! Quán thế âm Bồ tát hữu như thị lực, nhược hữu chúng sanh, cung kính lễ bái Quán thế âm Bồ tát, phước bất đường quyên, thị cố chúng sanh, giai ưng thọ trì Quán thế âm Bồ tát danh hiệu.","Bồ Tát có sức như vậy; ai cung kính lễ bái thì phước không mất uổng. Vì thế chúng sinh đều nên thọ trì danh hiệu Quán Thế Âm.",1,null),
+ L("Vô tận ý! Nhược hữu nhân thọ trì lục thập nhị ức hằng hà sa Bồ tát danh tự, phục tận hình cúng dường ẩm thực, y phục, ngọa cụ, y dược, ư nhữ ý vân hà?","Nếu có người thọ trì danh hiệu của sáu mươi hai ức hằng hà sa Bồ Tát, lại trọn đời cúng dường thức ăn, y phục, giường nằm, thuốc men; công đức của người ấy có nhiều không?",1,null),
+ L("Thị thiện nam tử, thiện nữ nhân công đức đa phủ?","",1,null),
+ L("Vô tận ý ngôn: Thậm đa, Thế Tôn.","Vô Tận Ý thưa: Rất nhiều, bạch Thế Tôn.",1,null),
+ L("Phật ngôn: Nhược phục hữu nhân, thọ trì Quán thế âm Bồ tát danh hiệu, nãi chí nhất thời lễ bái, cúng dường, thị nhị nhân phước, chánh đẳng vô dị!","Phật dạy: Nếu có người thọ trì danh hiệu Quán Thế Âm, dù chỉ một lần lễ bái cúng dường, phước của hai người bằng nhau không khác, trăm nghìn muôn ức kiếp cũng không cùng tận.",1,null),
+ L("ư bá thiên vạn ức kiếp, bất khả cùng tận.","",1,null),
+ L("Vô tận ý, thọ trì Quán thế âm Bồ tát danh hiệu, đắc như thị vô lượng vô biên phước đức chi lợi.","",1,null),
+ L("Vô tận ý Bồ tát bạch Phật ngôn:","Vô Tận Ý thưa: Bồ Tát Quán Thế Âm dạo cõi Ta bà như thế nào? Nói pháp cho chúng sinh như thế nào? Sức phương tiện ấy ra sao?",1,null),
+ L("Thế Tôn, Quán thế âm Bồ tát, vân hà du thử Ta bà thế giới?","",1,null),
+ L("Vân hà nhi vị chúng sanh thuyết pháp?","",1,null),
+ L("Phương tiện chi lực, kỳ sự vân hà?","",1,null),
+ L("Phật cáo Vô Tận Ý Bồ Tát: Thiện nam tử! Nhược hữu quốc độ chúng sanh, ưng dĩ Phật thân đắc độ giả, Quán Thế Âm Bồ Tát tức hiện Phật thân nhi vị thuyết pháp.","Phật dạy: Nếu chúng sinh ở cõi nào cần thân Phật mới độ được, Bồ Tát Quán Thế Âm liền hiện thân Phật mà nói pháp. Cứ như thế, cần thân nào thì Bồ Tát hiện thân ấy.",1,"Ba mươi ba ứng thân"),
+ L("Ưng dĩ Bích Chi Phật thân đắc độ giả, tức hiện Bích Chi Phật thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Thanh Văn thân đắc độ giả, tức hiện Thanh Văn thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Phạm Vương thân đắc độ giả, tức hiện Phạm Vương thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Đế Thích thân đắc độ giả, tức hiện Đế Thích thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Tự Tại Thiên thân đắc độ giả, tức hiện Tự Tại Thiên thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Đại Tự Tại Thiên thân đắc độ giả, tức hiện Đại Tự Tại Thiên thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Thiên Đại Tướng Quân thân đắc độ giả, tức hiện Thiên Đại Tướng Quân thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Tỳ Sa Môn thân đắc độ giả, tức hiện Tỳ Sa Môn thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Tiểu Vương thân đắc độ giả, tức hiện Tiểu Vương thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Trưởng Giả thân đắc độ giả, tức hiện Trưởng Giả thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Cư Sĩ thân đắc độ giả, tức hiện Cư Sĩ thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Tể Quan thân đắc độ giả, tức hiện Tể Quan thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Bà La Môn thân đắc độ giả, tức hiện Bà La Môn thân nhi vị thuyết pháp.","",1,null),
+ L("Ưng dĩ Tỳ Kheo, Tỳ Kheo Ni, Ưu Bà Tắc, Ưu Bà Di thân đắc độ giả, tức hiện Tỳ Kheo, Tỳ Kheo Ni, Ưu Bà Tắc, Ưu Bà Di thân nhi vị thuyết pháp.","Hiện thân người xuất gia và người tại gia, nam và nữ.",1,null),
+ L("Ưng dĩ Trưởng Giả, Cư Sĩ, Tể Quan, Bà La Môn phụ nữ thân đắc độ giả, tức hiện phụ nữ thân nhi vị thuyết pháp.","Hiện thân người phụ nữ.",1,null),
+ L("Ưng dĩ đồng nam, đồng nữ thân đắc độ giả, tức hiện đồng nam, đồng nữ thân nhi vị thuyết pháp.","Hiện thân em bé trai, em bé gái.",1,null),
+ L("Ưng dĩ Thiên, Long, Dạ Xoa, Càn Thát Bà, A Tu La, Ca Lâu La, Khẩn Na La, Ma Hầu La Già, nhân phi nhân đẳng thân đắc độ giả, tức giai hiện chi nhi vị thuyết pháp.","Hiện thân trời, rồng và các loài trong tám bộ chúng.",1,null),
+ L("Ưng dĩ Chấp Kim Cang thần đắc độ giả, tức hiện Chấp Kim Cang thần nhi vị thuyết pháp.","Hiện thân thần Chấp Kim Cang mà nói pháp.",1,null),
+ L("Vô tận ý! Thị Quán thế âm Bồ tát thành tựu như thị công đức dĩ chủng chủng hình, du chư quốc độ, độ thoát chúng sanh, thị cố nhữ đẳng, ưng đương nhất tâm cúng dường Quán thế âm Bồ tát.","Bồ Tát Quán Thế Âm thành tựu công đức như vậy, dùng nhiều hình tướng dạo khắp các cõi để độ thoát chúng sinh; vì thế hãy một lòng cúng dường. Giữa lúc sợ hãi nguy nạn, Bồ Tát hay ban sự không sợ hãi, nên cõi Ta bà gọi Ngài là Đấng Thí Vô Úy.",1,null),
+ L("Thị Quán thế âm Bồ tát ma ha tát, ư bố úy cấp nạn chi trung, năng thí vô úy;","",1,null),
+ L("thị cố thử Ta bà thế giới, giai hiệu chi vi thí vô úy giả.","",1,null),
+ L("Vô tận ý Bồ tát bạch Phật ngôn:","Vô Tận Ý xin cúng dường Bồ Tát chuỗi ngọc anh lạc quý giá, thưa: Xin Nhân giả nhận món pháp thí này. Bồ Tát chưa chịu nhận; Vô Tận Ý lại thưa: Xin Nhân giả thương chúng con mà nhận.",1,null),
+ L("Thế Tôn! Ngã kim đương cúng dường Quán thế âm Bồ tát.","",1,null),
+ L("Tức giải cảnh chúng bảo châu anh lạc, giá trị bá thiên lượng kim, nhi dĩ dữ chi, tác thị ngôn:","",1,null),
+ L("Nhân giả thọ thử pháp thí, trân bảo anh lạc.","",1,null),
+ L("Thời Quán thế âm Bồ tát bất khẳng thọ chi.","",1,null),
+ L("Vô tận ý phục bạch Quán thế âm Bồ tát ngôn:","",1,null),
+ L("Nhân giả mẫn ngã đẳng cố, thọ thử anh lạc.","",1,null),
+ L("Nhĩ thời Phật cáo Quán thế âm Bồ tát:","Phật dạy Bồ Tát Quán Thế Âm hãy thương Vô Tận Ý và bốn chúng, trời, rồng, người và phi nhân mà nhận. Bồ Tát nhận chuỗi ngọc, chia làm hai phần: một phần dâng Phật Thích Ca, một phần dâng tháp Phật Đa Bảo.",1,null),
+ L("Ðương mẫn thử Vô tận ý Bồ tát cập tứ chúng:","",1,null),
+ L("Thiên, Long, Dạ xoa, Càn thát bà, A tu la, Ca lâu la, Khẩn na la, Ma hầu la già, Nhân, Phi nhân đẳng cố, thọ thử anh lạc.","",1,null),
+ L("Tức thời Quán thế âm Bồ tát, mẫn chư tứ chúng, cập ư Thiên, Long, Nhân, Phi Nhân đẳng, thọ kỳ anh lạc, phân tác nhị phần:","",1,null),
+ L("Nhất phần phụng Thích Ca Mâu Ni Phật, nhất phần phụng Ða bảo Phật tháp.","",1,null),
+ L("Vô tận ý, Quán thế âm Bồ tát hữu như thị tự tại thần lực du ư Ta bà thế giới.","Bồ Tát Quán Thế Âm có sức thần tự tại như vậy, dạo khắp cõi Ta bà. Khi ấy Bồ Tát Vô Tận Ý nói kệ hỏi lại.",1,null),
+ L("Nhĩ thời Vô tận ý Bồ tát dĩ kệ vấn viết:","",1,null),
+ L("Nam mô Đại Từ Đại Bi Quán Thế Âm Bồ Tát.","Phần kệ trùng tụng (Thế Tôn diệu tướng cụ…) sẽ được bổ sung sau khi đối chiếu với bản nghi thức chuẩn. Ở đây xin niệm danh hiệu Bồ Tát ba lần.",3,"Kệ (sẽ bổ sung)"),
+ L("Nhĩ thời Trì Ðịa Bồ tát, tức tùng tòa khởi, tiền bạch Phật ngôn:","Bồ Tát Trì Địa đứng dậy bạch Phật: Nếu chúng sinh nào nghe phẩm Quán Thế Âm này, biết được nghiệp tự tại, cửa phổ môn thị hiện và sức thần thông của Bồ Tát, thì công đức người ấy chẳng phải ít.",1,"Lưu thông"),
+ L("Thế Tôn, nhược hữu chúng sanh văn thị Quán thế âm Bồ tát phẩm, tự tại chi nghiệp, phổ môn thị hiện, thần thông lực giả;","",1,null),
+ L("đương tri thị nhân công đức bất thiểu.","",1,null),
+ L("Phật thuyết thị Phổ môn phẩm thời, chúng trung bát vạn tứ thiên chúng sanh, giai phát vô đẳng đẳng A nậu đa la tam miệu tam bồ đề tâm.","Khi Phật nói phẩm Phổ Môn, trong hội có tám vạn bốn nghìn chúng sinh đều phát tâm cầu quả giác ngộ vô thượng.",1,null)];
+const KINH_DS=[L("Nam mô Dược Sư Hội Thượng Phật Bồ Tát.","Kính lạy chư Phật, Bồ Tát trong hội Dược Sư.",3,"Khai kinh"),
+ L("Nam mô Dược Sư Lưu Ly Quang Vương Phật.","Đức Phật Dược Sư ở cõi Tịnh Lưu Ly phương Đông, khi còn tu hạnh Bồ Tát đã phát mười hai đại nguyện để chữa lành thân bệnh và tâm bệnh cho chúng sinh.",1,"Mười hai đại nguyện (lược ý)"),
+ L("Nguyện thứ nhất: thân Phật sáng rực chiếu khắp vô lượng thế giới, nguyện cho mọi chúng sinh cũng được đầy đủ tướng tốt như Phật.","",1,null),
+ L("Nguyện thứ hai: thân Phật trong suốt như ngọc lưu ly, ánh sáng soi đường cho chúng sinh nơi tối tăm làm được mọi việc lành.","",1,null),
+ L("Nguyện thứ ba: dùng trí tuệ phương tiện giúp chúng sinh có đủ vật dụng, không ai phải thiếu thốn.","",1,null),
+ L("Nguyện thứ tư: đưa người lạc vào tà đạo trở về chánh đạo, người cầu quả nhỏ được hướng về Đại thừa.","",1,null),
+ L("Nguyện thứ năm: giúp người tu giữ giới thanh tịnh; ai lỡ phạm giới, nghe danh hiệu Phật liền được thanh tịnh trở lại.","",1,null),
+ L("Nguyện thứ sáu: người thân thể khiếm khuyết, đau yếu, nghe danh hiệu Phật liền được đầy đủ, khỏe mạnh.","",1,null),
+ L("Nguyện thứ bảy: người bệnh tật không thuốc thang, không nơi nương tựa, nghe danh hiệu Phật thì bệnh khổ tiêu trừ, thân tâm an lạc.","",1,null),
+ L("Nguyện thứ tám: người nữ chịu nhiều khổ vì thân phận, nghe danh hiệu Phật được thoát những khổ ấy, cho đến ngày thành Phật.","",1,null),
+ L("Nguyện thứ chín: giúp chúng sinh thoát lưới ma, lìa bỏ tà kiến, dần dần tu tập hạnh Bồ Tát.","",1,null),
+ L("Nguyện thứ mười: người bị tù ngục, trói buộc, chịu nhiều khổ nhục, nhờ oai lực của Phật mà thoát mọi ưu khổ.","",1,null),
+ L("Nguyện thứ mười một: người khổ vì đói khát, trước được ăn uống no đủ, sau được pháp vị an vui.","",1,null),
+ L("Nguyện thứ mười hai: người nghèo không áo mặc, khổ vì nóng lạnh, muỗi mòng, được y phục đẹp và mọi điều như ý.","",1,null),
+ L("Nam mô Bạc già phạt đế, Bệ sát xã, Lũ rô thích lưu ly, Bát lặc bà, Hắt ra xà dã.","Thần chú Dược Sư (Dược Sư Quán Đảnh Chân Ngôn), thường tụng để cầu an cho người đau ốm.",1,"Chú Dược Sư"),
+ L("Đát tha yết đa da, A ra hắt đế, Tam miệu tam bột đà da.","",1,null),
+ L("Đát điệt tha: Án, Bệ sát thệ, Bệ sát thệ, Bệ sát xã, Tam một yết đế tóa ha.","",3,null),
+ L("Nam mô Tiêu Tai Diên Thọ Dược Sư Lưu Ly Quang Như Lai.","Kính lạy Đức Phật Dược Sư Lưu Ly Quang, tiêu trừ tai ương, kéo dài tuổi thọ.",3,"Hồng danh")];
 
 /* ================= navigation ================= */
 function walkTo(h,onArrive){
