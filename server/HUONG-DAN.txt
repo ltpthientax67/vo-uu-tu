@@ -13,13 +13,14 @@ Website lưu dữ liệu ở đâu?
   - Sổ tu tập, lá xăm đã xin: lưu ngay trên máy của từng người dùng.
 
 ===========================================================================
-CẬP NHẬT MÁY CHỦ LÊN BẢN MỚI NHẤT (bản 5) – làm mỗi khi Code.gs thay đổi, khoảng 3 phút
+CẬP NHẬT MÁY CHỦ LÊN BẢN MỚI NHẤT (bản 6) – làm mỗi khi Code.gs thay đổi, khoảng 3 phút
 ===========================================================================
  Bản 2 thêm: Tường tâm nguyện dùng chung có duyệt, thông báo của Tự, báo lỗi, đếm lượt vào, trang quản trị.
  Bản 3 thêm: đếm số người đang có mặt trong Tự (hiện ở góc trái trên) và số người đang tụng ở thời kinh tối.
  Bản 4 thêm: ghi giờ vào từng lượt, người dùng thấy nhau trong Tự, trang quản trị xem ai đang ở trong Tự.
  Bản 5 thêm: lời chào có sẵn (Nam mô A Di Đà Phật, Tùy hỷ công đức, Cầu cho bạn bình an) hiện trên đầu khi gặp nhau.
- Nếu đã làm bản 2, 3 hoặc 4 rồi: chỉ cần làm bước 2 và bước 5 bên dưới.
+ Bản 6 thêm: khi người khác cùng ở trong Tự thả đèn hoa đăng, bạn thấy đèn của họ trôi trên hồ sen.
+ Nếu đã làm bản 2, 3, 4 hoặc 5 rồi: chỉ cần làm bước 2 và bước 5 bên dưới.
  1. Mở Google Sheet "Vô Ưu Tự – Dữ liệu" → Tiện ích mở rộng → Apps Script.
  2. Xóa hết code cũ trong Code.gs, dán toàn bộ server/Code.gs mới vào. (Nếu trước đây bạn đã điền
     OWNER_EMAIL thì điền lại.) Bấm Lưu.

@@ -215,6 +215,24 @@ html.big .sheet-body,html.big .banner,html.big .coach-card,html.big .intro-card{
 .mo-tap:active{transform:scale(.94)}.mo-tap.hit{box-shadow:0 0 28px rgba(255,200,120,.75)}
 .intro-more summary{cursor:pointer;color:var(--mist);font-size:14px;list-style:none}.intro-more summary::after{content:" +";color:var(--lamp)}.intro-more[open] summary::after{content:" –"}
 .intro-more{display:flex;flex-direction:column;gap:12px}.intro-more[open]{gap:14px}
+
+/* bản 1.8 */
+.goto{display:flex;gap:6px;align-items:flex-end}
+#miniMap{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:30px;z-index:5;width:122px;height:210px;border-radius:12px;background:rgba(13,22,24,.72);border:1px solid var(--line);cursor:pointer;backdrop-filter:blur(6px)}
+body.has-mini .hint{left:152px}
+.mapview{position:fixed;inset:0;z-index:20;background:rgba(5,9,10,.66);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+.map-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;max-width:100%}
+.map-head{display:flex;flex-direction:column;gap:2px}.map-head b{color:var(--paper);font-weight:500;font-size:16px}
+#bigMap{display:block;border-radius:10px;background:rgba(13,22,24,.6);cursor:pointer;touch-action:manipulation}
+.keys{width:100%;border-collapse:collapse;margin:6px 0 12px}.keys td{padding:7px 4px;border-bottom:1px solid var(--line)}
+kbd{font-family:inherit;font-size:12.5px;background:rgba(226,179,106,.12);border:1px solid rgba(226,179,106,.45);border-radius:6px;padding:2px 7px;color:var(--paper)}
+.st-row{margin:4px 0 10px}
+html.hc{--panel:#05090a;--line:#9aa39a;--mist:#f4f4ee;--mist-2:#d9ddd5;--paper:#ffffff}
+html.hc .pill{background:#05090a;border-color:#cbd0c7;color:#fff}
+html.hc .sheet,html.hc .toast,html.hc .banner,html.hc .goto-menu{background:#05090a;backdrop-filter:none}
+html.hc .muted,html.hc .note{color:#e3e6df}
+html.hc .chip[aria-pressed="true"],html.hc .btn{outline:1px solid #fff}
+html.hc :focus-visible{outline:3px solid #ffd27a;outline-offset:3px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 
@@ -1757,7 +1775,7 @@ function webRegForm(note,edit){
 }
 
 // ===== ĐỢT 1: Tường tâm nguyện chung (có duyệt), thông báo của Tự, báo bản mới, hướng dẫn lần đầu, báo lỗi =====
-const APP_VER="1.7";
+const APP_VER="1.8";
 const ERRS=[];
 addEventListener("error",e=>{ERRS.push(String(e.message||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
 addEventListener("unhandledrejection",e=>{const r=e.reason;if(r&&r.code)return;ERRS.push(String((r&&r.message)||r||"lỗi").slice(0,200));if(ERRS.length>6)ERRS.shift();});
@@ -3296,6 +3314,279 @@ if(!coarse&&!LITE){renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE
   const sc=sun.shadow.camera;sc.left=-34;sc.right=34;sc.top=34;sc.bottom=-34;sc.near=1;sc.far=170;sun.shadow.bias=-.0006;sun.shadow.normalBias=.03;
   scene.traverse(o=>{if(!o.isMesh||o===skyMesh)return;const g=o.geometry;if(!g.boundingSphere)g.computeBoundingSphere();const r=g.boundingSphere.radius*Math.max(o.scale.x,o.scale.y,o.scale.z);o.receiveShadow=true;o.castShadow=r>.1&&r<14;});}
 requestAnimationFrame(frame);
+/* ================= Đợt 8 (bản 1.8): trời theo giờ thật, mưa và sương, âm thanh theo vùng, ảnh lưu niệm, lễ theo mùa, bản đồ, dễ đọc ================= */
+// ---- 1. thời gian thật: bình minh, tự đổi theo giờ, trăng theo ngày âm ----
+TIMES.som={name:"Bình minh",sky:[[0,"#41557f"],[.34,"#cf9f9a"],[.49,"#f5d4ab"],[1,"#958a80"]],fog:0xd8c4b6,fogD:.012,hemi:[0xf0d8c8,0x5a4a3c,.6],amb:.1,sun:[0xffc79a,.62,[42,9,30]],lamp:.55,pt:.55,stars:.12,clouds:.8,moon:false,sunD:[0xffb07a,1]};
+TORDER.splice(0,TORDER.length,"som","sang","chieu","dem");
+const TMSG={som:"Bình minh lên, sương còn đọng trên sân Tự.",sang:"Trời đã sáng.",chieu:"Nắng chiều đang xuống.",dem:"Màn đêm buông xuống, đèn trong Tự đã thắp."};
+function autoKey(d=new Date()){const h=d.getHours()+d.getMinutes()/60;return h>=5&&h<6.75?"som":h<16&&h>=6.75?"sang":h>=16&&h<18.25?"chieu":"dem";}
+S.timeAuto=true;
+function moonFrac(d){return (1-Math.cos(2*Math.PI*(d-1)/29.53))/2;}
+function moonTex(d){const p=2*Math.PI*(d-1)/29.53,N=128,R=50;return canvasTex(N,N,(x)=>{x.clearRect(0,0,N,N);
+  const h=x.createRadialGradient(64,64,R*.9,64,64,64);h.addColorStop(0,"rgba(245,238,220,.35)");h.addColorStop(1,"rgba(245,238,220,0)");x.fillStyle=h;x.fillRect(0,0,N,N);
+  x.fillStyle="rgba(120,130,150,.10)";x.beginPath();x.arc(64,64,R,0,7);x.fill();
+  x.fillStyle="#f5eedc";for(let y=-R;y<=R;y++){const w=Math.sqrt(R*R-y*y);let a,b;if(p<=Math.PI){a=w*Math.cos(p);b=w;}else{a=-w;b=-w*Math.cos(p);}if(b>a)x.fillRect(64+a,64+y,b-a,1);}
+  x.globalCompositeOperation="source-atop";x.fillStyle="rgba(150,145,130,.22)";[[-14,-10,11],[10,6,8],[-4,16,7],[16,-14,5]].forEach(([u,v,r])=>{x.beginPath();x.arc(64+u,64+v,r,0,7);x.fill();});});}
+{const mt=moonTex(TODAY.d);moonD.material.map=mt;moonD.material.transparent=true;moonD.material.needsUpdate=true;const f=moonFrac(TODAY.d);moonD.scale.multiplyScalar(1.15);moonG.material.opacity=.06+.32*f;}
+// trăng soi đáy hồ
+const moonRef=new THREE.Mesh(new THREE.PlaneGeometry(1.1,3.4),new THREE.MeshBasicMaterial({map:glowTex,color:0xf5eedc,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}));
+moonRef.rotation.x=-Math.PI/2;moonRef.position.set(POND.x+.6,.07,POND.z-.8);scene.add(moonRef);
+// ---- 2. thời tiết: mưa chiều Nam Bộ, sương sớm ----
+const WX={mode:store.get("wx","auto"),rain:0,mist:0,pmist:0,base:null};
+function rainyDay(d){const m=d.getMonth()+1;if(m<5||m>11)return false;let s=(d.getFullYear()*400+m*32+d.getDate())>>>0;s=(s*2654435761)>>>0;return (s%1000)/1000<.4;}
+function wxAuto(){const d=new Date(),h=d.getHours()+d.getMinutes()/60;return rainyDay(d)&&h>=14.5&&h<17.5?"mua":"nang";}
+function raining(){return (WX.mode==="auto"?wxAuto():WX.mode)==="mua";}
+function captureBase(){WX.base={fogD:scene.fog.density,fog:scene.fog.color.clone(),hemi:hemi.intensity,sun:sun.intensity,sunD:sunD.material.opacity,cl:clouds.visible,clO:clouds.children[0]?clouds.children[0].material.opacity:0,clC:clouds.children[0]?clouds.children[0].material.color.clone():new THREE.Color(1,1,1)};WX.last=-1;}
+const _setTime0=setTime;
+setTime=function(k){_setTime0(k);captureBase();$("#timeLbl").textContent=TIMES[k].name;const b=$("#timeBtn");if(b)b.title=S.timeAuto?"Trời trong Tự đang theo giờ thật. Bấm để tự chọn.":"Đổi thời điểm trong ngày";};
+{const old=$("#timeBtn"),nb=old.cloneNode(true);old.replaceWith(nb);
+ nb.addEventListener("click",()=>{const seq=["auto","som","sang","chieu","dem"],cur=S.timeAuto?"auto":S.time,nx=seq[(seq.indexOf(cur)+1)%seq.length];
+   if(nx==="auto"){S.timeAuto=true;setTime(autoKey());toast("Trời trong Tự theo giờ thật nơi bạn: "+TIMES[S.time].name.toLowerCase()+".",2800);}
+   else{S.timeAuto=false;setTime(nx);toast(TMSG[nx],2600);}});}
+setTime(autoKey());
+setInterval(()=>{if(S.timeAuto&&autoKey()!==S.time)setTime(autoKey());},60000);
+// hạt mưa
+const RAIN_N=LITE?450:coarse?800:1400,rainPos=new Float32Array(RAIN_N*6),rainV=new Float32Array(RAIN_N);
+const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute("position",new THREE.BufferAttribute(rainPos,3));
+const rainMat=new THREE.LineBasicMaterial({color:0xb8c6d2,transparent:true,opacity:0,depthWrite:false});
+const rainLines=new THREE.LineSegments(rainGeo,rainMat);rainLines.frustumCulled=false;rainLines.visible=false;scene.add(rainLines);
+function roofed(x,z){return(x>HALL.x0-1.2&&x<HALL.x1+1.2&&z>HALL.z0-1.2&&z<HALL.z1+1.4)||(Math.abs(Math.abs(x)-13.35)<2.4&&z<-8.6&&z>-15.6);}
+function dropAt(i,cx,cz,top){let x=cx+rand(-13,13),z=cz+rand(-13,13);const y=roofed(x,z)?-50:rand(0,top);const o=i*6;rainPos[o]=x;rainPos[o+1]=y;rainPos[o+2]=z;rainPos[o+3]=x+.06;rainPos[o+4]=y+.55;rainPos[o+5]=z+.02;rainV[i]=rand(13,17);}
+for(let i=0;i<RAIN_N;i++)dropAt(i,0,10,12);
+// gợn nước trên hồ
+const ripples=[];{const rg=new THREE.RingGeometry(.8,.9,28);for(let i=0;i<(LITE?10:22);i++){const m=new THREE.Mesh(rg,new THREE.MeshBasicMaterial({color:0xdfe8ee,transparent:true,opacity:0,depthWrite:false}));m.rotation.x=-Math.PI/2;m.visible=false;scene.add(m);ripples.push({m,t:9});}}
+// sương sớm và hơi nước trên hồ
+const mists=[],pmists=[];
+for(let i=0;i<(LITE?8:16);i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:smokeTexW(),color:0xeef0ee,transparent:true,opacity:0,depthWrite:false}));s.scale.set(rand(8,11),rand(2.2,3),1);s.position.set(rand(-15,15),rand(.5,1.3),rand(-5,25));s.userData.v=rand(.12,.3);s.userData.k=rand(.6,1);scene.add(s);mists.push(s);}
+for(let i=0;i<6;i++){const a=i/6*6.283,s=new THREE.Sprite(new THREE.SpriteMaterial({map:smokeTexW(),color:0xf2f4f2,transparent:true,opacity:0,depthWrite:false}));s.scale.set(rand(3,4.2),1.1,1);s.position.set(POND.x+Math.cos(a)*1.8,.38,POND.z+Math.sin(a)*1.8);s.userData.a=a;scene.add(s);pmists.push(s);}
+// mái và sân ướt khi mưa
+const WET=[mat.pave,mat.stone,mat.tile].filter(Boolean).map(m=>({m,r:m.roughness}));
+const _gD=new THREE.Color(0x8d979b),_gN=new THREE.Color(0x1b242b),_cG=new THREE.Color(0x7c858b),_cGN=new THREE.Color(0x2a3138),_tc=new THREE.Color();
+let wxT=performance.now(),thunderAt=0;
+function wxFrame(now){const dt=Math.min(.1,(now-wxT)/1000);wxT=now;
+  const tr=raining()?1:0;WX.rain+=(tr-WX.rain)*Math.min(1,dt*.35);if(Math.abs(WX.rain-tr)<.003)WX.rain=tr;const r=WX.rain,night=S.time==="dem";
+  const tm=S.time==="som"?.3:r>.3?.12*r:S.time==="dem"?.05:0;WX.mist+=(tm-WX.mist)*Math.min(1,dt*.4);
+  const tp=S.time==="som"?.38:S.time==="dem"?.22:r>.3?.2:.05;WX.pmist+=(tp-WX.pmist)*Math.min(1,dt*.4);
+  const b=WX.base;if(b&&Math.abs(r-WX.last)>.002){WX.last=r;
+    scene.fog.density=b.fogD*(1+1.5*r);scene.fog.color.copy(b.fog).lerp(night?_gN:_gD,.7*r);scene.background.copy(scene.fog.color);
+    hemi.intensity=b.hemi*(1-.3*r);sun.intensity=b.sun*(1-.7*r);sunD.material.opacity=b.sunD*(1-r);skyMat.color.setScalar(1-.5*r);
+    clouds.visible=b.cl||r>.05;clouds.children.forEach(c=>{c.material.opacity=Math.max(b.cl?b.clO:0,.9*r);_tc.copy(b.clC).lerp(night?_cGN:_cG,r);c.material.color.copy(_tc);});
+    WET.forEach(w=>{w.m.roughness=w.r*(1-.5*r);});}
+  // mưa
+  rainLines.visible=r>.02&&S.entered;if(rainLines.visible){rainMat.opacity=.5*r*(night?.75:1);const cx=camera.position.x,cz=camera.position.z,top=camera.position.y+9;
+    const n=Math.floor(RAIN_N*Math.min(1,r*1.2));for(let i=0;i<RAIN_N;i++){const o=i*6;if(i>=n){rainPos[o+1]=rainPos[o+4]=-60;continue;}
+      const dy=rainV[i]*dt;rainPos[o+1]-=dy;rainPos[o+4]-=dy;rainPos[o]+=dt*.8;rainPos[o+3]+=dt*.8;
+      if(rainPos[o+1]<0||Math.abs(rainPos[o]-cx)>14||Math.abs(rainPos[o+2]-cz)>14)dropAt(i,cx,cz,top);}
+    rainGeo.attributes.position.needsUpdate=true;
+    if(Math.random()<r*dt*14){const R=ripples.find(q=>q.t>=1);if(R){const a=rand(0,6.283),d=Math.sqrt(Math.random())*3.5;R.m.position.set(POND.x+Math.cos(a)*d,.075,POND.z+Math.sin(a)*d);R.t=0;R.m.visible=true;}}}
+  ripples.forEach(R=>{if(R.t>=1)return;R.t+=dt*1.3;const k=Math.min(1,R.t);R.m.scale.setScalar(.06+k*.34);R.m.material.opacity=(1-k)*.55;if(k>=1)R.m.visible=false;});
+  mists.forEach(s=>{s.position.x+=s.userData.v*dt;if(s.position.x>17)s.position.x=-17;s.material.opacity=WX.mist*s.userData.k*(S.entered?1:.6);s.visible=s.material.opacity>.005;});
+  pmists.forEach((s,i)=>{s.userData.a+=dt*.05;s.position.x=POND.x+Math.cos(s.userData.a)*1.8;s.position.z=POND.z+Math.sin(s.userData.a)*1.8;s.position.y=.38+Math.sin(now/1800+i)*.06;s.material.opacity=WX.pmist*(.7+.3*Math.sin(now/2300+i*2));s.visible=s.material.opacity>.005;});
+  moonRef.material.opacity=S.time==="dem"?.32*moonFrac(TODAY.d)*(1-r):0;moonRef.visible=moonRef.material.opacity>.01;
+  if(r>.85&&now>thunderAt){thunderAt=now+rand(35000,90000);if(thunderAt-now<80000&&Math.random()<.6)thunder();}
+  requestAnimationFrame(wxFrame);}
+requestAnimationFrame(wxFrame);
+
+// ---- 3. âm thanh theo vùng: đàn tranh ngoài sân, dế và ếch ban đêm, tiếng mưa ----
+const TRANH=[196,220,261.63,293.66,349.23,392,440,523.25];
+function ensureZ(){if(!A)return null;if(A.z8)return A.z8;const c=A.ctx,Z={next:c.currentTime+4};
+  Z.tranh=c.createGain();Z.tranh.gain.value=0;Z.tranh.connect(A.bellBus||A.master);
+  Z.night=c.createGain();Z.night.gain.value=0;Z.night.connect(A.master);
+  const nb=c.createBuffer(1,c.sampleRate*2,c.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;Z.noise=nb;
+  Z.rain=c.createGain();Z.rain.gain.value=0;Z.rain.connect(A.master);
+  {const n=c.createBufferSource();n.buffer=nb;n.loop=true;const hp=c.createBiquadFilter();hp.type="highpass";hp.frequency.value=900;const lp=c.createBiquadFilter();lp.type="lowpass";lp.frequency.value=6500;const g=c.createGain();g.gain.value=.16;n.connect(hp);hp.connect(lp);lp.connect(g);g.connect(Z.rain);n.start();
+   const n2=c.createBufferSource();n2.buffer=nb;n2.loop=true;n2.playbackRate.value=.7;const bp=c.createBiquadFilter();bp.type="bandpass";bp.frequency.value=380;bp.Q.value=.7;const g2=c.createGain();g2.gain.value=.22;n2.connect(bp);bp.connect(g2);g2.connect(Z.rain);n2.start();}
+  A.z8=Z;return Z;}
+function pluck(Z,f,t,v,bend){const c=A.ctx,o=c.createOscillator(),o2=c.createOscillator(),g=c.createGain(),g2=c.createGain(),lp=c.createBiquadFilter(),lfo=c.createOscillator(),lg=c.createGain();
+  o.type="triangle";o2.type="sine";o.frequency.setValueAtTime(f,t);o2.frequency.setValueAtTime(f*2,t);
+  if(bend){[o,o2].forEach((q,k)=>{const ff=f*(k+1);q.frequency.setValueAtTime(ff,t+.2);q.frequency.linearRampToValueAtTime(ff*bend,t+.42);q.frequency.linearRampToValueAtTime(ff,t+.8);});}
+  lfo.frequency.value=5.4;lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(f*.011,t+.9);lfo.connect(lg);lg.connect(o.frequency);
+  lp.type="lowpass";lp.frequency.setValueAtTime(4200,t);lp.frequency.exponentialRampToValueAtTime(800,t+1.4);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+2.4);g2.gain.value=.3;
+  o.connect(g);o2.connect(g2);g2.connect(g);g.connect(lp);lp.connect(Z.tranh);[o,o2,lfo].forEach(q=>{q.start(t);q.stop(t+2.5);});}
+function tranhPhrase(Z){const c=A.ctx;let t=c.currentTime+.1,i=2+(Math.random()*4|0);const n=3+(Math.random()*4|0);
+  for(let k=0;k<n;k++){const last=k===n-1;pluck(Z,TRANH[i],t,last?.11:rand(.07,.1),(last||Math.random()<.25)?1.06:0);t+=pick([.42,.55,.55,.85]);i=Math.max(0,Math.min(TRANH.length-1,i+pick([-2,-1,-1,1,1,2])));}
+  Z.next=t+rand(6,13);}
+function cricket(Z){const c=A.ctx,t=c.currentTime+.02,f=rand(4200,4900);for(let k=0;k<3+(Math.random()*2|0);k++){const tt=t+k*.045,o=c.createOscillator(),g=c.createGain();o.frequency.value=f;g.gain.setValueAtTime(.0001,tt);g.gain.exponentialRampToValueAtTime(.012,tt+.006);g.gain.exponentialRampToValueAtTime(.0001,tt+.028);o.connect(g);g.connect(Z.night);o.start(tt);o.stop(tt+.04);}}
+function frog(Z,v){const c=A.ctx,t=c.currentTime+.02,f=rand(150,190);for(let k=0;k<2;k++){const tt=t+k*.22,o=c.createOscillator(),g=c.createGain(),lp=c.createBiquadFilter();o.type="square";o.frequency.setValueAtTime(f,tt);o.frequency.exponentialRampToValueAtTime(f*.72,tt+.1);lp.type="lowpass";lp.frequency.value=650;g.gain.setValueAtTime(.0001,tt);g.gain.exponentialRampToValueAtTime(.05*v,tt+.012);g.gain.exponentialRampToValueAtTime(.0001,tt+.11);o.connect(lp);lp.connect(g);g.connect(Z.night);o.start(tt);o.stop(tt+.13);}}
+function thunder(){if(!A||!A.on)return;const Z=ensureZ();if(!Z)return;const c=A.ctx,t=c.currentTime+.05,n=c.createBufferSource();n.buffer=Z.noise;n.loop=true;const lp=c.createBiquadFilter();lp.type="lowpass";lp.frequency.value=95;const g=c.createGain();
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.55,t+.5);g.gain.exponentialRampToValueAtTime(.2,t+1.4);g.gain.exponentialRampToValueAtTime(.0001,t+5);n.connect(lp);lp.connect(g);g.connect(A.master);n.start(t);n.stop(t+5.2);}
+function inHallNow(){return S.z<-7.7&&S.z>-27.3&&Math.abs(S.x)<11.3;}
+setInterval(()=>{if(!A||!A.on||A.ctx.state!=="running")return;const Z=ensureZ(),c=A.ctx,ct=c.currentTime;
+  const hall=inHallNow(),shrine=Math.abs(Math.abs(S.x)-13.35)<2&&S.z<-8.6,outdoor=S.entered&&!hall&&!shrine,dp=Math.hypot(S.x-POND.x,S.z-POND.z);
+  const music=store.get("tranh",1)&&outdoor&&!(CH&&CH.playing)&&!S.meditating?(dp<7?.6:1)*(WX.rain>.5?.55:1):0;
+  Z.tranh.gain.setTargetAtTime(music*.9,ct,1.5);if(music>.05&&ct>Z.next)tranhPhrase(Z);else if(music<=.05&&ct>Z.next)Z.next=ct+3;
+  const night=S.time==="dem"||S.time==="som";Z.night.gain.setTargetAtTime(S.entered&&night?(hall||shrine?.3:1):0,ct,1);
+  if(S.entered&&S.time==="dem"&&WX.rain<.5&&Math.random()<.07)cricket(Z);
+  if(S.entered&&(S.time==="dem"||WX.rain>.5)&&dp<11&&Math.random()<.035)frog(Z,Math.max(.25,1-dp/11));
+  Z.rain.gain.setTargetAtTime(S.entered?WX.rain*(hall||shrine?.4:1):0,ct,.8);},100);
+
+// ---- 4. chất lượng hình ảnh: tự động / nhẹ / đẹp ----
+const GFX={mode:store.get("gfx","auto"),pr:renderer.getPixelRatio(),max:Math.min(devicePixelRatio||1,coarse?1.75:2),min:coarse?.75:1,fr:0,t0:performance.now(),ok:0};
+function shadowsOn(on){if(renderer.shadowMap.enabled===on)return;renderer.shadowMap.enabled=on;sun.castShadow=on;
+  if(on){renderer.shadowMap.type=THREE.PCFSoftShadowMap;sun.shadow.mapSize.set(2048,2048);const sc=sun.shadow.camera;sc.left=-34;sc.right=34;sc.top=34;sc.bottom=-34;sc.near=1;sc.far=170;sc.updateProjectionMatrix();sun.shadow.bias=-.0006;sun.shadow.normalBias=.03;
+    scene.traverse(o=>{if(!o.isMesh||o===skyMesh||o.userData.noShadow)return;const g=o.geometry;if(!g.boundingSphere)g.computeBoundingSphere();const r=g.boundingSphere.radius*Math.max(o.scale.x,o.scale.y,o.scale.z);o.receiveShadow=true;o.castShadow=r>.1&&r<14;});}
+  scene.traverse(o=>{if(o.material)[].concat(o.material).forEach(m=>m.needsUpdate=true);});}
+function setPR(p){p=Math.max(GFX.min*.75,Math.min(GFX.max,Math.round(p*4)/4));if(p===GFX.pr)return;GFX.pr=p;renderer.setPixelRatio(p);resize();}
+function setGfx(m){GFX.mode=m;store.set("gfx",m);if(m==="lite"){setPR(coarse?.75:1);shadowsOn(false);}else if(m==="hi"){setPR(GFX.max);shadowsOn(true);}else{setPR(Math.min(GFX.max,coarse?1.5:2));shadowsOn(!coarse&&!LITE);GFX.ok=0;}}
+if(GFX.mode!=="auto")setGfx(GFX.mode);
+(function fpsWatch(now){GFX.fr++;if(now-GFX.t0>3000){const fps=GFX.fr*1000/(now-GFX.t0);GFX.fr=0;GFX.t0=now;GFX.fps=Math.round(fps);
+  if(GFX.mode==="auto"&&S.entered&&document.visibilityState==="visible"){if(fps<28){setPR(GFX.pr-.25);GFX.ok=0;if(GFX.pr<=GFX.min&&renderer.shadowMap.enabled&&fps<24)shadowsOn(false);}else if(fps>56){if(++GFX.ok>=3){setPR(GFX.pr+.25);GFX.ok=0;}}else GFX.ok=0;}}
+  requestAnimationFrame(fpsWatch);})(performance.now());
+
+// ---- 5. hoa đăng: đêm rằm, mùng một và đèn của người thật ----
+const _rl=releaseLantern;
+releaseLantern=function(text,mine){_rl(text,mine);if(mine){S.hd=(S.hd||0)+1;setTimeout(herePing,800);}};
+const _ms8=myState;myState=function(){const s=_ms8();s.h=(S.hd||0)%10000;return s;};
+let peerLanternToast=0;
+{const _sp=syncPeers;syncPeers=function(list){_sp(list);list.forEach(q=>{const P=PEERS.get(q.i);if(!P)return;const h=+q.h||0;
+  if(P.hd!==undefined&&h>P.hd){_rl(null,false);const L=lanterns[lanterns.length-1];if(L){L.crowd=false;const a=Math.atan2(q.z-POND.z,q.x-POND.x);L.from.set(POND.x+Math.cos(a)*3.4,.06,POND.z+Math.sin(a)*3.4);L.g.position.copy(L.from);}
+    if(Date.now()-peerLanternToast>60000){peerLanternToast=Date.now();toast(`${q.n?esc(q.n):"Một người bạn đồng tu"} vừa thả đèn hoa đăng trên hồ sen.`,4200);}}
+  P.hd=h;});};}
+const MOONDAY=TODAY.d===1||(TODAY.d>=14&&TODAY.d<=16);
+setInterval(()=>{if(S.entered&&MOONDAY&&(S.time==="dem"||S.time==="chieu")&&lanterns.length<9)_rl(null,false);},6500);
+function moonBanner(){if(!MOONDAY||S.time!=="dem"||store.get("moonSeen","")===dayKey(new Date()))return;store.set("moonSeen",dayKey(new Date()));
+  banner("moon",`<span class="eyebrow">${TODAY.d===1?"Đêm mùng một":"Đêm trăng rằm"}</span><p>${TODAY.d===1?"Trời không trăng, đèn hoa đăng càng sáng.":"Trăng tròn soi xuống hồ sen."} Mời bạn ra hồ thả một chiếc đèn, gửi theo một lời nguyện.</p>`,
+    [{label:"Ra hồ sen",fn:()=>{const h=HOT.find(x=>x.id==="pond");walkTo(h,()=>runHot(h));}},{label:"Để sau",ghost:true}]);}
+$("#enterBtn").addEventListener("click",()=>setTimeout(moonBanner,5200));
+
+// ---- 6. ảnh lưu niệm ----
+const SHOT_SKIP=new Set([glowTex,smokeTex,smokeTexW(),dotTex,moonD.material.map]);
+const SHOT_VERSES=DAILY.filter(d=>d[0].length<150);let shotI=Math.floor(Math.random()*SHOT_VERSES.length),shotSrc=null;
+function grabScene(){const hidden=[];scene.traverse(o=>{if(o.isSprite&&o.visible){const mp=o.material&&o.material.map;if(markers.includes(o)||(mp&&mp.image&&mp.image.tagName==="CANVAS"&&!SHOT_SKIP.has(mp))){o.visible=false;hidden.push(o);}}});
+  renderer.render(scene,camera);const c=document.createElement("canvas");c.width=renderer.domElement.width;c.height=renderer.domElement.height;c.getContext("2d").drawImage(renderer.domElement,0,0);hidden.forEach(o=>o.visible=true);return c;}
+function composeShot(src,v){const port=src.height>src.width,W=port?1080:1600,H=port?1350:1000,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+  const s=Math.max(W/src.width,H/src.height),dw=src.width*s,dh=src.height*s;x.drawImage(src,(W-dw)/2,(H-dh)/2,dw,dh);
+  const g=x.createLinearGradient(0,H*.5,0,H);g.addColorStop(0,"rgba(8,12,14,0)");g.addColorStop(.55,"rgba(8,12,14,.62)");g.addColorStop(1,"rgba(8,12,14,.88)");x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.strokeStyle="rgba(226,179,106,.6)";x.lineWidth=2;x.strokeRect(28,28,W-56,H-56);
+  const fs=port?46:44;x.font=`italic 500 ${fs}px "Cormorant Garamond",Georgia,serif`;const lines=wrapText(x,"“"+v[0]+"”",W-(port?170:420)).slice(0,5);
+  let y=H-70-26-34-lines.length*fs*1.22;x.textAlign="center";x.fillStyle="#f3ecdc";x.shadowColor="rgba(0,0,0,.5)";x.shadowBlur=8;lines.forEach(l=>{x.fillText(l,W/2,y);y+=fs*1.22;});
+  x.shadowBlur=0;x.font='300 26px "Be Vietnam Pro",sans-serif';x.fillStyle="#cbd0c7";x.fillText(v[1],W/2,y+14);
+  x.font='500 22px "Be Vietnam Pro",sans-serif';x.fillStyle="#e2b36a";x.fillText(("Vô Ưu Tự · "+LUNAR.label(new Date()).replace(/ năm .*/,"")).toUpperCase().split("").join(" "),W/2,H-62);
+  return c;}
+async function snapshot(){if(!S.entered)return;try{await document.fonts.ready;}catch(e){}shotSrc=grabScene();shotView();}
+function shotView(){const c=composeShot(shotSrc,SHOT_VERSES[shotI%SHOT_VERSES.length]),url=c.toDataURL("image/jpeg",.9);
+  openSheet("Ảnh lưu niệm","Một khoảnh khắc ở Tự",`<img src="${url}" alt="Ảnh chụp khung cảnh Vô Ưu Tự kèm một câu kệ" style="width:100%;border-radius:12px;border:1px solid var(--line);display:block">
+    <p class="muted">Ảnh chỉ có khung cảnh và câu kệ. Tên, lời nguyện hay tâm sự của bạn không nằm trong ảnh.</p>
+    <div class="row"><a class="btn" id="shSave" href="${url}" download="vo-uu-tu-${dayKey(new Date())}.jpg">Lưu ảnh</a><button class="btn ghost" id="shShare">Chia sẻ</button><button class="chip" id="shNext">Đổi câu kệ</button></div>`);
+  $("#shNext").addEventListener("click",()=>{shotI++;shotView();});
+  $("#shShare").addEventListener("click",()=>c.toBlob(async b=>{const f=new File([b],"vo-uu-tu.jpg",{type:"image/jpeg"});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:"Vô Ưu Tự",text:"Một khoảnh khắc an yên ở Vô Ưu Tự"});}catch(e){}}else{$("#shSave").click();toast("Máy bạn chưa hỗ trợ chia sẻ trực tiếp, ảnh đã được lưu về máy.");}},"image/jpeg",.9));}
+{const tools=$("#hud .tools"),ab=$("#aboutBtn");ab.insertAdjacentHTML("beforebegin",`<button class="pill" id="shotBtn" title="Chụp ảnh lưu niệm (phím P)"><svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M2 5.5h2.5L6 3.5h4l1.5 2H14v7H2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="8" cy="9" r="2.3" stroke="currentColor" stroke-width="1.2"/></svg><span class="lbl-long">Chụp ảnh</span></button>`);$("#shotBtn").addEventListener("click",snapshot);}
+
+// ---- 7. lễ theo mùa: bông hồng Vu Lan, tắm Phật, hái lộc đầu năm ----
+let roseG=null;
+function wearRose(c){if(roseG&&roseG.parent)roseG.parent.remove(roseG);roseG=null;if(!c)return;const u=avatar.userData.upper;if(!u)return;
+  roseG=new THREE.Group();const pm=M(c==="do"?0xc0142a:0xf4f1ea,{roughness:.6});for(let k=0;k<5;k++){const p=new THREE.Mesh(new THREE.SphereGeometry(.024,8,6),pm);const a=k/5*6.283;p.position.set(Math.cos(a)*.016,Math.sin(a)*.016,0);p.scale.z=.6;roseG.add(p);}
+  const core=new THREE.Mesh(new THREE.SphereGeometry(.02,8,6),pm);core.position.z=-.01;roseG.add(core);const lf=new THREE.Mesh(new THREE.SphereGeometry(.025,6,4),M(0x2f6a32));lf.scale.set(1.4,.5,.3);lf.position.set(.03,-.035,.01);lf.rotation.z=-.6;roseG.add(lf);
+  roseG.position.set(.085,.42,-.135);u.add(roseG);}
+{const _ra=restyleAvatar;restyleAvatar=function(){_ra();wearRose(store.get("rose",""));};}
+if(SEASON==="vulan")wearRose(store.get("rose",""));
+function hongVuLan(){openSheet("Mùa Vu Lan","Bông hồng cài áo",`<p class="lede">Mùa Vu Lan, người con cài một bông hồng lên áo để nhớ ơn cha mẹ.</p>
+  <p><b>Hồng đỏ</b>: mẹ còn bên cạnh. Mừng vì mình còn mẹ, nhắc mình về nhà thương mẹ nhiều hơn.<br><b>Hồng trắng</b>: mẹ đã đi xa. Thương nhớ và hồi hướng công đức cho mẹ.</p>
+  <p class="muted">Tục cài hoa hồng mùa Vu Lan bắt nguồn từ bài văn “Bông hồng cài áo” của Thiền sư Nhất Hạnh (1962).</p>
+  <div class="row"><button class="btn" id="roDo">Cài hồng đỏ</button><button class="btn ghost" id="roTrang">Cài hồng trắng</button>${store.get("rose","")?'<button class="chip" id="roGo">Gỡ hoa</button>':""}</div><div id="roMsg"></div>`);
+  const set=c=>{store.set("rose",c);wearRose(c);const msg=c==="do"?"Bông hồng đỏ đã cài trên áo bạn. Hôm nay, gọi cho mẹ một cuộc nhé.":"Bông hồng trắng đã cài trên áo bạn. Mời bạn tụng một thời cầu siêu, hồi hướng cho mẹ.";
+    $("#roMsg").innerHTML=`<p class="lede" style="margin-top:12px">${msg}</p><div class="row"><button class="btn" id="roChant">${c==="do"?"Tụng cầu an cho cha mẹ":"Tụng cầu siêu cho mẹ"}</button></div><p class="muted">Đổi sang góc nhìn “Phía sau” để thấy bông hoa trên áo.</p>`;
+    $("#roChant").addEventListener("click",()=>chant(c==="do"?"cauan":"causieu"));bell(196,.35);};
+  $("#roDo").addEventListener("click",()=>set("do"));$("#roTrang").addEventListener("click",()=>set("trang"));const g=$("#roGo");g&&g.addEventListener("click",()=>{store.set("rose","");wearRose("");closeSheet();toast("Đã gỡ hoa khỏi áo.");});}
+const newHot=[];
+if(SEASON==="vulan"){const bar=$("#postureBar");bar&&bar.insertAdjacentHTML("beforeend",`<button class="pill" id="roseBtn">Bông hồng cài áo</button>`);$("#roseBtn").addEventListener("click",hongVuLan);}
+// tắm Phật mùa Phật Đản
+let tpWater=null;const TP={x:-5.5,z:-4.6};
+if(SEASON==="phatdan"){const gold=mat.gold||M(0xc9a24a,{metalness:.6,roughness:.35});
+  cyl(.62,.7,.55,mat.stone,TP.x,.275,TP.z,8);const basin=cyl(.58,.46,.2,M(0x8a6a3a,{metalness:.5,roughness:.4}),TP.x,.65,TP.z,24);
+  tpWater=cyl(.53,.53,.02,new THREE.MeshStandardMaterial({color:0x6d97a8,roughness:.15,metalness:.1,transparent:true,opacity:.85}),TP.x,.74,TP.z,24);
+  for(let k=0;k<8;k++){const a=k/8*6.283,p=new THREE.Mesh(new THREE.SphereGeometry(.1,8,6),mat.lotus||M(0xe8a5a8));p.scale.set(1,.5,1.6);p.position.set(TP.x+Math.cos(a)*.16,.8,TP.z+Math.sin(a)*.16);p.rotation.y=-a;scene.add(p);}
+  const baby=new THREE.Group();baby.position.set(TP.x,.84,TP.z);baby.scale.setScalar(1.6);scene.add(baby);
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(.07,.09,.3,12),gold);body.position.y=.15;baby.add(body);const hd=new THREE.Mesh(new THREE.SphereGeometry(.075,14,10),gold);hd.position.y=.37;baby.add(hd);
+  const ush=new THREE.Mesh(new THREE.SphereGeometry(.035,10,8),gold);ush.position.y=.44;baby.add(ush);
+  const armU=new THREE.Mesh(new THREE.CylinderGeometry(.018,.02,.22,8),gold);armU.position.set(.075,.36,0);armU.rotation.z=-.15;baby.add(armU);
+  const armD=new THREE.Mesh(new THREE.CylinderGeometry(.018,.02,.2,8),gold);armD.position.set(-.085,.12,0);armD.rotation.z=-.25;baby.add(armD);
+  const gl=glow(0xffe0a0,1.4,.35);gl.position.y=.3;baby.add(gl);circ(TP.x,TP.z,.85);
+  newHot.push({id:"tamphat",name:"Tắm Phật",sub:"Lễ tắm tượng Thái tử đản sanh",stand:[-5.4,-2.9],yaw:0,r:1.5,kind:"tamphat",action:"Tắm Phật",focus:{pos:[-5.0,1.9,-2.6],look:[-5.5,1.25,-4.6]},mk:null});}
+function tamPhat(){const h=HOT.find(x=>x.id==="tamphat");let n=0;
+  openSheet("Mùa Phật Đản","Lễ tắm Phật",`<p class="lede">Tượng Thái tử Tất Đạt Đa lúc đản sanh: một tay chỉ trời, một tay chỉ đất. Múc nước thơm tắm tượng là nhắc mình gột rửa thân tâm.</p>
+    <p class="verse">Ngã kim quán mộc chư Như Lai,<br>Tịnh trí trang nghiêm công đức tụ,<br>Ngũ trược chúng sanh linh ly cấu,<br>Đồng chứng Như Lai tịnh pháp thân.</p>
+    <p class="muted">Nghĩa: Nay con tắm gội chư Như Lai, trí trong sạch trang nghiêm, công đức nhóm họp. Nguyện chúng sanh ở đời năm trược đều lìa cấu nhiễm, cùng chứng pháp thân thanh tịnh của Như Lai.</p>
+    <div class="row"><button class="btn" id="tpBtn">Múc nước tắm Phật (0/3)</button><span class="muted" id="tpMsg"></span></div>`,h.focus);
+  $("#tpBtn").addEventListener("click",()=>{const b=$("#tpBtn");b.disabled=true;n++;
+    for(let k=0;k<14;k++){const d=sph(.022,new THREE.MeshBasicMaterial({color:0xcfe6f0,transparent:true,opacity:.85}),TP.x+rand(-.04,.04),1.95,TP.z+rand(-.04,.04),6);const t0=k*55;
+      later(()=>tween(700,p=>{d.position.y=1.95-p*1.15;d.material.opacity=.85*(1-p*.6);},()=>scene.remove(d)),t0);}
+    if(A&&A.on){const Z=ensureZ();if(Z){const c=A.ctx,t=c.currentTime,s=c.createBufferSource();s.buffer=Z.noise;const bp=c.createBiquadFilter();bp.type="bandpass";bp.frequency.value=1600;const g=c.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.1,t+.1);g.gain.exponentialRampToValueAtTime(.0001,t+1.2);s.connect(bp);bp.connect(g);g.connect(A.master);s.start(t);s.stop(t+1.3);}}
+    b.textContent=`Múc nước tắm Phật (${n}/3)`;
+    later(()=>{if(n<3){b.disabled=false;$("#tpMsg").textContent=n===1?"Gột rửa thân.":"Gột rửa khẩu.";}else{bell(196,.4);$("#tpMsg").textContent="Gột rửa ý. Nguyện thân tâm thanh tịnh như nước trong.";}},1200);});}
+// hái lộc đầu năm
+const LOC=[["Lộc An","Năm mới thân an, tâm an, nhà an.","Mỗi sáng thức dậy, thở ba hơi thật chậm trước khi cầm điện thoại."],["Lộc Hiếu","Cha mẹ còn là phúc lớn nhất trong nhà.","Tuần này về thăm hoặc gọi cho cha mẹ, hỏi một câu thật lòng."],["Lộc Nhẫn","Một lần nhịn, chín lần lành.","Khi giận, đợi ba hơi thở rồi mới nói."],["Lộc Thí","Cho đi là còn mãi.","Làm một việc tốt nhỏ cho người lạ trong tuần đầu năm."],["Lộc Trí","Hiểu mình là khởi đầu của trí tuệ.","Đọc một trang kinh hoặc sách lành mỗi ngày."],["Lộc Hòa","Gia hòa vạn sự thành.","Nói lời cảm ơn với người trong nhà mỗi ngày."],["Lộc Kiện","Thân khỏe để tu, tâm khỏe để thương.","Đi bộ chánh niệm mười phút mỗi ngày."],["Lộc Tín","Giữ lời là giữ mình.","Hứa ít hơn, làm đủ hơn."],["Lộc Hỷ","Vui với niềm vui của người khác.","Chúc mừng thật lòng một người đang có chuyện vui."],["Lộc Xả","Buông được thì nhẹ.","Viết ra một điều cũ, thả đèn hoa đăng ở hồ sen."],["Lộc Tịnh","Ăn chay một ngày, lòng nhẹ một ngày.","Chọn ngày rằm hoặc mùng một để ăn chay."],["Lộc Phúc","Phúc do mình gieo, không do ai cho.","Gieo một hạt lành mỗi ngày, dù rất nhỏ."]];
+if(SEASON==="tet"){const red=M(0xc0241a,{emissive:0x5a0a04,emissiveIntensity:.5}),gold=mat.gold||M(0xd8b04a);
+  for(let k=0;k<10;k++){const a=k/10*6.283,b=box(.12,.18,.012,red,-5.6+Math.cos(a)*rand(.35,.6),rand(1.0,1.6),16.5+Math.sin(a)*rand(.35,.6));b.rotation.y=-a;b.add(new THREE.Mesh(new THREE.BoxGeometry(.12,.018,.016),gold));}
+  newHot.push({id:"hailoc",name:"Hái lộc đầu năm",sub:"Nhận một câu chúc và một việc lành",stand:[-4.3,17.7],yaw:.87,r:1.4,kind:"hailoc",action:"Hái lộc",focus:{pos:[-4.2,1.8,18],look:[-5.6,1.3,16.5]},mk:null});}
+function haiLoc(){const k=dayKey(new Date()),got=store.get("loc",{});const i=got[k]!==undefined?got[k]:Math.floor(Math.random()*LOC.length);got[k]=i;store.set("loc",got);const L=LOC[i];
+  openSheet("Đầu năm","Hái lộc",`<p class="muted">${got[k]!==undefined&&Object.keys(got).length?"Mỗi ngày một lộc. Lộc hôm nay của bạn:":""}</p><h3 style="font-size:30px;margin:8px 0">${L[0]}</h3><p class="verse">${L[1]}</p><p><b>Việc lành đầu năm:</b> ${L[2]}</p>
+    <div class="row"><button class="btn ghost" id="locCard">Lưu thẻ lộc</button></div>`,HOT.find(x=>x.id==="hailoc").focus);bell(262,.3);
+  $("#locCard").addEventListener("click",()=>shareCard({eyebrow:"Lộc đầu năm",title:L[0],verse:[L[1]],body:"Việc lành đầu năm: "+L[2],src:"Vô Ưu Tự",file:"loc-dau-nam"}));}
+newHot.forEach(h=>HOT.push(h));
+{const _rh=runHot;runHot=function(h){if(h.kind==="tamphat")tamPhat();else if(h.kind==="hailoc")haiLoc();else _rh(h);};}
+
+// ---- 8. bản đồ nhỏ và về chánh điện ----
+const MAPB={x0:-17,x1:17,z0:-29,z1:30};
+function drawMap(x,W,H,big){const s=Math.min(W/(MAPB.x1-MAPB.x0),H/(MAPB.z1-MAPB.z0)),ox=(W-(MAPB.x1-MAPB.x0)*s)/2,oz=(H-(MAPB.z1-MAPB.z0)*s)/2,P=(px,pz)=>[ox+(px-MAPB.x0)*s,oz+(pz-MAPB.z0)*s];
+  x.clearRect(0,0,W,H);x.fillStyle="rgba(46,64,44,.55)";const [a0,b0]=P(-15.6,-28.6),[a1,b1]=P(15.6,27);x.fillRect(a0,b0,a1-a0,b1-b0);
+  x.fillStyle="rgba(140,135,123,.45)";{const [p,q]=P(-1.6,-7),[r,t]=P(1.6,27);x.fillRect(p,q,r-p,t-q);}
+  x.fillStyle="rgba(203,208,199,.22)";OBST.forEach(o=>{if(o.t==="r"){const [p,q]=P(o.x0,o.z0),[r,t]=P(o.x1,o.z1);x.fillRect(p,q,Math.max(1,r-p),Math.max(1,t-q));}else{const [p,q]=P(o.x,o.z);x.beginPath();x.arc(p,q,Math.max(1,o.r*s),0,7);x.fill();}});
+  {const [p,q]=P(HALL.x0,HALL.z0),[r,t]=P(HALL.x1,HALL.z1);x.fillStyle="rgba(163,46,31,.35)";x.fillRect(p,q,r-p,t-q);x.strokeStyle="rgba(226,179,106,.8)";x.lineWidth=big?2:1;x.strokeRect(p,q,r-p,t-q);}
+  {const [p,q]=P(POND.x,POND.z);x.fillStyle="rgba(90,140,165,.75)";x.beginPath();x.arc(p,q,POND.r*s,0,7);x.fill();}
+  PEERS.forEach(Pe=>{const [p,q]=P(Pe.g.position.x,Pe.g.position.z);x.fillStyle="#d99a96";x.beginPath();x.arc(p,q,big?4:2.5,0,7);x.fill();});
+  x.font=big?'500 12.5px "Be Vietnam Pro",sans-serif':'500 9px "Be Vietnam Pro",sans-serif';x.textAlign="center";
+  const boxes=[];HOT.forEach(h=>{const [p,q]=P(h.stand[0],h.stand[1]);x.fillStyle="#e2b36a";x.beginPath();x.arc(p,q,big?4.5:2.2,0,7);x.fill();
+    if(big){const w=x.measureText(h.name).width,bx=[p-w/2-2,q-21,p+w/2+2,q-5];if(boxes.some(o=>bx[0]<o[2]&&bx[2]>o[0]&&bx[1]<o[3]&&bx[3]>o[1]))return;boxes.push(bx);x.fillStyle="rgba(239,231,214,.95)";x.shadowColor="#000";x.shadowBlur=4;x.fillText(h.name,p,q-8);x.shadowBlur=0;}});
+  {const [p,q]=P(S.x,S.z);x.save();x.translate(p,q);x.rotate(-S.yaw);x.fillStyle="#fff4d6";x.strokeStyle="#0d1618";x.lineWidth=1.5;const k=big?11:7;x.beginPath();x.moveTo(0,-k);x.lineTo(k*.65,k*.7);x.lineTo(0,k*.35);x.lineTo(-k*.65,k*.7);x.closePath();x.fill();x.stroke();x.restore();}
+  return {s,ox,oz};}
+document.body.insertAdjacentHTML("beforeend",`<canvas id="miniMap" width="244" height="420" title="Bản đồ (phím N) · bấm để mở lớn" hidden></canvas>
+  <div class="mapview" id="mapView" hidden role="dialog" aria-label="Bản đồ Vô Ưu Tự"><div class="map-card"><div class="map-head"><b>Bản đồ Vô Ưu Tự</b><span class="muted">Bấm vào một điểm để đi tới</span></div><canvas id="bigMap"></canvas>
+  <div class="row"><button class="btn" id="mapHall">Về chánh điện</button><button class="btn ghost" id="mapClose">Đóng</button></div></div></div>`);
+{const g=$("#gotoWrap");g.insertAdjacentHTML("afterbegin",`<button class="pill" id="mapBtn" title="Bản đồ (phím N)" style="padding:9px 12px;font-size:13.5px">Bản đồ</button>`);$("#mapBtn").addEventListener("click",openMap);}
+const mini=$("#miniMap"),mctx=mini.getContext("2d");mctx.setTransform(2,0,0,2,0,0);
+function miniOn(){return store.get("mini",1)&&!coarse&&innerWidth>720;}
+setInterval(()=>{const on=S.entered&&miniOn()&&!S.sheetOpen;mini.hidden=!on;document.body.classList.toggle("has-mini",on);if(on)drawMap(mctx,122,210,false);},250);
+mini.addEventListener("click",openMap);
+let mapInfo=null;
+function openMap(){if(!S.entered)return;const mv=$("#mapView"),c=$("#bigMap");mv.hidden=false;const W=Math.min(innerWidth-48,520),H=Math.min(innerHeight-190,820),dpr=Math.min(2,devicePixelRatio||1);
+  c.width=W*dpr;c.height=H*dpr;c.style.width=W+"px";c.style.height=H+"px";const x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);
+  const draw=()=>{if(mv.hidden)return;mapInfo=drawMap(x,W,H,true);requestAnimationFrame(draw);};draw();$("#mapClose").focus();}
+function closeMap(){$("#mapView").hidden=true;}
+$("#bigMap").addEventListener("click",e=>{if(!mapInfo)return;const r=e.target.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;let best=null,bd=26;
+  HOT.forEach(h=>{const px=mapInfo.ox+(h.stand[0]-MAPB.x0)*mapInfo.s,pz=mapInfo.oz+(h.stand[1]-MAPB.z0)*mapInfo.s,d=Math.hypot(px-mx,pz-my);if(d<bd){bd=d;best=h;}});
+  if(best){closeMap();walkTo(best,best.kind==="info"?()=>toast(best.text):()=>runHot(best));}});
+$("#mapClose").addEventListener("click",closeMap);$("#mapView").addEventListener("click",e=>{if(e.target.id==="mapView")closeMap();});
+function veChanhDien(){closeMap();walkTo(HOT.find(x=>x.id==="bowl"));toast("Đang đi về chánh điện.",2200);}
+$("#mapHall").addEventListener("click",veChanhDien);
+function rebuildGoto(){const m=$("#gotoMenu");m.innerHTML=`<button data-id="__hall"><b>Về chánh điện</b><span>Phím B · đứng trước lư hương</span></button>`+HOT.map(h=>`<button data-id="${h.id}"><b>${h.name}</b><span>${h.sub}</span></button>`).join("");
+  $$("#gotoMenu button").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.id==="__hall")return veChanhDien();const h=HOT.find(x=>x.id===b.dataset.id);walkTo(h,h.kind==="info"?()=>toast(h.text):()=>runHot(h));}));}
+rebuildGoto();
+
+// ---- 9. dễ đọc, tương phản cao, phím tắt ----
+if(store.get("hc",0))document.documentElement.classList.add("hc");
+function keysHelp(){openSheet("Hướng dẫn","Phím tắt",`<table class="keys">${[["W A S D / mũi tên","Đi lại"],["Kéo chuột","Nhìn quanh"],["B","Về chánh điện"],["N","Mở bản đồ"],["P","Chụp ảnh lưu niệm"],["T","Đổi thời điểm trong ngày"],["M","Gõ mõ khi đang tự tụng"],["Esc","Đóng bảng đang mở"],["H hoặc ?","Xem lại bảng này"]].map(([k,v])=>`<tr><td><kbd>${k}</kbd></td><td>${v}</td></tr>`).join("")}</table>
+  <p class="muted">Trong phần Cài đặt (nút “?” → Về Tự) có chữ lớn, tương phản cao, chất lượng hình ảnh và thời tiết.</p>`);}
+addEventListener("keydown",e=>{if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)||e.ctrlKey||e.metaKey||e.altKey||!S.entered)return;const k=e.key.toLowerCase();
+  if(k==="escape"){if(!$("#mapView").hidden)closeMap();else if(S.sheetOpen)closeSheet();return;}
+  if(k==="b")veChanhDien();else if(k==="n"){$("#mapView").hidden?openMap():closeMap();}else if(k==="p")snapshot();else if(k==="t")$("#timeBtn").click();else if(k==="h"||k==="?")keysHelp();});
+{const _rs=renderSettings;renderSettings=function(){_rs();const el=$("#abSettings");if(!el)return;
+  const chips=(id,opts,cur)=>`<div class="row st-row" id="${id}">${opts.map(([v,l])=>`<button class="chip" data-v="${v}" aria-pressed="${v===cur}">${l}</button>`).join("")}</div>`;
+  el.insertAdjacentHTML("beforeend",`<label class="check"><input type="checkbox" id="stHc" ${store.get("hc",0)?"checked":""}><span>Tương phản cao (chữ sáng, nền đậm)</span></label>
+    <label class="check"><input type="checkbox" id="stTranh" ${store.get("tranh",1)?"checked":""}><span>Tiếng đàn tranh nhẹ ngoài sân</span></label>
+    ${coarse?"":`<label class="check"><input type="checkbox" id="stMini" ${store.get("mini",1)?"checked":""}><span>Hiện bản đồ nhỏ ở góc màn hình</span></label>`}
+    <span class="muted">Chất lượng hình ảnh${GFX.fps?` · đang chạy khoảng ${GFX.fps} khung hình/giây`:""}</span>${chips("stGfx",[["auto","Tự động"],["lite","Nhẹ"],["hi","Đẹp nhất"]],GFX.mode)}
+    <span class="muted">Thời tiết trong Tự</span>${chips("stWx",[["auto","Theo mùa"],["nang","Luôn nắng"],["mua","Mưa"]],WX.mode)}
+    <div class="row"><button class="btn ghost" id="stKeys">Phím tắt</button></div>`);
+  $("#stHc").addEventListener("change",e=>{store.set("hc",e.target.checked?1:0);document.documentElement.classList.toggle("hc",e.target.checked);});
+  $("#stTranh").addEventListener("change",e=>store.set("tranh",e.target.checked?1:0));
+  const mi=$("#stMini");mi&&mi.addEventListener("change",e=>store.set("mini",e.target.checked?1:0));
+  const bind=(id,fn)=>$$(`#${id} .chip`).forEach(b=>b.addEventListener("click",()=>{$$(`#${id} .chip`).forEach(x=>x.setAttribute("aria-pressed",String(x===b)));fn(b.dataset.v);}));
+  bind("stGfx",setGfx);bind("stWx",v=>{WX.mode=v;store.set("wx",v);});$("#stKeys").addEventListener("click",keysHelp);};}
+window.__vut8={peers:()=>[...PEERS].map(([k,P])=>[k,P.hd]),hd:()=>S.hd,WX,GFX,snapshot,openMap,veChanhDien,setGfx,keysHelp,tamPhat,haiLoc,hongVuLan,wearRose,autoKey,moonFrac};
+
 window.__vut={S,phap,chant,person,setLook,tangKinh,dangLe,phatTich,phongSanh,dinhHuong,chungTrong,walkTo,HOT,incense,chant,pond,wall,meritBook,bellTower,setTime,xin:xinXam,bode,avatar};window.__setTime=setTime;
 })();
 </script>

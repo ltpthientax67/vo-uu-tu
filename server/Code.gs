@@ -1,5 +1,5 @@
 /**
- * VÔ ƯU TỰ – Máy chủ dữ liệu trên Google Sheets (Google Apps Script) · bản 5 (thêm lời chào có sẵn khi gặp nhau)
+ * VÔ ƯU TỰ – Máy chủ dữ liệu trên Google Sheets (Google Apps Script) · bản 6 (thấy đèn hoa đăng người khác thả)
  * (bản 3: đếm người đang có mặt; bản 4: ghi giờ vào từng lượt, người dùng thấy nhau trong Tự, trang quản trị xem ai đang online)
  * Lưu: đăng ký dùng thử, góp ý, câu hỏi Phật pháp, Tường tâm nguyện, thông báo, báo lỗi, lượt vào Tự.
  * Có các lệnh quản trị (cần mật khẩu) cho trang quan-tri.html.
@@ -231,7 +231,8 @@ function here_(cid, p) {
       o: ['lam', 'aodai', 'tang'].indexOf(q.o) >= 0 ? q.o : 'lam', f: q.f ? 1 : 0,
       p: ['stand', 'sit', 'lay', 'chao'].indexOf(q.p) >= 0 ? q.p : 'stand',
       n: clean_(q.n, 20).replace(/[<>"&]/g, ''),
-      m: [0, 1, 2].indexOf(Number(q.m)) >= 0 ? Number(q.m) : 0
+      m: [0, 1, 2].indexOf(Number(q.m)) >= 0 ? Number(q.m) : 0,
+      h: Math.max(0, Math.min(9999, Math.floor(Number(q.h) || 0)))
     };
     const prev = m[cid];
     m[cid] = [now, p.chant === true ? 1 : 0, prev ? prev[2] : now, st];
@@ -241,7 +242,7 @@ function here_(cid, p) {
     const peers = [];
     Object.keys(m).forEach(function (k) {
       n++; if (m[k][1]) ch++;
-      if (k !== cid && m[k][3] && m[k][3].i && peers.length < 40) { const o = m[k][3]; peers.push({ i: o.i, x: o.x, z: o.z, y: o.y, o: o.o, f: o.f, p: o.p, n: o.n, m: o.m || 0, a: now - m[k][0] }); }
+      if (k !== cid && m[k][3] && m[k][3].i && peers.length < 40) { const o = m[k][3]; peers.push({ i: o.i, x: o.x, z: o.z, y: o.y, o: o.o, f: o.f, p: o.p, n: o.n, m: o.m || 0, h: o.h || 0, a: now - m[k][0] }); }
     });
     return { ok: true, n: n, chant: ch, peers: peers };
   } finally { lock.releaseLock(); }
